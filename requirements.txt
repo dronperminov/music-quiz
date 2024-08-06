@@ -1,0 +1,9 @@
+fastapi
+Jinja2
+passlib[bcrypt]
+pymongo
+pyjwt
+python-multipart
+requests
+uvicorn[standard]
+yandex-music==2.2.0

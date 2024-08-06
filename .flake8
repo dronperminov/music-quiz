@@ -1,0 +1,13 @@
+[flake8]
+
+max-line-length = 175
+max-complexity = 20
+inline-quotes = "
+
+application-import-names = src, tests
+import-order-style = pycharm
+
+extend-immutable-calls = Body, Depends, OAuth2PasswordBearer, File, Query, Form
+
+exclude = .git, __pycache__, .idea
+ignore = ANN101
