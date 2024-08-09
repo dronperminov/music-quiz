@@ -1,0 +1,59 @@
+{
+  "yandex_artists": [
+    {
+      "yandex_id": "160970",
+      "name": "Noize MC",
+      "description": "Noize MC description",
+      "tracks": {"40053530": 5, "40053536": 17},
+      "artist_type": "singer_male",
+      "image_urls": [],
+      "listen_count": 2544108,
+      "genres": ["rock", "hip-hop"]
+    },
+    {
+      "yandex_id": "762002",
+      "name": "Anacondaz",
+      "description": "Anacondaz description",
+      "tracks": {"40053536": 35, "25319594": 1},
+      "artist_type": "band",
+      "image_urls": [],
+      "listen_count": 899361,
+      "genres": ["hip-hop"]
+    }
+  ],
+  "yandex_tracks": [
+    {
+      "yandex_id": "25319594",
+      "title": "Мама, я люблю",
+      "artists": ["762002"],
+      "year": 2015,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 225,
+      "image_urls": []
+    },
+    {
+      "yandex_id": "40053530",
+      "title": "Вселенная бесконечна",
+      "artists": ["160970"],
+      "year": 2013,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 140,
+      "image_urls": ["url1"]
+    },
+    {
+      "yandex_id": "40053536",
+      "title": "Похуисты",
+      "artists": ["160970", "762002"],
+      "year": 2017,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 278,
+      "image_urls": []
+    }
+  ]
+}

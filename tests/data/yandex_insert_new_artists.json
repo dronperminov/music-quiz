@@ -1,0 +1,35 @@
+{
+  "yandex_artists": [
+    {
+      "yandex_id": "4623000",
+      "name": "Монеточка",
+      "description": "Монеточка description",
+      "tracks": {},
+      "artist_type": "singer_female",
+      "image_urls": [],
+      "listen_count": 4300129,
+      "genres": ["pop"]
+    },
+    {
+      "yandex_id": "41126",
+      "name": "Каста",
+      "description": "Каста description",
+      "tracks": {},
+      "artist_type": "band",
+      "image_urls": [],
+      "listen_count": 2152641,
+      "genres": ["hip-hop"]
+    },
+    {
+      "yandex_id": "15691816",
+      "name": "ANNA ASTI",
+      "description": "ANNA ASTI description",
+      "tracks": {},
+      "artist_type": "singer_female",
+      "image_urls": [],
+      "listen_count": 5607502,
+      "genres": ["pop"]
+    }
+  ],
+  "yandex_tracks": []
+}

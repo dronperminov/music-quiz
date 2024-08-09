@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class ArtistType(Enum):
+    UNKNOWN = "unknown"
     SINGER_MALE = "singer_male"
     SINGER_FEMALE = "singer_female"
     PERFORMER_MALE = "performer_male"

@@ -1,0 +1,60 @@
+{
+  "yandex_artists": [
+    {
+      "yandex_id": "41126",
+      "name": "Каста",
+      "description": "Каста description",
+      "tracks": {"21101459": 1, "21101461": 2, "21101463": 3, "21101465": 4},
+      "artist_type": "band",
+      "image_urls": [],
+      "listen_count": 2152641,
+      "genres": ["hip-hop"]
+    }
+  ],
+  "yandex_tracks": [
+    {
+      "yandex_id": "21101459",
+      "title": "Вокруг шум",
+      "artists": ["41126"],
+      "year": 2014,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 213,
+      "image_urls": []
+    },
+    {
+      "yandex_id": "21101461",
+      "title": "Ды-ды-дым",
+      "artists": ["41126"],
+      "year": 2014,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 243,
+      "image_urls": []
+    },
+    {
+      "yandex_id": "21101463",
+      "title": "Сочиняй мечты",
+      "artists": ["41126"],
+      "year": 2014,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 216,
+      "image_urls": []
+    },
+    {
+      "yandex_id": "21101465",
+      "title": "Ревность",
+      "artists": ["41126"],
+      "year": 2014,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 176,
+      "image_urls": []
+    }
+  ]
+}

@@ -28,7 +28,7 @@ class Artist:
             "artist_type": self.artist_type.value,
             "image_urls": self.image_urls,
             "listen_count": self.listen_count,
-            "tracks": self.tracks,
+            "tracks": self.get_tracks_dict(),
             "genres": [genre.value for genre in self.genres],
             "metadata": self.metadata.to_dict()
         }
@@ -43,7 +43,27 @@ class Artist:
             artist_type=ArtistType(data["artist_type"]),
             image_urls=data["image_urls"],
             listen_count=data["listen_count"],
-            tracks=data["tracks"],
+            tracks={track["track_id"]: track["position"] for track in data["tracks"]},
             genres=[Genre(genre) for genre in data["genres"]],
             metadata=Metadata.from_dict(data["metadata"])
         )
+
+    def get_tracks_dict(self) -> List[dict]:
+        return [{"track_id": track_id, "position": position} for track_id, position in self.tracks.items()]
+
+    def get_diff(self, data: dict) -> dict:
+        artist_data = self.to_dict()
+        diff = {}
+
+        for field in ["name", "description", "artist_type", "image_urls", "listen_count", "genres"]:
+            if field in data and artist_data[field] != data[field]:
+                diff[field] = {"prev": artist_data[field], "new": data[field]}
+
+        if "tracks" in data:
+            artist_tracks = sorted(artist_data["tracks"], key=lambda track: track["track_id"])
+            data_tracks = sorted(data["tracks"], key=lambda track: track["track_id"])
+
+            if artist_tracks != data_tracks:
+                diff["tracks"] = {"prev": artist_data["tracks"], "new": data["tracks"]}
+
+        return diff

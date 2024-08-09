@@ -1,0 +1,48 @@
+{
+  "yandex_artists": [
+    {
+      "yandex_id": "160970",
+      "name": "Noize MC",
+      "description": "Noize MC description",
+      "tracks": {"40053530": 5, "40053533": 23},
+      "artist_type": "performer_male",
+      "image_urls": [],
+      "listen_count": 1000000,
+      "genres": ["rock", "hip-hop"]
+    },
+    {
+      "yandex_id": "2734048",
+      "name": "RasKar",
+      "description": "RasKar description",
+      "tracks": {"40053533": 3},
+      "artist_type": "performer_male",
+      "image_urls": [],
+      "listen_count": 72725,
+      "genres": ["hip-hop"]
+    }
+  ],
+  "yandex_tracks": [
+    {
+      "yandex_id": "40053530",
+      "title": "Вселенная бесконечна",
+      "artists": ["160970"],
+      "year": 2011,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 183,
+      "image_urls": []
+    },
+    {
+      "yandex_id": "40053533",
+      "title": "Сам",
+      "artists": ["160970", "2734048"],
+      "year": 2012,
+      "lyrics": null,
+      "genres": ["hip-hop"],
+      "language": "russian",
+      "duration": 135,
+      "image_urls": []
+    }
+  ]
+}

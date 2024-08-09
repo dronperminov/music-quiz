@@ -54,3 +54,13 @@ class Track:
             image_urls=data["image_urls"],
             metadata=Metadata.from_dict(data["metadata"])
         )
+
+    def get_diff(self, data: dict) -> dict:
+        track_data = self.to_dict()
+        diff = {}
+
+        for field in ["title", "artists", "year", "lyrics", "genres", "language", "duration", "downloaded", "image_urls"]:
+            if field in data and track_data[field] != data[field]:
+                diff[field] = {"prev": track_data[field], "new": data[field]}
+
+        return diff
