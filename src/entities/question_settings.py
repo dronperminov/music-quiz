@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-from bson import ObjectId
-
 from src.entities.track_modification_settings import TrackModificationSettings
 from src.enums import ArtistsCount, Genre, Hits, Language, QuestionType
 
@@ -17,7 +15,7 @@ class QuestionSettings:
     listen_count: Tuple[int, int]
     question_types: Dict[QuestionType, float]
     hits: Hits
-    black_list: List[ObjectId]
+    black_list: List[int]
     track_modifications: TrackModificationSettings
     repeat_incorrect_probability: float
 

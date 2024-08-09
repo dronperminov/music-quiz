@@ -1,8 +1,9 @@
 from pymongo import ASCENDING, MongoClient
 
 
-class MongoManager:
+class Database:
     client: MongoClient = None
+    identifiers = None
     users = None
     settings = None
     artists = None
@@ -19,6 +20,12 @@ class MongoManager:
     def connect(self) -> None:
         self.client = MongoClient(self.mongo_url)
         database = self.client[self.database_name]
+
+        self.identifiers = database["identifiers"]
+
+        for name in ["artists", "tracks", "similar_artist_groups"]:
+            if self.identifiers.find_one({"_id": name}) is None:
+                self.identifiers.insert_one({"_id": name, "value": 0})
 
         self.users = database["users"]
         self.users.create_index([("username", ASCENDING)], unique=True)
@@ -50,6 +57,9 @@ class MongoManager:
         self.similar_artist_groups = database["similar_artist_groups"]
         self.similar_artist_groups.create_index([("group_id", ASCENDING)], unique=True)
         self.similar_artist_groups.create_index([("creator", ASCENDING)])
+
+    def drop(self) -> None:
+        self.client.drop_database(self.database_name)
 
     def close(self) -> None:
         self.client.close()

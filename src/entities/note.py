@@ -1,15 +1,13 @@
 from dataclasses import dataclass
 from typing import List
 
-from bson import ObjectId
-
 from src.entities.track_landmark import TrackLandmark
 
 
 @dataclass
 class Note:
     username: str
-    artist_id: ObjectId
+    artist_id: int
     text: str
     track_landmarks: List[TrackLandmark]
 

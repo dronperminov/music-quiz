@@ -2,8 +2,6 @@ import abc
 from dataclasses import dataclass
 from datetime import datetime
 
-from bson import ObjectId
-
 from src.entities.artist import Artist
 from src.entities.track import Track
 
@@ -66,7 +64,7 @@ class AddArtistAction(HistoryAction):
 @dataclass
 class EditArtistAction(HistoryAction):
     name = "edit_artist"
-    artist_id: ObjectId
+    artist_id: int
     diff: dict
 
     def to_dict(self) -> dict:
@@ -81,7 +79,7 @@ class EditArtistAction(HistoryAction):
 @dataclass
 class RemoveArtistAction(HistoryAction):
     name = "remove_artist"
-    artist_id: ObjectId
+    artist_id: int
 
     def to_dict(self) -> dict:
         return {
@@ -107,7 +105,7 @@ class AddTrackAction(HistoryAction):
 @dataclass
 class EditTrackAction(HistoryAction):
     name = "edit_track"
-    track_id: ObjectId
+    track_id: int
     diff: dict
 
     def to_dict(self) -> dict:
@@ -122,7 +120,7 @@ class EditTrackAction(HistoryAction):
 @dataclass
 class RemoveTrackAction(HistoryAction):
     name = "remove_track"
-    track_id: ObjectId
+    track_id: int
 
     def to_dict(self) -> dict:
         return {

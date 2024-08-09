@@ -1,14 +1,12 @@
 from dataclasses import dataclass
 from typing import List
 
-from bson import ObjectId
-
 
 @dataclass
 class SimilarArtistsGroup:
     creator: str
-    group_id: ObjectId
+    group_id: int
     name: str
     description: str
-    artist_ids: List[ObjectId]
+    artist_ids: List[int]
     image_url: str

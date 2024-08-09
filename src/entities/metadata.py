@@ -19,9 +19,9 @@ class Metadata:
 
     @classmethod
     def from_dict(cls: "Metadata", data: dict) -> "Metadata":
-        return cls(
-            created_by=data["created_by"],
-            created_at=data["created_at"],
-            updated_by=data["updated_by"],
-            updated_at=data["updated_at"]
-        )
+        return cls(created_by=data["created_by"], created_at=data["created_at"], updated_by=data["updated_by"], updated_at=data["updated_at"])
+
+    @classmethod
+    def initial(cls: "Metadata", username: str) -> "Metadata":
+        timestamp = datetime.now().replace(microsecond=0)
+        return cls(created_by=username, created_at=timestamp, updated_by=username, updated_at=timestamp)

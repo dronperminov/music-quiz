@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from bson import ObjectId
-
 from src.entities.lyrics import Lyrics
 from src.entities.metadata import Metadata
 from src.entities.source import Source
@@ -11,10 +9,10 @@ from src.enums import Genre, Language
 
 @dataclass
 class Track:
-    track_id: ObjectId
+    track_id: int
     source: Source
     title: str
-    artists: List[ObjectId]
+    artists: List[int]
     year: int
     lyrics: Optional[Lyrics]
     genres: List[Genre]

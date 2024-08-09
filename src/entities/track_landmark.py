@@ -1,11 +1,9 @@
 from dataclasses import dataclass
 
-from bson import ObjectId
-
 
 @dataclass
 class TrackLandmark:
-    track_id: ObjectId
+    track_id: int
     timecode: str
     text: str
 

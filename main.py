@@ -4,7 +4,7 @@ from typing import AsyncContextManager
 import uvicorn
 from fastapi import FastAPI
 
-from src.database import database
+from src import database
 
 
 @asynccontextmanager

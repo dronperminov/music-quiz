@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from bson import ObjectId
-
 from src.entities.track_modifications import TrackModifications
 from src.enums import QuestionType
 
@@ -12,8 +10,8 @@ from src.enums import QuestionType
 class Question:
     username: str
     question_type: QuestionType
-    group_id: Optional[ObjectId]
-    track_id: ObjectId
+    group_id: Optional[int]
+    track_id: int
     title: str
     answer: str
     question_timecode: str

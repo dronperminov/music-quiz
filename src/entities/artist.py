@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, List
 
-from bson import ObjectId
-
 from src.entities.metadata import Metadata
 from src.entities.source import Source
 from src.enums import ArtistType, Genre
@@ -10,14 +8,14 @@ from src.enums import ArtistType, Genre
 
 @dataclass
 class Artist:
-    artist_id: ObjectId
+    artist_id: int
     source: Source
     name: str
     description: str
     artist_type: ArtistType
     image_urls: List[str]
     listen_count: int
-    tracks: Dict[ObjectId, int]
+    tracks: Dict[int, int]
     genres: List[Genre]
     metadata: Metadata
 
