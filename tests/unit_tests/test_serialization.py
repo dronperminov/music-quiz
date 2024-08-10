@@ -3,7 +3,8 @@ from unittest import TestCase
 
 from src.entities.artist import Artist
 from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction, HistoryAction, RemoveArtistAction, RemoveTrackAction
-from src.entities.lyrics import Lyrics, LyricsLine
+from src.entities.lyrics import Lyrics
+from src.entities.lyrics_line import LyricsLine
 from src.entities.metadata import Metadata
 from src.entities.note import Note
 from src.entities.question import Question

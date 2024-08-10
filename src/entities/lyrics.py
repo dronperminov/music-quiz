@@ -2,26 +2,9 @@ import re
 from dataclasses import dataclass
 from typing import List, Tuple
 
+from src.entities.chorus_detector import ChorusDetector
+from src.entities.lyrics_line import LyricsLine
 from src.enums import Language
-
-
-@dataclass
-class LyricsLine:
-    time: float
-    text: str
-
-    def to_dict(self) -> dict:
-        return {"time": self.time, "text": self.text}
-
-    @classmethod
-    def from_dict(cls: "LyricsLine", data: dict) -> "LyricsLine":
-        return cls(time=data["time"], text=data["text"])
-
-    @classmethod
-    def from_lrc(cls: "LyricsLine", lrc_line: str) -> "LyricsLine":
-        match = re.search(r"^\[(?P<minute>\d+):(?P<second>\d+\.\d+)] (?P<text>.*)$", lrc_line)
-        text, minute, second = match.group("text").strip(), float(match.group("minute")), float(match.group("second"))
-        return LyricsLine(time=round(minute * 60 + second, 2), text=text)
 
 
 @dataclass
@@ -32,18 +15,18 @@ class Lyrics:
 
     @classmethod
     def from_lrc(cls: "Lyrics", lyrics_str: str) -> "Lyrics":
-        lyrics_lines = []
+        lines = []
 
         for line in lyrics_str.split("\n"):
             if (lyrics_line := LyricsLine.from_lrc(lrc_line=line)).text:
-                lyrics_lines.append(lyrics_line)
+                lines.append(lyrics_line)
 
-        return Lyrics(lines=lyrics_lines, chorus=[], lrc=True)  # TODO: detect chorus
+        return Lyrics(lines=lines, chorus=ChorusDetector().detect(lines), lrc=True)
 
     @classmethod
     def from_text(cls: "Lyrics", text: str) -> "Lyrics":
-        lines = [LyricsLine(time=0, text=line) for line in text.split("\n")]
-        return Lyrics(lines=lines, chorus=[], lrc=False)
+        lines = [LyricsLine(time=0, text=line.strip()) for line in text.split("\n") if line.strip()]
+        return Lyrics(lines=lines, chorus=ChorusDetector().detect(lines), lrc=False)
 
     def to_dict(self) -> dict:
         return {

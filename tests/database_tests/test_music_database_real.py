@@ -37,7 +37,21 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(artist.name, "Каста")
         self.assertEqual(len(artist.tracks), 4)
 
-    def test_3_insert_chart(self) -> None:
+    def test_3_insert_tracks(self) -> None:
+        track_ids = ["40585519", "64355205", "58531281"]
+        tracks, artists = yandex_music_parser.parse_tracks(track_ids=track_ids)
+        self.music_database.add_from_yandex(artists=artists, tracks=tracks, username="user")
+        self.assertEqual(self.music_database.get_tracks_count(), 17)
+
+        artist = self.music_database.get_artist(artist_id=8)
+        self.assertEqual(artist.name, "Заточка")
+        self.assertEqual(len(artist.tracks), 1)
+
+        track = self.music_database.get_track(track_id=16)
+        self.assertEqual(track.title, "Юра, прости")
+        self.assertEqual(track.artists, [7])
+
+    def test_4_insert_chart(self) -> None:
         tracks, artists = yandex_music_parser.parse_chart(max_tracks=100)
         self.music_database.add_from_yandex(artists=artists, tracks=tracks, username="user")
-        self.assertEqual(self.music_database.get_tracks_count(), 114)
+        self.assertEqual(self.music_database.get_tracks_count(), 117)

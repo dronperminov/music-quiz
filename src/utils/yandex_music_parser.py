@@ -13,6 +13,13 @@ class YandexMusicParser:
         self.client = Client(token).init()
         self.covers_size = covers_size
 
+    def get_tracks(self, track_ids: List[str]) -> List[dict]:
+        return [self.__process_track(track) for track in self.client.tracks(track_ids=track_ids)]
+
+    def parse_tracks(self, track_ids: List[str], only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
+        tracks = self.get_tracks(track_ids)
+        return self.__parse_tracks(tracks, max_tracks=len(tracks), only_sole=only_sole)
+
     def parse_artist(self, artist_id: str, max_tracks: int, only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
         tracks = self.__get_artist_tracks(artist_id=artist_id, max_tracks=max_tracks)
         return self.__parse_tracks(tracks, max_tracks=max_tracks, only_sole=only_sole)
@@ -60,7 +67,7 @@ class YandexMusicParser:
         if not cover_urls:
             cover_urls.append(artist.cover.get_url(size=self.covers_size))
 
-        assert {track_id for track_id in tracks} == track_ids
+        assert {track_id for track_id in tracks} == track_ids  # TODO: remove some tracks
 
         return {
             "yandex_id": artist_id,
@@ -104,8 +111,8 @@ class YandexMusicParser:
             "year": min([album.year for album in track.albums], default=0),
             "language": language.value,
             "lyrics": lyrics.to_dict() if lyrics else None,
-            "duration": round(track.duration_ms / 1000, 2),
-            "image_urls": [track.get_cover_url(self.covers_size)]
+            "duration": round(track.duration_ms / 1000, 2) if track.duration_ms else 0,
+            "image_urls": [track.get_cover_url(self.covers_size)] if track.cover_uri else []
         }
 
     def __get_artists(self, track: Track) -> List[int]:
