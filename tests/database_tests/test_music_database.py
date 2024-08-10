@@ -1,27 +1,15 @@
 import json
 import os
-from unittest import TestCase
 
-from src import Database, logger
 from src.entities.artist import Artist
 from src.entities.metadata import Metadata
-from src.entities.music_database import MusicDatabase
 from src.entities.source import YandexSource
 from src.entities.track import Track
 from src.enums import ArtistType, Genre, Language
+from tests.database_tests.abstract_music_database_test import AbstractTestMusicDatabase
 
 
-class TestMusicDatabase(TestCase):
-    database: Database
-    music_database: MusicDatabase
-    data_path = os.path.join(os.path.dirname(__file__), "..", "data")
-
-    @classmethod
-    def setUpClass(cls: "TestMusicDatabase") -> None:
-        cls.database = Database("mongodb://localhost:27017/", database_name="test_music_quiz_db")
-        cls.database.connect()
-        cls.music_database = MusicDatabase(database=cls.database, logger=logger)
-
+class TestMusicDatabase(AbstractTestMusicDatabase):
     def test_1_artist_insert(self) -> None:
         artist = Artist(
             artist_id=self.music_database.get_artist_id(),
@@ -80,23 +68,6 @@ class TestMusicDatabase(TestCase):
             data = json.load(f)
 
         self.music_database.add_from_yandex(artists=data["yandex_artists"], tracks=data["yandex_tracks"], username="user")
-
-    def __validate_database(self) -> None:
-        for artist in self.database.artists.find({}):
-            artist = Artist.from_dict(artist)
-
-            for track_id in artist.tracks:
-                track = self.music_database.get_track(track_id)
-                self.assertIsNotNone(track)
-                self.assertIn(artist.artist_id, track.artists)
-
-        for track in self.database.tracks.find({}):
-            track = Track.from_dict(track)
-
-            for artist_id in track.artists:
-                artist = self.music_database.get_artist(artist_id)
-                self.assertIsNotNone(artist)
-                self.assertIn(track.track_id, artist.tracks)
 
     def test_3_yandex_insert_initial(self) -> None:
         self.__add_from_yandex("yandex_insert_initial.json")
@@ -168,11 +139,3 @@ class TestMusicDatabase(TestCase):
 
         self.assertEqual(self.music_database.get_artists_count(), 7)
         self.assertEqual(self.music_database.get_tracks_count(), 9)
-
-    def tearDown(self) -> None:
-        self.__validate_database()
-
-    @classmethod
-    def tearDownClass(cls: "TestMusicDatabase") -> None:
-        cls.database.drop()
-        cls.database.close()

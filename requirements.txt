@@ -6,4 +6,4 @@ pyjwt
 python-multipart
 requests
 uvicorn[standard]
-yandex-music==2.2.0
+yandex-music==2.1.0
