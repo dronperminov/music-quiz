@@ -80,6 +80,7 @@ class YandexMusicParser:
             "genres": genres,
             "description": description,
             "tracks": tracks,
+            "tracks_count": artist.counts.tracks,
             "image_urls": cover_urls
         }
 
@@ -115,7 +116,7 @@ class YandexMusicParser:
             "language": language.value,
             "lyrics": lyrics.to_dict() if lyrics else None,
             "duration": round(track.duration_ms / 1000, 2) if track.duration_ms else 0,
-            "image_urls": [track.get_cover_url(self.covers_size)] if track.cover_uri else []
+            "image_url": track.get_cover_url(self.covers_size) if track.cover_uri else None
         }
 
     def __get_artists(self, track: Track) -> List[int]:

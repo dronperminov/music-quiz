@@ -43,6 +43,7 @@ class TestSerialization(TestCase):
             image_urls=["url1", "url2", "url3"],
             listen_count=123000,
             tracks={1: 1, 5: 2, 8: 3},
+            tracks_count=10,
             genres=[Genre.ROCK, Genre.POP],
             metadata=Metadata.initial("system")
         )
@@ -74,7 +75,7 @@ class TestSerialization(TestCase):
             language=Language.FOREIGN,
             duration=183.5,
             downloaded=False,
-            image_urls=["url 1"],
+            image_url="url 1",
             metadata=Metadata.initial("system")
         )
 
@@ -165,6 +166,7 @@ class TestSerialization(TestCase):
             image_urls=["url1", "url2", "url3"],
             listen_count=123000,
             tracks={1: 1, 6: 2, 8: 3},
+            tracks_count=10,
             genres=[Genre.ROCK, Genre.POP],
             metadata=Metadata.initial("system")
         )
@@ -180,7 +182,7 @@ class TestSerialization(TestCase):
             language=Language.FOREIGN,
             duration=183.5,
             downloaded=False,
-            image_urls=["url 1"],
+            image_url="url 1",
             metadata=Metadata.initial("system")
         )
 

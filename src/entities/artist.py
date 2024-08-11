@@ -16,6 +16,7 @@ class Artist:
     image_urls: List[str]
     listen_count: int
     tracks: Dict[int, int]
+    tracks_count: int
     genres: List[Genre]
     metadata: Metadata
 
@@ -29,6 +30,7 @@ class Artist:
             "image_urls": self.image_urls,
             "listen_count": self.listen_count,
             "tracks": self.get_tracks_dict(),
+            "tracks_count": self.tracks_count,
             "genres": [genre.value for genre in self.genres],
             "metadata": self.metadata.to_dict()
         }
@@ -44,6 +46,7 @@ class Artist:
             image_urls=data["image_urls"],
             listen_count=data["listen_count"],
             tracks={track["track_id"]: track["position"] for track in data["tracks"]},
+            tracks_count=data["tracks_count"],
             genres=[Genre(genre) for genre in data["genres"]],
             metadata=Metadata.from_dict(data["metadata"])
         )
@@ -55,7 +58,7 @@ class Artist:
         artist_data = self.to_dict()
         diff = {}
 
-        for field in ["name", "description", "artist_type", "image_urls", "listen_count", "genres"]:
+        for field in ["name", "description", "artist_type", "image_urls", "listen_count", "tracks_count", "genres"]:
             if field in data and artist_data[field] != data[field]:
                 diff[field] = {"prev": artist_data[field], "new": data[field]}
 

@@ -8,7 +8,8 @@
       "artist_type": "performer_male",
       "image_urls": [],
       "listen_count": 1000000,
-      "genres": ["rock", "hip-hop"]
+      "genres": ["rock", "hip-hop"],
+      "tracks_count": 277
     },
     {
       "yandex_id": "2734048",
@@ -18,7 +19,8 @@
       "artist_type": "performer_male",
       "image_urls": [],
       "listen_count": 72725,
-      "genres": ["hip-hop"]
+      "genres": ["hip-hop"],
+      "tracks_count": 22
     }
   ],
   "yandex_tracks": [
@@ -31,7 +33,7 @@
       "genres": ["hip-hop"],
       "language": "russian",
       "duration": 183,
-      "image_urls": []
+      "image_url": null
     },
     {
       "yandex_id": "40053533",
@@ -42,7 +44,7 @@
       "genres": ["hip-hop"],
       "language": "russian",
       "duration": 135,
-      "image_urls": []
+      "image_url": null
     }
   ]
 }

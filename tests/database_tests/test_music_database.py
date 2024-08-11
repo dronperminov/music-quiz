@@ -17,6 +17,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
             image_urls=["url1"],
             listen_count=125000,
             tracks={},
+            tracks_count=12,
             genres=[Genre.ROCK],
             metadata=Metadata.initial("system")
         )
@@ -44,7 +45,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
             language=Language.RUSSIAN,
             duration=124,
             downloaded=False,
-            image_urls=["url1"],
+            image_url="url1",
             metadata=Metadata.initial("system")
         )
 

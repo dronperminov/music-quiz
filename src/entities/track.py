@@ -19,7 +19,7 @@ class Track:
     language: Language
     duration: float
     downloaded: bool
-    image_urls: List[str]
+    image_url: Optional[str]
     metadata: Metadata
 
     def to_dict(self) -> dict:
@@ -34,7 +34,7 @@ class Track:
             "language": self.language.value,
             "duration": self.duration,
             "downloaded": self.downloaded,
-            "image_urls": self.image_urls,
+            "image_url": self.image_url,
             "metadata": self.metadata.to_dict()
         }
 
@@ -51,7 +51,7 @@ class Track:
             language=Language(data["language"]),
             duration=data["duration"],
             downloaded=data["downloaded"],
-            image_urls=data["image_urls"],
+            image_url=data["image_url"],
             metadata=Metadata.from_dict(data["metadata"])
         )
 
@@ -59,7 +59,7 @@ class Track:
         track_data = self.to_dict()
         diff = {}
 
-        for field in ["title", "artists", "year", "lyrics", "genres", "language", "duration", "downloaded", "image_urls"]:
+        for field in ["title", "artists", "year", "lyrics", "genres", "language", "duration", "downloaded", "image_url"]:
             if field in data and track_data[field] != data[field]:
                 diff[field] = {"prev": track_data[field], "new": data[field]}
 

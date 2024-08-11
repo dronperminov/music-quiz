@@ -8,7 +8,8 @@
       "artist_type": "singer_female",
       "image_urls": [],
       "listen_count": 4300129,
-      "genres": ["pop"]
+      "genres": ["pop"],
+      "tracks_count": 59
     },
     {
       "yandex_id": "41126",
@@ -18,7 +19,8 @@
       "artist_type": "band",
       "image_urls": [],
       "listen_count": 2152641,
-      "genres": ["hip-hop"]
+      "genres": ["hip-hop"],
+      "tracks_count": 301
     },
     {
       "yandex_id": "15691816",
@@ -28,7 +30,8 @@
       "artist_type": "singer_female",
       "image_urls": [],
       "listen_count": 5607502,
-      "genres": ["pop"]
+      "genres": ["pop"],
+      "tracks_count": 46
     }
   ],
   "yandex_tracks": []

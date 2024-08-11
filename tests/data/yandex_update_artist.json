@@ -8,7 +8,8 @@
       "artist_type": "singer_male",
       "image_urls": [],
       "listen_count": 2544108,
-      "genres": ["rock", "hip-hop"]
+      "genres": ["rock", "hip-hop"],
+      "tracks_count": 277
     }
   ],
   "yandex_tracks": []

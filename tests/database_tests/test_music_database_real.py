@@ -72,3 +72,6 @@ class TestMusicDatabaseReal(AbstractTestMusicDatabase):
     def test_5_insert_chart(self) -> None:
         self.add_from_yandex("real/chart.json")
         self.assertEqual(self.music_database.get_tracks_count(), 117)
+
+    def test(self) -> None:
+        self.music_database.yandex_music_parser.parse_artist(artist_id="5838706", max_tracks=10)
