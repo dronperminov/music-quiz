@@ -4,7 +4,7 @@ import os
 import sys
 
 from src.database import Database
-from src.entities.music_database import MusicDatabase
+from src.music_database import MusicDatabase
 from src.utils.yandex_music_parser import YandexMusicParser
 
 secrets_path = os.path.join(os.path.dirname(__file__), "..", "secrets.json")

@@ -2,9 +2,9 @@ import re
 from dataclasses import dataclass
 from typing import List, Tuple
 
-from src.entities.chorus_detector import ChorusDetector
 from src.entities.lyrics_line import LyricsLine
 from src.enums import Language
+from src.utils.chorus_detector import ChorusDetector
 
 
 @dataclass

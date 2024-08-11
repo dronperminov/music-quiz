@@ -11,7 +11,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         tracks, artists = yandex_music_parser.parse_artist(artist_id="160970", only_sole=True, max_tracks=10)
         self.music_database.add_from_yandex(artists=artists, tracks=tracks, username="user")
         self.assertEqual(self.music_database.get_artists_count(), 1)
-        self.assertEqual(self.music_database.get_tracks_count(), 7)
+        self.assertEqual(self.music_database.get_tracks_count(), 8)
 
         artist = self.music_database.get_artist(artist_id=1)
         self.assertEqual(artist.name, "Noize MC")
@@ -25,7 +25,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
 
         artist = self.music_database.get_artist(artist_id=3)
         self.assertEqual(artist.name, "Монеточка")
-        self.assertEqual(artist.tracks[8], 6)
+        self.assertEqual(artist.tracks[9], 6)
 
     def test_2_insert_playlist(self) -> None:
         tracks, artists = yandex_music_parser.parse_playlist(playlist_id="41126", playlist_username="yamusic-bestsongs", max_tracks=4)

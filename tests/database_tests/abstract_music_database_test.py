@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from src import Database, logger
 from src.entities.artist import Artist
-from src.entities.music_database import MusicDatabase
 from src.entities.track import Track
+from src.music_database import MusicDatabase
 
 
 class AbstractTestMusicDatabase(TestCase):
