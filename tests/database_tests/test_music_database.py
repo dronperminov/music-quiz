@@ -1,6 +1,3 @@
-import json
-import os
-
 from src.entities.artist import Artist
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
@@ -63,14 +60,8 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertIsNotNone(track_from_db)
         self.assertEqual(track, track_from_db)
 
-    def __add_from_yandex(self, filename: str) -> None:
-        with open(os.path.join(self.data_path, filename), encoding="utf-8") as f:
-            data = json.load(f)
-
-        self.music_database.add_from_yandex(artists=data["yandex_artists"], tracks=data["yandex_tracks"], username="user")
-
     def test_3_yandex_insert_initial(self) -> None:
-        self.__add_from_yandex("yandex_insert_initial.json")
+        self.add_from_yandex("yandex_insert_initial.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 3)
         self.assertEqual(self.music_database.get_tracks_count(), 3)
@@ -92,7 +83,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(track.duration, 183)
 
     def test_4_yandex_update_artist(self) -> None:
-        self.__add_from_yandex("yandex_update_artist.json")
+        self.add_from_yandex("yandex_update_artist.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 3)
         self.assertEqual(self.music_database.get_tracks_count(), 3)
@@ -105,7 +96,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(artist.tracks[3], 23)
 
     def test_5_yandex_insert_update(self) -> None:
-        self.__add_from_yandex("yandex_insert_update.json")
+        self.add_from_yandex("yandex_insert_update.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 4)
         self.assertEqual(self.music_database.get_tracks_count(), 5)
@@ -129,13 +120,13 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(track.duration, 225)
 
     def test_6_yandex_insert_new_artists(self) -> None:
-        self.__add_from_yandex("yandex_insert_new_artists.json")
+        self.add_from_yandex("yandex_insert_new_artists.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 7)
         self.assertEqual(self.music_database.get_tracks_count(), 5)
 
     def test_7_yandex_insert_new_tracks(self) -> None:
-        self.__add_from_yandex("yandex_insert_new_tracks.json")
+        self.add_from_yandex("yandex_insert_new_tracks.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 7)
         self.assertEqual(self.music_database.get_tracks_count(), 9)

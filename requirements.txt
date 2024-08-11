@@ -1,5 +1,6 @@
 fastapi
 Jinja2
+Levenshtein
 passlib[bcrypt]
 pymongo
 pyjwt

@@ -5,7 +5,7 @@ from src.entities.lyrics_line import LyricsLine
 
 
 class ChorusDetector:
-    min_chorus_length: int = 4
+    min_chorus_length: int = 2
 
     def detect(self, lines: List[LyricsLine]) -> List[Tuple[int, int]]:
         indices = [i for i, line in enumerate(lines) if not line.is_parenthesis()]
