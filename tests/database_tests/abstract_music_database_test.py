@@ -2,7 +2,7 @@ import json
 import os
 from unittest import TestCase
 
-from src import Database, logger
+from src import Database, logger, yandex_music_parser
 from src.entities.artist import Artist
 from src.entities.track import Track
 from src.music_database import MusicDatabase
@@ -17,7 +17,7 @@ class AbstractTestMusicDatabase(TestCase):
     def setUpClass(cls: "AbstractTestMusicDatabase") -> None:
         cls.database = Database("mongodb://localhost:27017/", database_name="test_music_quiz_db")
         cls.database.connect()
-        cls.music_database = MusicDatabase(database=cls.database, logger=logger)
+        cls.music_database = MusicDatabase(database=cls.database, yandex_music_parser=yandex_music_parser, logger=logger)
 
     def add_from_yandex(self, filename: str) -> None:
         with open(os.path.join(self.data_path, filename), encoding="utf-8") as f:

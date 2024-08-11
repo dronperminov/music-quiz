@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List, Optional, Set, Tuple
 
-from yandex_music import Artist, Client, Track
+from yandex_music import Artist, Client, DownloadInfo, Track
 from yandex_music.exceptions import NotFoundError
 
 from src.entities.lyrics import Lyrics
@@ -33,6 +33,9 @@ class YandexMusicParser:
         chart = self.client.chart()
         tracks = [self.__process_track(track.track) for track in chart.chart.tracks]
         return self.__parse_tracks(tracks, max_tracks=max_tracks, only_sole=only_sole)
+
+    def get_download_info(self, track_ids: List[str], bitrate: int = 192) -> List[DownloadInfo]:
+        return [track.get_specific_download_info("mp3", bitrate) for track in self.client.tracks(track_ids)]
 
     def __parse_tracks(self, tracks: List[dict], max_tracks: int, only_sole: bool) -> Tuple[List[dict], List[dict]]:
         if only_sole:

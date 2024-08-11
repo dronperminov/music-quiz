@@ -2,31 +2,30 @@ import json
 import os
 import unittest
 
-from src import yandex_music_parser
 from src.enums import ArtistType, Genre
 from tests.database_tests.abstract_music_database_test import AbstractTestMusicDatabase
 
 
-class TestMusicDatabase(AbstractTestMusicDatabase):
+class TestMusicDatabaseReal(AbstractTestMusicDatabase):
     @unittest.skip
     def test_0_update_real_data(self) -> None:
-        tracks, artists = yandex_music_parser.parse_artist(artist_id="160970", only_sole=True, max_tracks=10)
+        tracks, artists = self.music_database.yandex_music_parser.parse_artist(artist_id="160970", only_sole=True, max_tracks=10)
         with open(os.path.join(self.data_path, "real", "artist_sole.json"), "w", encoding="utf-8") as f:
             json.dump({"yandex_artists": artists, "yandex_tracks": tracks}, f, ensure_ascii=False)
 
-        tracks, artists = yandex_music_parser.parse_artist(artist_id="160970", only_sole=False, max_tracks=10)
+        tracks, artists = self.music_database.yandex_music_parser.parse_artist(artist_id="160970", only_sole=False, max_tracks=10)
         with open(os.path.join(self.data_path, "real", "artist_all.json"), "w", encoding="utf-8") as f:
             json.dump({"yandex_artists": artists, "yandex_tracks": tracks}, f, ensure_ascii=False)
 
-        tracks, artists = yandex_music_parser.parse_playlist(playlist_id="41126", playlist_username="yamusic-bestsongs", max_tracks=4)
+        tracks, artists = self.music_database.yandex_music_parser.parse_playlist(playlist_id="41126", playlist_username="yamusic-bestsongs", max_tracks=4)
         with open(os.path.join(self.data_path, "real", "playlist.json"), "w", encoding="utf-8") as f:
             json.dump({"yandex_artists": artists, "yandex_tracks": tracks}, f, ensure_ascii=False)
 
-        tracks, artists = yandex_music_parser.parse_tracks(track_ids=["40585519", "64355205", "58531281"])
+        tracks, artists = self.music_database.yandex_music_parser.parse_tracks(track_ids=["40585519", "64355205", "58531281"])
         with open(os.path.join(self.data_path, "real", "tracks.json"), "w", encoding="utf-8") as f:
             json.dump({"yandex_artists": artists, "yandex_tracks": tracks}, f, ensure_ascii=False)
 
-        tracks, artists = yandex_music_parser.parse_chart(max_tracks=100)
+        tracks, artists = self.music_database.yandex_music_parser.parse_chart(max_tracks=100)
         with open(os.path.join(self.data_path, "real", "chart.json"), "w", encoding="utf-8") as f:
             json.dump({"yandex_artists": artists, "yandex_tracks": tracks}, f, ensure_ascii=False)
 

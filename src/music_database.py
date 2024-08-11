@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -8,11 +9,13 @@ from src.entities.history_action import AddArtistAction, AddTrackAction, EditArt
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
+from src.utils.yandex_music_parser import YandexMusicParser
 
 
 class MusicDatabase:
-    def __init__(self, database: Database, logger: logging.Logger) -> None:
+    def __init__(self, database: Database, yandex_music_parser: YandexMusicParser, logger: logging.Logger) -> None:
         self.database = database
+        self.yandex_music_parser = yandex_music_parser
         self.logger = logger
 
     def get_artist_id(self) -> int:
@@ -82,6 +85,15 @@ class MusicDatabase:
         self.database.history.insert_one(action.to_dict())
 
         self.logger.info(f'Updated track "{track["title"]}" ({track_id}) by @{username} (keys: {[key for key in diff]})')
+
+    def download_tracks(self, output_path: str, username: str) -> None:
+        tracks = list(self.database.tracks.find({"downloaded": False, "source.name": "yandex"}, {"track_id": 1, "source": 1}))
+        download_info = self.yandex_music_parser.get_download_info(track_ids=[track["source"]["yandex_id"] for track in tracks])
+
+        for track, info in zip(tracks, download_info):
+            track_path = os.path.join(output_path, f'{track["track_id"]}.mp3')
+            info.download(track_path)
+            self.update_track(track_id=track["track_id"], diff={"downloaded": {"prev": False, "new": True}}, username=username)
 
     def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> None:
         yandex2artist_id = {}

@@ -2,6 +2,7 @@ fastapi
 Jinja2
 Levenshtein
 passlib[bcrypt]
+pydub
 pymongo
 pyjwt
 python-multipart

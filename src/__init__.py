@@ -20,4 +20,4 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s -
 logger = logging.getLogger()
 
 database = Database(mongo_url="mongodb://localhost:27017/", database_name="music_quiz_db")
-music_database = MusicDatabase(database=database, logger=logger)
+music_database = MusicDatabase(database=database, yandex_music_parser=yandex_music_parser, logger=logger)
