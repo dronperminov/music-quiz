@@ -4,6 +4,7 @@ from unittest import TestCase
 
 from src import Database, logger, yandex_music_parser
 from src.entities.artist import Artist
+from src.entities.source import YandexSource
 from src.entities.track import Track
 from src.music_database import MusicDatabase
 
@@ -27,6 +28,9 @@ class AbstractTestMusicDatabase(TestCase):
 
     def validate_database(self) -> None:
         for artist in self.database.artists.find({}):
+            if artist["source"]["name"] == YandexSource.name:
+                self.assertTrue(isinstance(artist["source"]["yandex_id"], str))
+
             artist = Artist.from_dict(artist)
 
             for track_id in artist.tracks:
@@ -35,6 +39,9 @@ class AbstractTestMusicDatabase(TestCase):
                 self.assertIn(artist.artist_id, track.artists)
 
         for track in self.database.tracks.find({}):
+            if track["source"]["name"] == YandexSource.name:
+                self.assertTrue(isinstance(track["source"]["yandex_id"], str))
+
             track = Track.from_dict(track)
 
             for artist_id in track.artists:

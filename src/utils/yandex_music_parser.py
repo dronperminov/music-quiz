@@ -119,18 +119,18 @@ class YandexMusicParser:
             "image_url": track.get_cover_url(self.covers_size) if track.cover_uri else None
         }
 
-    def __get_artists(self, track: Track) -> List[int]:
+    def __get_artists(self, track: Track) -> List[str]:
         artists = []
 
         for artist in track.artists:
-            artists.append(artist.id)
+            artists.append(str(artist.id))
 
             if not artist.decomposed:
                 continue
 
             for decomposed_artist in artist.decomposed:
                 if isinstance(decomposed_artist, Artist):
-                    artists.append(decomposed_artist["id"])
+                    artists.append(str(decomposed_artist.id))
 
         return artists
 
