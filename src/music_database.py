@@ -113,7 +113,7 @@ class MusicDatabase:
             image_urls = []
 
             for i, image_url in enumerate(artist["image_urls"]):
-                wget.download(image_url, os.path.join(artist_dir, f'{i}.png'))
+                wget.download(image_url, os.path.join(artist_dir, f"{i}.png"))
                 image_urls.append(f'/images/artists/{artist["artist_id"]}/{i}.png')
 
             diff = {"image_urls": {"prev": artist["image_urls"], "new": image_urls}}

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from yandex_music import Artist, Client, DownloadInfo, Track
 from yandex_music.exceptions import NotFoundError
@@ -43,12 +43,12 @@ class YandexMusicParser:
 
         tracks = tracks[:max_tracks]
 
-        artist_id2tracks = defaultdict(set)
+        artist_id2tracks = defaultdict(dict)
         for track in tracks:
             for yandex_artist_id in track["artists"]:
-                artist_id2tracks[yandex_artist_id].add(track["yandex_id"])
+                artist_id2tracks[yandex_artist_id][track["yandex_id"]] = track["title"]
 
-        artists = [self.__get_artist(yandex_artist_id, tracks) for yandex_artist_id, tracks in artist_id2tracks.items()]
+        artists = [self.__get_artist(yandex_artist_id, track_id2name) for yandex_artist_id, track_id2name in artist_id2tracks.items()]
 
         artist2genres = {artist["yandex_id"]: artist["genres"] for artist in artists}
         for track in tracks:
@@ -56,21 +56,21 @@ class YandexMusicParser:
 
         return tracks, artists
 
-    def __get_artist(self, artist_id: str, track_ids: Set[str]) -> dict:
+    def __get_artist(self, artist_id: str, track_id2name: Dict[str, str]) -> dict:
         brief_info = self.client._request.get(f"{self.client.base_url}/artists/{artist_id}/brief-info")
         artist_data = brief_info["artist"]
 
         description = artist_data["description"]["text"] if "description" in artist_data else ""
-        tracks = self.__get_artist_track_positions(artist_id=artist_id, track_ids=track_ids)
+        tracks = self.__get_artist_track_positions(artist_id=artist_id, track_id2name=track_id2name)
 
         artist = self.client.artists([artist_id])[0]
         genres = [genre.value for genre in set(Genre.from_yandex(genre) for genre in artist.genres) if genre]
 
         cover_urls = [f'https://{cover["uri"].replace("%%", self.covers_size)}' for cover in brief_info.get("all_covers", [])]
-        if not cover_urls:
+        if not cover_urls and artist.cover:
             cover_urls.append(artist.cover.get_url(size=self.covers_size))
 
-        assert {track_id for track_id in tracks} == track_ids  # TODO: remove some tracks
+        assert {track_id for track_id in tracks} == {track_id for track_id in track_id2name}  # TODO: remove some tracks
 
         return {
             "yandex_id": artist_id,
@@ -84,27 +84,40 @@ class YandexMusicParser:
             "image_urls": cover_urls
         }
 
-    def __get_artist_track_positions(self, artist_id: str, track_ids: Set[str], page_size: int = 20, max_pages: int = 250) -> Dict[str, int]:
-        track2position = dict()
+    def __get_artist_track_positions(self, artist_id: str, track_id2name: Dict[str, str], page_size: int = 20, max_pages: int = 250) -> Dict[str, int]:
+        track_id2position = dict()
+        name2position = {}
 
         for page in range(max_pages):
             tracks = self.client.artists_tracks(artist_id, page_size=page_size, page=page)
 
-            for i, track in enumerate(tracks):
-                if track.id in track_ids:
-                    track2position[track.id] = page_size * page + i + 1
-
-            if len(track2position) == len(track_ids):
+            if not tracks:
                 break
 
-        return track2position
+            for i, track in enumerate(tracks):
+                position = page_size * page + i + 1
+
+                if str(track.id) in track_id2name:
+                    track_id2position[str(track.id)] = position
+                else:
+                    name2position[track.title] = position
+
+            if len(track_id2position) == len(track_id2name):
+                return track_id2position
+
+        # если не нашёлся трек по id, пытаемся найти его по названию
+        for track_id, name in track_id2name.items():
+            if name in name2position:
+                track_id2position[track_id] = name2position[name]
+
+        return track_id2position
 
     def __process_track(self, track: Track) -> dict:
         lyrics = self.__get_lyrics(track)
         language = lyrics.get_language() if lyrics else Language.UNKNOWN
 
         return {
-            "yandex_id": track.id,
+            "yandex_id": str(track.id),
             "title": track.title,
             "artists": self.__get_artists(track),
             "year": min([album.year for album in track.albums], default=0),
