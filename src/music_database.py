@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from typing import Dict, List, Optional
 
+import wget
+
 from src.database import Database
 from src.entities.artist import Artist
 from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction
@@ -28,6 +30,10 @@ class MusicDatabase:
     def get_artist(self, artist_id: int) -> Optional[Artist]:
         artist = self.database.artists.find_one({"artist_id": artist_id})
         return Artist.from_dict(artist) if artist else None
+
+    def get_artist_tracks(self, artist_id: int) -> List[Track]:
+        tracks = self.database.tracks.find({"artists": artist_id})
+        return [Track.from_dict(track) for track in tracks]
 
     def add_artist(self, artist: Artist, username: str) -> None:
         action = AddArtistAction(username=username, timestamp=datetime.now(), artist=artist)
@@ -91,9 +97,27 @@ class MusicDatabase:
         download_info = self.yandex_music_parser.get_download_info(track_ids=[track["source"]["yandex_id"] for track in tracks])
 
         for track, info in zip(tracks, download_info):
-            track_path = os.path.join(output_path, f'{track["track_id"]}.mp3')
-            info.download(track_path)
+            info.download(os.path.join(output_path, f'{track["track_id"]}.mp3'))
             self.update_track(track_id=track["track_id"], diff={"downloaded": {"prev": False, "new": True}}, username=username)
+
+    def download_tracks_image(self, output_path: str, username: str) -> None:
+        for track in self.database.tracks.find({"image_url": {"$ne": None, "$not": {"$regex": "^/images/tracks/.*"}}}, {"track_id": 1, "image_url": 1}):
+            wget.download(track["image_url"], os.path.join(output_path, f'{track["track_id"]}.png'))
+            diff = {"image_url": {"prev": track["image_url"], "new": f'/images/tracks/{track["track_id"]}.png'}}
+            self.update_track(track_id=track["track_id"], diff=diff, username=username)
+
+    def download_artists_images(self, output_path: str, username: str) -> None:
+        for artist in self.database.artists.find({"image_urls": {"$ne": None, "$not": {"$regex": "^/images/artists/.*"}}}, {"artist_id": 1, "image_urls": 1}):
+            artist_dir = os.path.join(output_path, f'{artist["artist_id"]}')
+            os.makedirs(artist_dir, exist_ok=True)
+            image_urls = []
+
+            for i, image_url in enumerate(artist["image_urls"]):
+                wget.download(image_url, os.path.join(artist_dir, f'{i}.png'))
+                image_urls.append(f'/images/artists/{artist["artist_id"]}/{i}.png')
+
+            diff = {"image_urls": {"prev": artist["image_urls"], "new": image_urls}}
+            self.update_artist(artist_id=artist["artist_id"], diff=diff, username=username)
 
     def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> None:
         yandex2artist_id = {}

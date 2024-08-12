@@ -8,4 +8,5 @@ pyjwt
 python-multipart
 requests
 uvicorn[standard]
+wget
 yandex-music==2.1.0
