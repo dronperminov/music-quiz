@@ -107,7 +107,7 @@ class MusicDatabase:
             self.update_track(track_id=track["track_id"], diff=diff, username=username)
 
     def download_artists_images(self, output_path: str, username: str) -> None:
-        for artist in self.database.artists.find({"image_urls": {"$ne": None, "$not": {"$regex": "^/images/artists/.*"}}}, {"artist_id": 1, "image_urls": 1}):
+        for artist in self.database.artists.find({"image_urls": {"$ne": [], "$not": {"$regex": "^/images/artists/.*"}}}, {"artist_id": 1, "image_urls": 1}):
             artist_dir = os.path.join(output_path, f'{artist["artist_id"]}')
             os.makedirs(artist_dir, exist_ok=True)
             image_urls = []
