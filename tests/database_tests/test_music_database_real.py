@@ -9,11 +9,11 @@ from tests.database_tests.abstract_music_database_test import AbstractTestMusicD
 class TestMusicDatabaseReal(AbstractTestMusicDatabase):
     @unittest.skip
     def test_0_update_real_data(self) -> None:
-        tracks, artists = self.music_database.yandex_music_parser.parse_artist(artist_id="160970", only_sole=True, max_tracks=10)
+        tracks, artists = self.music_database.yandex_music_parser.parse_artist(artist_id="160970", max_tracks=10, max_artists=1)
         with open(os.path.join(self.data_path, "real", "artist_sole.json"), "w", encoding="utf-8") as f:
             json.dump({"yandex_artists": artists, "yandex_tracks": tracks}, f, ensure_ascii=False)
 
-        tracks, artists = self.music_database.yandex_music_parser.parse_artist(artist_id="160970", only_sole=False, max_tracks=10)
+        tracks, artists = self.music_database.yandex_music_parser.parse_artist(artist_id="160970", max_tracks=10, max_artists=10)
         with open(os.path.join(self.data_path, "real", "artist_all.json"), "w", encoding="utf-8") as f:
             json.dump({"yandex_artists": artists, "yandex_tracks": tracks}, f, ensure_ascii=False)
 

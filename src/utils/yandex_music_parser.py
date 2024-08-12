@@ -14,35 +14,28 @@ class YandexMusicParser:
         self.client = Client(token).init()
         self.covers_size = covers_size
 
-    def get_tracks(self, track_ids: List[str]) -> List[dict]:
-        return [self.__process_track(track) for track in self.__request(func=lambda: self.client.tracks(track_ids=track_ids))]
+    def parse_tracks(self, track_ids: List[str], max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
+        tracks = self.__request(func=lambda: self.client.tracks(track_ids=track_ids))
+        return self.__parse_tracks(tracks, max_tracks=len(tracks), max_artists=max_artists)
 
-    def parse_tracks(self, track_ids: List[str], only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
-        tracks = self.get_tracks(track_ids)
-        return self.__parse_tracks(tracks, max_tracks=len(tracks), only_sole=only_sole)
+    def parse_artist(self, artist_id: str, max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
+        tracks = self.__request(func=lambda: self.client.artists_tracks(artist_id, page_size=max_tracks))
+        return self.__parse_tracks(tracks, max_tracks=max_tracks, max_artists=max_artists)
 
-    def parse_artist(self, artist_id: str, max_tracks: int, only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
-        tracks = [self.__process_track(track) for track in self.__request(func=lambda: self.client.artists_tracks(artist_id, page_size=max_tracks))]
-        return self.__parse_tracks(tracks, max_tracks=max_tracks, only_sole=only_sole)
-
-    def parse_playlist(self, playlist_id: str, playlist_username: str, max_tracks: int, only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
+    def parse_playlist(self, playlist_id: str, playlist_username: str, max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
         playlist = self.__request(func=lambda: self.client.users_playlists(playlist_id, playlist_username))
-        tracks = [self.__process_track(track.track) for track in playlist.tracks]
-        return self.__parse_tracks(tracks, max_tracks=max_tracks, only_sole=only_sole)
+        return self.__parse_tracks([track.track for track in playlist.tracks], max_tracks=max_tracks, max_artists=max_artists)
 
-    def parse_chart(self, max_tracks: int, only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
+    def parse_chart(self, max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
         chart = self.__request(func=lambda: self.client.chart())
-        tracks = [self.__process_track(track.track) for track in chart.chart.tracks]
-        return self.__parse_tracks(tracks, max_tracks=max_tracks, only_sole=only_sole)
+        return self.__parse_tracks([track.track for track in chart.chart.tracks], max_tracks=max_tracks, max_artists=max_artists)
 
     def get_download_info(self, track_ids: List[str], bitrate: int = 192) -> List[DownloadInfo]:
         return [track.get_specific_download_info("mp3", bitrate) for track in self.__request(func=lambda: self.client.tracks(track_ids))]
 
-    def __parse_tracks(self, tracks: List[dict], max_tracks: int, only_sole: bool) -> Tuple[List[dict], List[dict]]:
-        if only_sole:
-            tracks = [track for track in tracks if len(track["artists"]) == 1]
-
-        tracks = tracks[:max_tracks]
+    def __parse_tracks(self, tracks: List[Track], max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
+        tracks = [track for track in tracks if len(self.__get_artists(track)) <= max_artists][:max_tracks]
+        tracks = [self.__process_track(track) for track in tracks]
 
         artist_id2tracks = defaultdict(dict)
         for track in tracks:
@@ -61,13 +54,13 @@ class YandexMusicParser:
         return tracks, artists
 
     def __get_artist(self, artist_id: str, track_id2title: Dict[str, str]) -> dict:
-        brief_info = self.__request(func=lambda: self.client._request.get(f"{self.client.base_url}/artists/{artist_id}/brief-info"))
+        brief_info: dict = self.__request(func=lambda: self.client._request.get(f"{self.client.base_url}/artists/{artist_id}/brief-info"))
         artist_data = brief_info["artist"]
 
         listen_count = brief_info.get("stats", {}).get("last_month_listeners", 0)
         description = artist_data["description"]["text"] if "description" in artist_data else ""
-        tracks = self.__get_artist_track_positions(artist_id=artist_id, track_id2title=track_id2title)
         genres = [genre.value for genre in set(Genre.from_yandex(genre) for genre in artist_data["genres"]) if genre]
+        tracks = self.__get_artist_track_positions(artist_id=artist_id, track_id2title=track_id2title, page_size=max(20, len(track_id2title)))
 
         cover_urls = [f'https://{cover["uri"].replace("%%", self.covers_size)}' for cover in brief_info.get("all_covers", [])]
         if not cover_urls and "cover" in artist_data:
@@ -144,6 +137,15 @@ class YandexMusicParser:
         return artists
 
     def __get_lyrics(self, track: Track) -> Optional[Lyrics]:
+        if track.lyrics_info is not None:
+            if track.lyrics_info.has_available_sync_lyrics:
+                return Lyrics.from_lrc(self.__request(func=lambda: track.get_lyrics("LRC").fetch_lyrics()))
+
+            if track.lyrics_info.has_available_text_lyrics:
+                return Lyrics.from_text(self.__request(func=lambda: track.get_lyrics("TEXT").fetch_lyrics()))
+
+            return None
+
         try:
             return Lyrics.from_lrc(track.get_lyrics("LRC").fetch_lyrics())
         except NotFoundError:
@@ -171,7 +173,7 @@ class YandexMusicParser:
         title = re.sub(r"^\s+|\s+$|\s*\([^)]+\)\s*$", "", title)
         return title
 
-    def __request(self, func: Callable, max_retries: int = 5) -> Union[dict, list, Playlist]:
+    def __request(self, func: Callable, max_retries: int = 5) -> Union[dict, list, str, Playlist]:
         for _ in range(max_retries):
             try:
                 return func()
