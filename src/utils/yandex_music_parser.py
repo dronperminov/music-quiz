@@ -21,7 +21,7 @@ class YandexMusicParser:
         return self.__parse_tracks(tracks, max_tracks=len(tracks), only_sole=only_sole)
 
     def parse_artist(self, artist_id: str, max_tracks: int, only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
-        tracks = self.__get_artist_tracks(artist_id=artist_id, max_tracks=max_tracks)
+        tracks = [self.__process_track(track) for track in self.client.artists_tracks(artist_id, page_size=max_tracks)]
         return self.__parse_tracks(tracks, max_tracks=max_tracks, only_sole=only_sole)
 
     def parse_playlist(self, playlist_id: str, playlist_username: str, max_tracks: int, only_sole: bool = False) -> Tuple[List[dict], List[dict]]:
@@ -98,11 +98,6 @@ class YandexMusicParser:
                 break
 
         return track2position
-
-    def __get_artist_tracks(self, artist_id: str, max_tracks: int) -> List[dict]:
-        artist_tracks = self.client.artists_tracks(artist_id, page_size=max_tracks)
-        tracks = [self.__process_track(track) for track in artist_tracks]
-        return tracks[:max_tracks]
 
     def __process_track(self, track: Track) -> dict:
         lyrics = self.__get_lyrics(track)
