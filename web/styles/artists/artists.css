@@ -1,0 +1,60 @@
+.artist {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-gap: 0.9em;
+    margin-bottom: 10px;
+    background: #f4f4f4;
+    padding: 5px 5px 0 5px;
+    border-radius: 15px;
+}
+
+.artist-image {
+    cursor: pointer;
+}
+
+.artist-image:hover img {
+    padding: 0;
+    border: 2px solid var(--main-color);
+}
+
+.artist-image img {
+    padding: 2px;
+    width: 100%;
+    border-radius: 20px;
+}
+
+.artist-name {
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-bottom: 0.4em;
+}
+
+.artist-name a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.artist-name a:hover {
+    color: var(--main-color);
+}
+
+.artist-stats {
+    color: var(--subtext-color);
+    font-size: 0.8em;
+    margin-bottom: 0.3em;
+}
+
+.artist-type {
+    color: var(--subtext-color);
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.artist-button {
+    background: linear-gradient(45deg, #e9273f 0%, #c239a3 100%);
+    color: var(--gradient-button-color);
+    text-decoration: none;
+    padding: 0.4em 0.6em;
+    border-radius: 0.6em;
+    font-size: 0.9em;
+}

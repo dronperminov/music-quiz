@@ -31,6 +31,9 @@ class MusicDatabase:
         artist = self.database.artists.find_one({"artist_id": artist_id})
         return Artist.from_dict(artist) if artist else None
 
+    def get_artists(self) -> List[Artist]:
+        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort("listen_count", -1)]
+
     def get_artist_tracks(self, artist_id: int) -> List[Track]:
         tracks = self.database.tracks.find({"artists": artist_id})
         return [Track.from_dict(track) for track in tracks]

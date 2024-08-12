@@ -1,0 +1,30 @@
+{% set title = "Исполнители | Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/artists/artists.css">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Исполнители</h1>
+
+        <div class="artists">
+            {% for artist in artists %}
+            <div class="artist">
+                <div class="artist-image">
+                    <a href="/artists/{{artist.artist_id}}"><img src="{{artist.image_urls[-1] if artist.image_urls else '/images/artists/default.png'}}" loading="lazy"></a>
+                </div>
+                <div class="artist-info">
+                    <div class="artist-name"><a href="/artists/{{artist.artist_id}}">{{artist.name}}</a></div>
+                    <div class="artist-stats">{{artist.listen_count}} прослушиваний | {{get_word_form(artist.tracks|length, ['трек', 'трека', 'треков'])}}</div>
+                    <div class="artist-type">{{artist.artist_type.to_rus()}}</div>
+                    <div><a class="artist-button" href="/artists/{{artist.artist_id}}">Смотреть</a></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% include "components/footer.html" %}
+</body>
+</html>
