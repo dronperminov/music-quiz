@@ -14,6 +14,14 @@
     --block-background: #f4f4f4;
 
     --gradient-button-color: #fff;
+
+    /* status */
+    --error-color: #f44336;
+
+    /* player */
+    --player-progress-bar-color: #eeeeee;
+    --player-progress-current-color: var(--main-color);
+    --player-time-color: var(--subtext-color);
 }
 
 @font-face {
@@ -76,6 +84,12 @@ h3 {
 
 .link:hover {
     border-bottom-style: solid;
+}
+
+.error {
+    color: var(--error-color);
+    font-size: 0.9em;
+    text-align: center;
 }
 
 .description {

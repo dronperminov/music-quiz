@@ -1,7 +1,4 @@
 function ShowTrackInfo(trackId) {
-    let body = document.getElementsByTagName("body")[0]
-    body.classList.add("no-overflow")
-
     for (let trackInfo of document.getElementsByClassName("track-info"))
         trackInfo.classList.remove("track-info-open")
 

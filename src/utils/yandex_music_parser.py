@@ -3,7 +3,7 @@ from collections import defaultdict
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from yandex_music import Artist, Client, DownloadInfo, Playlist, Track
-from yandex_music.exceptions import NetworkError, NotFoundError
+from yandex_music.exceptions import BadRequestError, NetworkError, NotFoundError
 
 from src.entities.lyrics import Lyrics
 from src.enums import ArtistType, Genre, Language
@@ -30,6 +30,13 @@ class YandexMusicParser:
     def parse_chart(self, max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
         chart = self.__request(func=lambda: self.client.chart())
         return self.__parse_tracks([track.track for track in chart.chart.tracks], max_tracks=max_tracks, max_artists=max_artists)
+
+    def get_track_link(self, track_id: str, bitrate: int = 192) -> Optional[str]:
+        try:
+            info = self.__request(func=lambda: self.client.tracks([track_id])[0].get_specific_download_info("mp3", bitrate))
+            return info.get_direct_link()
+        except BadRequestError:
+            return None
 
     def get_download_info(self, track_ids: List[str], bitrate: int = 192) -> List[DownloadInfo]:
         return [track.get_specific_download_info("mp3", bitrate) for track in self.__request(func=lambda: self.client.tracks(track_ids))]

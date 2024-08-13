@@ -1,0 +1,50 @@
+.player {
+    display: table;
+}
+
+.player-progress {
+    display: table-cell;
+    width: 100%;
+    vertical-align: middle;
+}
+
+.player-time {
+    display: table-cell;
+    width: 0;
+    white-space: nowrap;
+    font-size: 0.75em;
+    padding-left: 0.5em;
+    vertical-align: middle;
+    color: var(--player-time-color);
+}
+
+.player-progress-bar {
+    border-radius: 5px;
+    height: 5px;
+    background: var(--player-progress-bar-color);
+    position: relative;
+    cursor: pointer;
+}
+
+.player-progress-current {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    background: var(--player-progress-current-color);
+    width: 0;
+    border-radius: 5px;
+}
+
+.player-progress:hover .player-progress-current:after {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 100%;
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--player-progress-current-color);
+}
