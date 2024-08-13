@@ -1,3 +1,17 @@
+.last-added-artists {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 1em;
+    overflow: auto;
+    margin-bottom: 1.5em;
+}
+
+.last-added-artist {
+    width: 90px;
+    font-size: 0.5em;
+    text-align: center;
+}
+
 .artist {
     display: grid;
     grid-template-columns: 100px 1fr;

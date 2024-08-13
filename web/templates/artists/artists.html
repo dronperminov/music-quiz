@@ -1,18 +1,31 @@
 {% set title = "Исполнители | Музыкальный квиз Плюшевой наковальни" %}
 {% include "components/header.html" %}
-<link rel="stylesheet" type="text/css" href="/styles/artists/artists.css">
+    <link rel="stylesheet" type="text/css" href="/styles/artists/artists.css?v={{version}}">
 </head>
 <body>
     {% include "components/menu.html" %}
 
     <div class="content">
         <h1>Исполнители</h1>
+        <div class="description">Всего в базе находится {{get_word_form(artists_count, ['исполнитель', 'исполнителя', 'исполнителей'])}}</div>
+
+        <h2>Недавно добавленные</h2>
+        <div class="last-added-artists">
+            {% for artist in last_added_artists %}
+            <div class="last-added-artist">
+                <div class="artist-image">
+                    <a href="/artists/{{artist.artist_id}}"><img src="{{artist.image_urls[0] if artist.image_urls else '/images/artists/default.png'}}" loading="lazy"></a>
+                </div>
+                <div class="artist-name"><a href="/artists/{{artist.artist_id}}">{{artist.name}}</a></div>
+            </div>
+            {% endfor %}
+        </div>
 
         <div class="artists">
             {% for artist in artists %}
             <div class="artist">
                 <div class="artist-image">
-                    <a href="/artists/{{artist.artist_id}}"><img src="{{artist.image_urls[-1] if artist.image_urls else '/images/artists/default.png'}}" loading="lazy"></a>
+                    <a href="/artists/{{artist.artist_id}}"><img src="{{artist.image_urls[0] if artist.image_urls else '/images/artists/default.png'}}" loading="lazy"></a>
                 </div>
                 <div class="artist-info">
                     <div class="artist-name"><a href="/artists/{{artist.artist_id}}">{{artist.name}}</a></div>

@@ -11,12 +11,15 @@ router = APIRouter()
 @router.get("/artists")
 def get_artists() -> HTMLResponse:
     artists = music_database.get_artists()
+    last_added_artists = music_database.get_last_added_artists(count=10)
 
     template = templates.get_template("artists/artists.html")
     content = template.render(
         page="artists",
         version=get_static_hash(),
+        artists_count=music_database.get_artists_count(),
         artists=artists,
+        last_added_artists=last_added_artists,
         get_word_form=get_word_form
     )
     return HTMLResponse(content=content)
