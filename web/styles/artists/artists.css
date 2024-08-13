@@ -72,3 +72,18 @@
     border-radius: 0.6em;
     font-size: 0.9em;
 }
+
+.artist-controls {
+    display: grid;
+    grid-template-columns: min-content min-content;
+    grid-gap: 1em;
+}
+
+.artist-controls svg {
+    fill: var(--subtext-color);
+    cursor: pointer;
+}
+
+.artist-controls svg:hover {
+    fill: var(--main-color);
+}

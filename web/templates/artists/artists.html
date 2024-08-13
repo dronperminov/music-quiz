@@ -31,7 +31,13 @@
                     <div class="artist-name"><a href="/artists/{{artist.artist_id}}">{{artist.name}}</a></div>
                     <div class="artist-stats">{{artist.format_listen_count()}} прослушиваний | {{get_word_form(artist.tracks|length, ['трек', 'трека', 'треков'])}}</div>
                     <div class="artist-type">{{artist.artist_type.to_rus()}}</div>
-                    <div><a class="artist-button" href="/artists/{{artist.artist_id}}">Смотреть</a></div>
+                    <div class="artist-controls">
+                        <div><a class="artist-button" href="/artists/{{artist.artist_id}}">Смотреть</a></div>
+
+                        <svg width="1.2em" height="1.2em" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M5.781 4.414a7 7 0 019.62 10.039l-9.62-10.04zm-1.408 1.42a7 7 0 009.549 9.964L4.373 5.836zM10 1a9 9 0 100 18 9 9 0 000-18z"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
             {% endfor %}
