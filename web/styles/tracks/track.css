@@ -1,0 +1,129 @@
+.track {
+    display: grid;
+    grid-template-columns: 5em 1fr 1.5em 1.5em;
+    grid-gap: 0.5em;
+    background: var(--block-background);
+    padding: 5px 5px 0 5px;
+    border-radius: 1em;
+}
+
+.track-image img {
+    padding: 2px;
+    width: 100%;
+    border-radius: 1.1em;
+}
+
+.track-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-top: 0.4em;
+    margin-bottom: 0.2em;
+}
+
+.track-artists {
+    font-size: 0.75em;
+    color: var(--subtext-color);
+    line-height: 1.5em;
+}
+
+.track-controls {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+}
+
+.track-controls svg {
+    fill: var(--text-color);
+    cursor: pointer;
+}
+
+.track-controls svg:hover {
+    fill: var(--main-color);
+}
+
+.track-menu {
+    display: grid;
+    align-content: center;
+    justify-content: end;
+    padding-right: 0.4em;
+}
+
+.track-info-popup {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    background: transparent;
+    pointer-events: none;
+    transition: background .1s ease-in;
+}
+
+.track-info-popup-open {
+    background: #00000080;
+    transition: background .1s ease-out;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.track-info {
+    position: fixed;
+    background: var(--block-background);
+    border: 1px solid var(--border-color);
+    border-radius: 10px 10px 0 0;
+    padding: 10px;
+    left: -1px;
+    right: -1px;
+    bottom: calc(-100dvh - 11px);
+    max-height: 60dvh;
+    transition: bottom .2s ease-in;
+    overflow: auto;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    user-select: none;
+}
+
+.track-info-open {
+    bottom: -11px;
+    transition: bottom .2s ease-out;
+}
+
+.track-info .close-icon {
+    position: sticky;
+    left: 100%;
+    top: 0;
+    background: var(--block-background);
+}
+
+.track-about {
+    font-size: 1.1em;
+    color: var(--text-color);
+    margin-bottom: 0.5em;
+}
+
+.track-info .track-image {
+    max-width: 150px;
+    margin: 0 auto;
+    pointer-events: none;
+}
+
+.track-lyrics {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.track-lyrics-line {
+    font-size: 0.9em;
+    line-height: 1.4em;
+}
+
+.track-lyrics-line-chorus {
+    color: var(--main-color);
+}
+
+@media (max-width: 767px) {
+    .track-info {
+        max-width: unset;
+    }
+}
