@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Set, Tuple
 
 from src.entities.lyrics_line import LyricsLine
 from src.enums import Language
@@ -56,3 +56,12 @@ class Lyrics:
             return Language.FOREIGN
 
         return Language.UNKNOWN
+
+    def get_chorus_indices(self) -> Set[int]:
+        indices = set()
+
+        for start, end in self.chorus:
+            for index in range(start, end + 1):
+                indices.add(index)
+
+        return indices

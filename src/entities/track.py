@@ -64,3 +64,7 @@ class Track:
                 diff[field] = {"prev": track_data[field], "new": data[field]}
 
         return diff
+
+    def format_duration(self) -> str:
+        seconds = round(self.duration)
+        return f"{seconds // 60:02d}:{seconds % 60:02d}"
