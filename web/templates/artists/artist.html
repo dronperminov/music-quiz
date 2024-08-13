@@ -60,26 +60,40 @@
             </div>
             {% endfor %}
         </div>
-
-        <div class="track-info-popup" id="track-info-popup" onclick="CloseTrackInfo()"></div>
-
-        {% for track in tracks %}
-        <div class="track-info" id="track-info-{{track.track_id}}">
-            <div class="close-icon" title="Закрыть" onclick="CloseTrackInfo()"></div>
-
-            <div class="track-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy"></div>
-
-            <div class="track-about"><b>Название</b>: {{track.title}}</div>
-            {% if track.year > 0 %}<div class="track-about"><b>Год выхода:</b> {{track.year}}</div>{% endif %}
-            {% if track.duration > 0 %}<div class="track-about"><b>Длительность:</b> {{track.format_duration()}}</div>{% endif %}
-
-            {% if track.genres %}<div class="track-about"><b>Жанры:</b> {% for genre in track.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}
-            {% if track.language.to_rus() %}<div class="track-about"><b>Язык:</b> {{track.language.to_rus()}}</div>{% endif %}
-            <div class="track-about"><b>Добавлен:</b> {{track.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.created_by }}</div>
-            {% if not track.metadata.is_initial() %}<div class="track-about"><b>Обновлён:</b> {{track.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.updated_by }}</div>{% endif %}
-        </div>
-        {% endfor %}
     </div>
+
+    <div class="track-info-popup" id="track-info-popup" onclick="CloseTrackInfo()"></div>
+
+    {% for track in tracks %}
+    <div class="track-info" id="track-info-{{track.track_id}}">
+        <div class="close-icon" title="Закрыть" onclick="CloseTrackInfo()"></div>
+
+        <div class="track-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy"></div>
+
+        <div class="track-about"><b>Название</b>: {{track.title}}</div>
+        {% if track.year > 0 %}<div class="track-about"><b>Год выхода:</b> {{track.year}}</div>{% endif %}
+        {% if track.duration > 0 %}<div class="track-about"><b>Длительность:</b> {{track.format_duration()}}</div>{% endif %}
+
+        {% if track.genres %}<div class="track-about"><b>Жанры:</b> {% for genre in track.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}
+        {% if track.language.to_rus() %}<div class="track-about"><b>Язык:</b> {{track.language.to_rus()}}</div>{% endif %}
+        <div class="track-about"><b>Добавлен:</b> {{track.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.created_by }}</div>
+        {% if not track.metadata.is_initial() %}<div class="track-about"><b>Обновлён:</b> {{track.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.updated_by }}</div>{% endif %}
+
+        {% if track.lyrics %}
+        <div class="details">
+            <div class="details-header" onclick="this.parentNode.classList.toggle('details-open')"><span class="details-icon"></span> Текст</div>
+            <div class="details-content">
+                <div class="track-lyrics">
+                    {% set indices = track.lyrics.get_chorus_indices() %}
+                    {% for line in track.lyrics.lines %}
+                    <div class="track-lyrics-line{% if loop.index0 in indices %} track-lyrics-line-chorus{% endif %}">{{line.text}}</div>
+                    {% if (loop.index0 in indices) != (loop.index in indices) %}<br>{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
 
     <script src="/js/artists/artist.js"></script>
     {% include "components/footer.html" %}

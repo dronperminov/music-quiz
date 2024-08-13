@@ -99,19 +99,14 @@
     padding-right: 0.4em;
 }
 
-.content {
-    position: relative;
-    overflow: hidden;
-}
-
 .track-info-popup {
-    position: absolute;
+    position: fixed;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
+
     background: transparent;
-    border-radius: 10px;
     pointer-events: none;
     transition: background .1s ease-in;
 }
@@ -129,16 +124,25 @@
     border: 1px solid var(--border-color);
     border-radius: 10px 10px 0 0;
     padding: 10px;
-    top: 100%;
-    height: 60dvh;
+    left: -1px;
+    right: -1px;
+    bottom: calc(-100dvh - 11px);
+    max-height: 60dvh;
     transition: bottom .2s ease-in;
     overflow: auto;
+    max-width: var(--max-width);
+    margin: 0 auto;
 }
 
 .track-info-open {
-    margin: -10px;
-    top: calc(40dvh + 10px);
-    transition: top .2s ease-out;
+    bottom: -11px;
+    transition: bottom .2s ease-out;
+}
+
+.track-info .close-icon {
+    position: sticky;
+    left: 100%;
+    top: 0
 }
 
 .track-about {
@@ -152,14 +156,22 @@
     margin: 0 auto;
 }
 
-@media (max-width: 767px) {
-    .track-info-popup {
-        border-radius: 0;
-    }
+.track-lyrics {
+    overflow-x: auto;
+    white-space: nowrap;
+}
 
+.track-lyrics-line {
+    font-size: 0.9em;
+    line-height: 1.4em;
+}
+
+.track-lyrics-line-chorus {
+    color: var(--main-color);
+}
+
+@media (max-width: 767px) {
     .track-info {
-        margin: 0;
-        left: 0;
-        right: 0;
+        max-width: unset;
     }
 }
