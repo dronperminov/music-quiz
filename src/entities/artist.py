@@ -70,3 +70,12 @@ class Artist:
                 diff["tracks"] = {"prev": artist_data["tracks"], "new": data["tracks"]}
 
         return diff
+
+    def format_listen_count(self) -> str:
+        if self.listen_count >= 1000000:
+            return f"{self.listen_count / 1000000:.2f}M"
+
+        if self.listen_count >= 1000:
+            return f"{self.listen_count / 1000:.2f}K"
+
+        return str(self.listen_count)

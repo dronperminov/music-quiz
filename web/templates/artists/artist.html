@@ -1,0 +1,67 @@
+{% set title = "%s | Музыкальный квиз Плюшевой наковальни" % artist.name %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/artists/artist.css?v={{version}}">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <div class="artist-image">
+            <img src="{{artist.image_urls[0] if artist.image_urls else '/images/artists/default.png'}}">
+        </div>
+
+        <div class="artist-name">{{artist.name}}</div>
+        <div class="artist-stats">{% if artist.artist_type.to_rus() %}{{artist.artist_type.to_rus()}} | {% endif %}{{artist.format_listen_count()}} прослушиваний | {{get_word_form(artist.tracks|length, ['трек', 'трека', 'треков'])}}</div>
+
+        <div class="details" onclick="this.classList.toggle('details-open')">
+            <div class="details-header"><span class="details-icon"></span> Об исполнителе</div>
+            
+            <div class="details-content">
+                {% if artist.description %}<div class="artist-about">{{artist.description}}</div>{% endif %}
+                {% if artist.genres %}<div class="artist-about"><b>Жанры</b>: {% for genre in artist.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}
+                <div class="artist-about"><b>Всего треков</b>: {{artist.tracks_count }}</div>
+                <div class="artist-about"><b>Добавлен</b>: {{artist.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{artist.metadata.created_by }}</div>
+                {% if not artist.metadata.is_initial() %}<div class="artist-about"><b>Обновлён</b>: {{artist.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{artist.metadata.updated_by }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="artist-line"></div>
+
+        <h3>Треки</h3>
+
+        <div class="artist-tracks">
+            {% for track in tracks %}
+            <div class="track" data-track-id="{{track.track_id}}">
+                <div class="track-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy"></div>
+                <div class="track-info">
+                    <div class="track-title">{{track.title}}</div>
+                    <div class="track-artists">
+                        {% for artist_id in track.artists %}{{", " if loop.index0 else ""}}
+                        {% if artist_id != artist.artist_id %}<a class="link" href="/artists/{{artist_id}}">{{artist2name[artist_id]}}</a>{% else %}<b>{{artist2name[artist_id]}}</b>{% endif %}{% endfor %}
+                        {% if track.year > 0 %}({{track.year}}){% endif %}
+                    </div>
+                </div>
+                <div class="track-controls">
+                    <svg class="" width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.495,2.573 L1.501,0.142 C0.832,-0.265 0,0.25 0,1.069 L0,5.931 C0,6.751 0.832,7.264 1.501,6.858 L5.495,4.428 C6.168,4.018 6.168,2.983 5.495,2.573" />
+                    </svg>
+
+                    <svg class="hidden" width="1.25em" height="1.25em" viewBox="-0.7 -0.05 8.1 8.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1,0 C0.448,0 0,0.448 0,1 L0,7 C0,7.552 0.448,8 1,8 C1.552,8 2,7.552 2,7 L2,1 C2,0.448 1.552,0 1,0 M6,1 L6,7 C6,7.552 5.552,8 5,8 C4.448,8 4,7.552 4,7 L4,1 C4,0.448 4.448,0 5,0 C5.552,0 6,0.448 6,1" />
+                    </svg>
+                </div>
+                <div class="track-menu">
+                    <div class="vertical-ham">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% include "components/footer.html" %}
+</body>
+</html>

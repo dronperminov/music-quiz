@@ -43,3 +43,15 @@ class Genre(Enum):
                 return genre
 
         return None
+
+    def to_rus(self) -> str:
+        genre2rus = {
+            Genre.ROCK: "рок",
+            Genre.HIP_HOP: "хип-хоп",
+            Genre.POP: "поп",
+            Genre.ELECTRO: "электронная",
+            Genre.DISCO: "диско",
+            Genre.JAZZ_SOUL: "джаз / соул"
+        }
+
+        return genre2rus[self]

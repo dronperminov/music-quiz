@@ -11,7 +11,8 @@ from src.enums import ArtistType, Genre, Language
 
 class YandexMusicParser:
     def __init__(self, token: str, covers_size: str = "400x400") -> None:
-        self.client = Client(token).init()
+        self.token = token
+        self.client = None
         self.covers_size = covers_size
 
     def parse_tracks(self, track_ids: List[str], max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
@@ -174,6 +175,9 @@ class YandexMusicParser:
         return title
 
     def __request(self, func: Callable, max_retries: int = 5) -> Union[dict, list, str, Playlist]:
+        if self.client is None:
+            self.client = Client(self.token).init()
+
         for _ in range(max_retries):
             try:
                 return func()

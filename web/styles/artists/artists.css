@@ -14,12 +14,12 @@
 
 .artist {
     display: grid;
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 6.5em 1fr;
     grid-gap: 0.9em;
-    margin-bottom: 10px;
-    background: #f4f4f4;
+    margin-bottom: 1em;
+    background: var(--block-background);
     padding: 5px 5px 0 5px;
-    border-radius: 15px;
+    border-radius: 1em;
 }
 
 .artist-image {

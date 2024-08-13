@@ -25,3 +25,6 @@ class Metadata:
     def initial(cls: "Metadata", username: str) -> "Metadata":
         timestamp = datetime.now().replace(microsecond=0)
         return cls(created_by=username, created_at=timestamp, updated_by=username, updated_at=timestamp)
+
+    def is_initial(self) -> bool:
+        return self.created_by == self.updated_by and self.created_at == self.updated_at

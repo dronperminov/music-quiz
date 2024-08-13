@@ -1,0 +1,100 @@
+.artist-image {
+    border-radius: 1.5em;
+    text-align: center;
+}
+
+.artist-image img {
+    max-width: 200px;
+    padding: 2px;
+    width: 100%;
+    border-radius: 20px;
+}
+
+.artist-name {
+    font-weight: bold;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.artist-type {
+    color: var(--subtext-color);
+    font-size: 1em;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0.2em;
+}
+
+.artist-stats {
+    color: var(--subtext-color);
+    font-size: 0.9em;
+    text-align: center;
+    margin-bottom: 0.9em;
+}
+
+.artist-about {
+    font-size: 0.9em;
+    color: var(--text-color);
+    margin-bottom: 0.3em;
+}
+
+.artist-line {
+    margin: 0.8em 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.artist-tracks {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 1em;
+}
+
+.track {
+    display: grid;
+    grid-template-columns: 5em 1fr 1.5em 1.5em;
+    grid-gap: 0.5em;
+    background: var(--block-background);
+    padding: 5px 5px 0 5px;
+    border-radius: 1em;
+}
+
+.track-image img {
+    padding: 2px;
+    width: 100%;
+    border-radius: 1.1em;
+}
+
+.track-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-top: 0.4em;
+    margin-bottom: 0.2em;
+}
+
+.track-artists {
+    font-size: 0.75em;
+    color: var(--subtext-color);
+    line-height: 1.5em;
+}
+
+.track-controls {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+}
+
+.track-controls svg {
+    fill: var(--text-color);
+    cursor: pointer;
+}
+
+.track-controls svg:hover {
+    fill: var(--main-color);
+}
+
+.track-menu {
+    display: grid;
+    align-content: center;
+    justify-content: end;
+    padding-right: 0.4em;
+}

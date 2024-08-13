@@ -41,6 +41,15 @@ class MusicDatabase:
         tracks = self.database.tracks.find({"artists": artist_id})
         return [Track.from_dict(track) for track in tracks]
 
+    def get_artist_names(self, tracks: List[Track]) -> Dict[int, str]:
+        artist_ids = set()
+
+        for track in tracks:
+            artist_ids.update(track.artists)
+
+        artists = self.database.artists.find({"artist_id": {"$in": list(artist_ids)}}, {"artist_id": 1, "name": 1})
+        return {artist["artist_id"]: artist["name"] for artist in artists}
+
     def add_artist(self, artist: Artist, username: str) -> None:
         action = AddArtistAction(username=username, timestamp=datetime.now(), artist=artist)
         self.database.artists.insert_one(artist.to_dict())
