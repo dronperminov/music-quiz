@@ -132,6 +132,7 @@
     overflow: auto;
     max-width: var(--max-width);
     margin: 0 auto;
+    user-select: none;
 }
 
 .track-info-open {
@@ -142,7 +143,8 @@
 .track-info .close-icon {
     position: sticky;
     left: 100%;
-    top: 0
+    top: 0;
+    background: var(--block-background);
 }
 
 .track-about {
@@ -154,6 +156,7 @@
 .track-info .track-image {
     max-width: 150px;
     margin: 0 auto;
+    pointer-events: none;
 }
 
 .track-lyrics {

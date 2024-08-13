@@ -10,6 +10,7 @@ function ShowTrackInfo(trackId) {
 
     let trackInfo = document.getElementById(`track-info-${trackId}`)
     trackInfo.classList.add('track-info-open')
+    trackInfo.scrollTop = 0
 }
 
 function CloseTrackInfo() {
@@ -21,4 +22,10 @@ function CloseTrackInfo() {
 
     for (trackInfo of document.getElementsByClassName("track-info-open"))
         trackInfo.classList.remove('track-info-open')
+}
+
+function InitSwipeHandlers() {
+    for (let block of document.getElementsByClassName("track-info")) {
+        let handler = new SwipeHandler(block, CloseTrackInfo, SWIPE_HANDLER_DOWN)
+    }
 }

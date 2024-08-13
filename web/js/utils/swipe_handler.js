@@ -1,0 +1,99 @@
+const SWIPE_HANDLER_DOWN = "down"
+const SWIPE_HANDLER_UP = "up"
+const SWIPE_HANDLER_LEFT = "left"
+const SWIPE_HANDLER_RIGHT = "right"
+const SWIPE_HANDLER_VERTICAL = "vertical"
+const SWIPE_HANDLER_HORIZONTAL = "horizontal"
+
+function SwipeHandler(block, onSwipe, direction, swipePart = 0.4) {
+    this.block = block
+    this.onSwipe = onSwipe
+
+    this.direction = direction
+    this.swipePart = swipePart
+    this.isPressed = false
+
+    this.block.addEventListener("transitionend", (e) => this.block.style.transform = "")
+
+    this.block.addEventListener("mousedown", (e) => this.MouseDown(this.GetPoint(e)))
+    this.block.addEventListener("mousemove", (e) => this.MouseMove(this.GetPoint(e)))
+    this.block.addEventListener("mouseup", (e) => this.MouseUp())
+    this.block.addEventListener("mouseleave", (e) => this.MouseUp())
+
+    this.block.addEventListener("touchstart", (e) => this.MouseDown(this.GetPoint(e)))
+    this.block.addEventListener("touchmove", (e) => this.MouseMove(this.GetPoint(e)))
+    this.block.addEventListener("touchend", (e) => this.MouseUp())
+    this.block.addEventListener("touchleave", (e) => this.MouseUp())
+}
+
+SwipeHandler.prototype.GetPoint = function(e) {
+    if (e.target != this.block)
+        return null
+
+    if (e.touches)
+        return {x: e.touches[0].clientX, y: e.touches[0].clientY}
+
+    return {x: e.clientX, y: e.clientY}
+}
+
+SwipeHandler.prototype.MouseDown = function(point) {
+    if (point === null)
+        return
+
+    this.isPressed = true
+    this.prevX = point.x
+    this.prevY = point.y
+    this.deltaX = 0
+    this.deltaY = 0
+}
+
+SwipeHandler.prototype.GetDeltaX = function(x) {
+    if ([SWIPE_HANDLER_UP, SWIPE_HANDLER_DOWN, SWIPE_HANDLER_VERTICAL].indexOf(this.direction) > -1)
+        return 0
+
+    let dx = x - this.prevX
+
+    if (this.direction == SWIPE_HANDLER_LEFT && dx > 0)
+        return 0
+
+    if (this.direction == SWIPE_HANDLER_RIGHT && dx < 0)
+        return 0
+
+    return dx
+}
+
+SwipeHandler.prototype.GetDeltaY = function(y) {
+    if ([SWIPE_HANDLER_LEFT, SWIPE_HANDLER_RIGHT, SWIPE_HANDLER_HORIZONTAL].indexOf(this.direction) > -1)
+        return 0
+
+    let dy = y - this.prevY
+
+    if (this.direction == SWIPE_HANDLER_UP && dy > 0)
+        return 0
+
+    if (this.direction == SWIPE_HANDLER_DOWN && dy < 0)
+        return 0
+
+    return dy
+}
+
+SwipeHandler.prototype.MouseMove = function(point) {
+    if (!this.isPressed || point === null)
+        return
+
+    this.deltaX = this.GetDeltaX(point.x)
+    this.deltaY = this.GetDeltaY(point.y)
+    this.block.style.transform = `translate(${this.deltaX}px, ${this.deltaY}px)`
+}
+
+SwipeHandler.prototype.MouseUp  = function() {
+    this.isPressed = false
+
+    if (Math.abs(this.deltaX) > this.block.clientWidth * this.swipePart || Math.abs(this.deltaY) > this.block.clientHeight * this.swipePart)
+        this.onSwipe()
+    else
+        this.block.style.transform = `translate(0, 0)`
+
+    this.deltaX = 0
+    this.deltaY = 0
+}

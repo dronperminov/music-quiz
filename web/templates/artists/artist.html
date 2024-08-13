@@ -91,11 +91,16 @@
                     {% endfor %}
                 </div>
             </div>
+        </div>
         {% endif %}
     </div>
     {% endfor %}
 
-    <script src="/js/artists/artist.js"></script>
+    <script src="/js/artists/artist.js?v={{version}}"></script>
+    <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
+    <script>
+        InitSwipeHandlers()
+    </script>
     {% include "components/footer.html" %}
 </body>
 </html>
