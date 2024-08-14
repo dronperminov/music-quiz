@@ -73,8 +73,12 @@ class MusicDatabase:
         artist = self.database.artists.find_one({"artist_id": artist_id}, {"name": 1})
         assert artist is not None
 
-        new_values = {key: key_diff["new"] for key, key_diff in diff.items()}
         action = EditArtistAction(username=username, timestamp=datetime.now(), artist_id=artist_id, diff=diff)
+
+        new_values = {key: key_diff["new"] for key, key_diff in diff.items()}
+        new_values["metadata.updated_at"] = action.timestamp
+        new_values["metadata.updated_by"] = action.username
+
         self.database.artists.update_one({"artist_id": artist_id}, {"$set": new_values})
         self.database.history.insert_one(action.to_dict())
 
@@ -108,8 +112,12 @@ class MusicDatabase:
         track = self.database.tracks.find_one({"track_id": track_id}, {"title": 1})
         assert track is not None
 
-        new_values = {key: key_diff["new"] for key, key_diff in diff.items()}
         action = EditTrackAction(username=username, timestamp=datetime.now(), track_id=track_id, diff=diff)
+
+        new_values = {key: key_diff["new"] for key, key_diff in diff.items()}
+        new_values["metadata.updated_at"] = action.timestamp
+        new_values["metadata.updated_by"] = action.username
+
         self.database.tracks.update_one({"track_id": track_id}, {"$set": new_values})
         self.database.history.insert_one(action.to_dict())
 
