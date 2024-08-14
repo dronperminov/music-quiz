@@ -9,41 +9,53 @@
         <h1>Исполнители</h1>
         <div class="description">Всего в базе находится {{get_word_form(artists_count, ['исполнитель', 'исполнителя', 'исполнителей'])}}</div>
 
-        <h2>Недавно добавленные</h2>
-        <div class="last-added-artists">
-            {% for artist in last_added_artists %}
-            <div class="last-added-artist">
-                <div class="artist-image">
-                    <a href="/artists/{{artist.artist_id}}"><img src="{{artist.image_urls[0] if artist.image_urls else '/images/artists/default.png'}}" loading="lazy"></a>
-                </div>
-                <div class="artist-name"><a href="/artists/{{artist.artist_id}}">{{artist.name}}</a></div>
+        <select id="order">
+            <option value="listen_count">Количество прослушиваний</option>
+            <option value="name">Имя</option>
+            <option value="tracks_count">Количество треков (всего)</option>
+            <option value="tracks.size">Количество добавленных треков</option>
+            <option value="metadata.created_at">Время создания</option>
+            <option value="metadata.updated_at">Время обновления</option>
+        </select>
+
+        <select id="order-type">
+            <option value="-1">по убыванию</option>
+            <option value="1">по возрастанию</option>
+        </select>
+
+        <button onclick="SearchArtists()">Показать</button>
+
+        <div class="short-artists-block">
+            <h2>Недавно добавленные</h2>
+            <div class="short-artists">
+                {% for artist in last_added_artists %}{% include "components/short_artist.html" %}{% endfor %}
             </div>
-            {% endfor %}
         </div>
 
-        <div class="artists">
-            {% for artist in artists %}
-            <div class="artist">
-                <div class="artist-image">
-                    <a href="/artists/{{artist.artist_id}}"><img src="{{artist.image_urls[0] if artist.image_urls else '/images/artists/default.png'}}" loading="lazy"></a>
-                </div>
-                <div class="artist-info">
-                    <div class="artist-name"><a href="/artists/{{artist.artist_id}}">{{artist.name}}</a></div>
-                    <div class="artist-stats">{{artist.format_listen_count()}} прослушиваний | {{get_word_form(artist.tracks|length, ['трек', 'трека', 'треков'])}}</div>
-                    <div class="artist-type">{{artist.artist_type.to_rus()}}</div>
-                    <div class="artist-controls">
-                        <div><a class="artist-button" href="/artists/{{artist.artist_id}}">Смотреть</a></div>
-
-                        <svg width="1.2em" height="1.2em" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M5.781 4.414a7 7 0 019.62 10.039l-9.62-10.04zm-1.408 1.42a7 7 0 009.549 9.964L4.373 5.836zM10 1a9 9 0 100 18 9 9 0 000-18z"/>
-                        </svg>
-                    </div>
-                </div>
+        <div class="short-artists-block">
+            <h2>Самые прослушиваемые</h2>
+            <div class="short-artists">
+                {% for artist in top_listened_artists %}{% include "components/short_artist.html" %}{% endfor %}
             </div>
-            {% endfor %}
         </div>
+
+        <div class="loader hidden" id="loader">
+            <img src="/images/loader.svg">
+        </div>
+
+        <div class="error" id="error"></div>
     </div>
 
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/entities/artist.js?v={{version}}"></script>
+    <script src="/js/artists/artists.js?v={{version}}"></script>
+    <script>
+        let page = 0
+        let loading = false
+
+        window.addEventListener("scroll", e => ScrollArtists())
+    </script>
     {% include "components/footer.html" %}
 </body>
 </html>

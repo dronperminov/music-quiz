@@ -11,6 +11,7 @@ from src.entities.history_action import AddArtistAction, AddTrackAction, EditArt
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
+from src.query_params.artists_search import ArtistsSearch
 from src.utils.yandex_music_parser import YandexMusicParser
 
 
@@ -31,11 +32,16 @@ class MusicDatabase:
         artist = self.database.artists.find_one({"artist_id": artist_id})
         return Artist.from_dict(artist) if artist else None
 
-    def get_artists(self) -> List[Artist]:
-        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort("listen_count", -1)]
+    def search_artists(self, params: ArtistsSearch) -> List[Artist]:
+        skip = params.page_size * params.page
+        artists = self.database.artists.find({}).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
+        return [Artist.from_dict(artist) for artist in artists]
 
     def get_last_added_artists(self, count: int) -> List[Artist]:
         return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort("metadata.created_at", -1).limit(count)]
+
+    def get_top_listened_artists(self, count: int) -> List[Artist]:
+        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort("listen_count", -1).limit(count)]
 
     def get_artist_tracks(self, artist_id: int) -> List[Track]:
         tracks = self.database.tracks.find({"artists": artist_id})
