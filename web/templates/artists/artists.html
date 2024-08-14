@@ -1,8 +1,9 @@
 {% set title = "Исполнители | Музыкальный квиз Плюшевой наковальни" %}
 {% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/artists/artists.css?v={{version}}">
 </head>
-<body>
+<body ondragstart="return false">
     {% include "components/menu.html" %}
 
     <div class="content">
@@ -39,6 +40,8 @@
             </div>
         </div>
 
+        <div class="artists" id="artists"></div>
+
         <div class="loader hidden" id="loader">
             <img src="/images/loader.svg">
         </div>
@@ -46,13 +49,19 @@
         <div class="error" id="error"></div>
     </div>
 
+    <div class="info-popup" id="info-popup"></div>
+    <div id="info-block"></div>
+
     <script src="/js/utils/utils.js?v={{version}}"></script>
     <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
+    <script src="/js/utils/info_panels.js?v={{version}}"></script>
     <script src="/js/entities/artist.js?v={{version}}"></script>
     <script src="/js/artists/artists.js?v={{version}}"></script>
     <script>
         let page = 0
         let loading = false
+        let infos = new InfoPanels()
 
         window.addEventListener("scroll", e => ScrollArtists())
     </script>

@@ -5,12 +5,13 @@ const SWIPE_HANDLER_RIGHT = "right"
 const SWIPE_HANDLER_VERTICAL = "vertical"
 const SWIPE_HANDLER_HORIZONTAL = "horizontal"
 
-function SwipeHandler(block, onSwipe, direction, swipePart = 0.4) {
+function SwipeHandler(block, onSwipe, direction, swipePart = 0.4, moveDelta = 10) {
     this.block = block
     this.onSwipe = onSwipe
 
     this.direction = direction
     this.swipePart = swipePart
+    this.moveDelta = moveDelta
     this.isPressed = false
 
     this.block.addEventListener("transitionend", (e) => this.block.style.transform = "")
@@ -27,13 +28,13 @@ function SwipeHandler(block, onSwipe, direction, swipePart = 0.4) {
 }
 
 SwipeHandler.prototype.GetPoint = function(e) {
-    if (e.target != this.block)
+    if (this.block.scrollTop > 10)
         return null
 
     if (e.touches)
-        return {x: e.touches[0].clientX, y: e.touches[0].clientY}
+        return {x: e.touches[0].clientX, y: e.touches[0].clientY, e: e}
 
-    return {x: e.clientX, y: e.clientY}
+    return {x: e.clientX, y: e.clientY, e: e}
 }
 
 SwipeHandler.prototype.MouseDown = function(point) {
@@ -83,6 +84,11 @@ SwipeHandler.prototype.MouseMove = function(point) {
 
     this.deltaX = this.GetDeltaX(point.x)
     this.deltaY = this.GetDeltaY(point.y)
+
+    if (Math.abs(this.deltaX) < this.moveDelta && Math.abs(this.deltaY) < this.moveDelta)
+        return
+
+    point.e.preventDefault()
     this.block.style.transform = `translate(${this.deltaX}px, ${this.deltaY}px)`
 }
 

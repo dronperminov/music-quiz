@@ -1,0 +1,90 @@
+.info-popup {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    background: transparent;
+    pointer-events: none;
+    transition: background .1s ease-in;
+}
+
+.info-popup-open {
+    background: #000000b0;
+    transition: background .1s ease-out;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.info {
+    position: fixed;
+    background: var(--block-background);
+    border: 1px solid var(--border-color);
+    border-radius: 10px 10px 0 0;
+    padding: 10px;
+    left: -1px;
+    right: -1px;
+    bottom: calc(-100dvh - 11px);
+    max-height: 60dvh;
+    transition: bottom .2s ease-in;
+    overflow: auto;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    user-select: none;
+}
+
+.info-open {
+    bottom: -11px;
+    transition: bottom .2s ease-out;
+}
+
+.info .close-icon {
+    position: sticky;
+    left: 100%;
+    top: 0;
+}
+
+.info-images {
+    text-align: center;
+    margin-bottom: 0.8em;
+}
+
+.info-images div {
+    display: inline-grid;
+    grid-auto-flow: column;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: auto;
+}
+
+.info .info-image {
+    width: 150px;
+    margin: 0 auto;
+}
+
+.info .info-image img {
+    padding: 2px;
+    width: 100%;
+    border-radius: 1.1em;
+    vertical-align: top;
+}
+
+.info-line {
+    font-size: 1.1em;
+    color: var(--text-color);
+    margin-bottom: 0.5em;
+}
+
+.info-header-line {
+    font-size: 1.2em;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.info-description-line {
+    font-size: 1em;
+    color: var(--text-color);
+    margin-bottom: 0.5em;
+}

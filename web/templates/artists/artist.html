@@ -1,10 +1,11 @@
 {% set title = "%s | Музыкальный квиз Плюшевой наковальни" % artist.name %}
 {% include "components/header.html" %}
     <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
-    <link rel="stylesheet" type="text/css" href="/styles/player.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/artists/artist.css?v={{version}}">
 </head>
-<body>
+<body ondragstart="return false">
     {% include "components/menu.html" %}
 
     <div class="content">
@@ -60,7 +61,7 @@
                         </svg>
                     </div>
                     <div class="track-menu">
-                        <div class="vertical-ham" onclick="ShowTrackInfo({{track.track_id}})">
+                        <div class="vertical-ham" onclick="infos.Show({{track.track_id}})">
                             <div></div>
                             <div></div>
                             <div></div>
@@ -74,22 +75,22 @@
         </div>
     </div>
 
-    <div class="track-info-popup" id="track-info-popup" onclick="CloseTrackInfo()"></div>
+    <div class="info-popup" id="info-popup"></div>
 
     {% for track in tracks %}
-    <div class="track-info" id="track-info-{{track.track_id}}">
-        <div class="close-icon" title="Закрыть" onclick="CloseTrackInfo()"></div>
+    <div class="info" id="info-{{track.track_id}}">
+        <div class="close-icon" title="Закрыть"></div>
 
-        <div class="track-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy"></div>
+        <div class="info-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy"></div>
 
-        <div class="track-about"><b>Название</b>: {{track.title}}</div>
-        {% if track.year > 0 %}<div class="track-about"><b>Год выхода:</b> {{track.year}}</div>{% endif %}
-        {% if track.duration > 0 %}<div class="track-about"><b>Длительность:</b> {{track.format_duration()}}</div>{% endif %}
+        <div class="info-line"><b>Название</b>: {{track.title}}</div>
+        {% if track.year > 0 %}<div class="info-line"><b>Год выхода:</b> {{track.year}}</div>{% endif %}
+        {% if track.duration > 0 %}<div class="info-line"><b>Длительность:</b> {{track.format_duration()}}</div>{% endif %}
 
-        {% if track.genres %}<div class="track-about"><b>Жанры:</b> {% for genre in track.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}
-        {% if track.language.to_rus() %}<div class="track-about"><b>Язык:</b> {{track.language.to_rus()}}</div>{% endif %}
-        <div class="track-about"><b>Добавлен:</b> {{track.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.created_by }}</div>
-        {% if not track.metadata.is_initial() %}<div class="track-about"><b>Обновлён:</b> {{track.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.updated_by }}</div>{% endif %}
+        {% if track.genres %}<div class="info-line"><b>Жанры:</b> {% for genre in track.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}
+        {% if track.language.to_rus() %}<div class="info-line"><b>Язык:</b> {{track.language.to_rus()}}</div>{% endif %}
+        <div class="info-line"><b>Добавлен:</b> {{track.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.created_by }}</div>
+        {% if not track.metadata.is_initial() %}<div class="info-line"><b>Обновлён:</b> {{track.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.updated_by }}</div>{% endif %}
 
         {% if track.lyrics %}
         <div class="details">
@@ -110,13 +111,13 @@
 
     <script src="/js/utils/fetch.js?v={{version}}"></script>
     <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
+    <script src="/js/utils/info_panels.js?v={{version}}"></script>
     <script src="/js/utils/player.js?v={{version}}"></script>
     <script src="/js/utils/player_collection.js?v={{version}}"></script>
     <script src="/js/tracks/track.js?v={{version}}"></script>
     <script src="/js/artists/artist.js?v={{version}}"></script>
     <script>
-        InitSwipeHandlers()
-
+        let infos = new InfoPanels()
         let players = new PlayerCollection()
     </script>
     {% include "components/footer.html" %}

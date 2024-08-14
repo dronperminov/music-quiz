@@ -9,14 +9,19 @@ function SearchArtists() {
         shortArtists.classList.add("hidden")
 
     let artists = document.getElementById("artists")
-    artists.innerHTML = ""
+    let infoBlock = document.getElementById("info-block")
 
+    artists.innerHTML = ""
+    infoBlock.innerHTML = ""
     page = 0
+
     LoadArtists()
 }
 
 function LoadArtists(pageSize = 10) {
     let artists = document.getElementById("artists")
+    let infoBlock = document.getElementById("info-block")
+
     let loader = document.getElementById("loader")
     let error = document.getElementById("error")
 
@@ -40,7 +45,10 @@ function LoadArtists(pageSize = 10) {
         for (let artist of response.artists) {
             artist = new Artist(artist)
             artists.appendChild(artist.Build())
+            infoBlock.appendChild(artist.BuildInfo())
         }
+
+        infos.Update()
     })
 }
 
