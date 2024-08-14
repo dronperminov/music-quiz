@@ -8,6 +8,7 @@
     background: transparent;
     pointer-events: none;
     transition: background .1s ease-in;
+    z-index: 9999;
 }
 
 .info-popup-open {
@@ -32,6 +33,7 @@
     max-width: var(--max-width);
     margin: 0 auto;
     user-select: none;
+    z-index: 9999;
 }
 
 .info-open {

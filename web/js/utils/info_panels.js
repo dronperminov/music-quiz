@@ -20,6 +20,9 @@ InfoPanels.prototype.Update = function() {
 }
 
 InfoPanels.prototype.Show = function(infoId) {
+    let body = document.getElementsByTagName("body")[0]
+    body.classList.add("no-overflow")
+
     for (let info of document.getElementsByClassName(`info`))
         info.classList.remove("info-open")
 

@@ -1,0 +1,60 @@
+.basic-input {
+    width: 100%;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-color: var(--border-color);
+    padding: 1px 0;
+    background: transparent;
+    outline: none;
+    font-size: 1em;
+    transition: border-color 150ms ease-in;
+}
+
+.basic-input:hover, .basic-input:focus {
+    transition: border-color .15s ease-in;
+    border-bottom-color: var(--main-color);
+}
+
+.basic-input:disabled, .basic-input:disabled:hover, .basic-input:disabled:focus {
+    color: var(--border-color);
+    border: none;
+    border-bottom-color: var(--border-color);
+}
+
+.basic-input::-webkit-outer-spin-button, .basic-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+iniut[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.basic-select {
+    border: 1px solid var(--border-color);
+    border-radius: 0.8em;
+    padding: 0.4em 0.7em;
+    background: transparent;
+    font-size: 1em;
+    transition: border-color 150ms ease-in;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.basic-select:hover, .basic-select:focus {
+    border-color: var(--main-color);
+    transition: border-color .15s ease-in;
+}
+
+.basic-select:disabled, .basic-select:disabled:hover, .basic-select:disabled:focus {
+    color: var(--input-disabled-color);
+    border: none;
+}

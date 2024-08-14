@@ -1,6 +1,7 @@
 {% set title = "Исполнители | Музыкальный квиз Плюшевой наковальни" %}
 {% include "components/header.html" %}
     <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/search.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/artists/artists.css?v={{version}}">
 </head>
 <body ondragstart="return false">
@@ -10,21 +11,47 @@
         <h1>Исполнители</h1>
         <div class="description">Всего в базе находится {{get_word_form(artists_count, ['исполнитель', 'исполнителя', 'исполнителей'])}}</div>
 
-        <select id="order">
-            <option value="listen_count">Количество прослушиваний</option>
-            <option value="name">Имя</option>
-            <option value="tracks_count">Количество треков (всего)</option>
-            <option value="tracks.size">Количество добавленных треков</option>
-            <option value="metadata.created_at">Время создания</option>
-            <option value="metadata.updated_at">Время обновления</option>
-        </select>
+        <div class="search search-query-empty" id="search">
+            <div class="search-main">
+                <div class="search-clear">
+                    <div class="search-clear-icon"></div>
+                </div>
+                <div class="search-query">
+                    <input class="basic-input" type="search" id="query" placeholder="введите запрос">
+                </div>
+                <div class="search-filters" title="Фильтры">
+                    <svg width="1.5em" height="1.5em" viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 7C3 6.44772 3.44772 6 4 6H20C20.5523 6 21 6.44772 21 7C21 7.55228 20.5523 8 20 8H4C3.44772 8 3 7.55228 3 7ZM6 12C6 11.4477 6.44772 11 7 11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H7C6.44772 13 6 12.5523 6 12ZM9 17C9 16.4477 9.44772 16 10 16H14C14.5523 16 15 16.4477 15 17C15 17.5523 14.5523 18 14 18H10C9.44772 18 9 17.5523 9 17Z"/>
+                    </svg>
+                </div>
+            </div>
 
-        <select id="order-type">
-            <option value="-1">по убыванию</option>
-            <option value="1">по возрастанию</option>
-        </select>
+            <div class="search-filters-popup" id="search-filters-popup">
+                <h3>Фильтры</h3>
 
-        <button onclick="SearchArtists()">Показать</button>
+                <div class="search-filter">
+                    <label>Сортировка:
+                        <select class="basic-select" id="order">
+                            <option value="listen_count">кол-во прослушиваний</option>
+                            <option value="name">имя</option>
+                            <option value="tracks_count">количество треков (всего)</option>
+                            <option value="tracks.size">количество добавленных треков</option>
+                            <option value="metadata.created_at">время создания</option>
+                            <option value="metadata.updated_at">время обновления</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="search-filter">
+                    <label>Порядок сортировки:
+                        <select class="basic-select" id="order-type">
+                            <option value="-1">по убыванию</option>
+                            <option value="1">по возрастанию</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </div>
 
         <div class="short-artists-block">
             <h2>Недавно добавленные</h2>
@@ -41,6 +68,7 @@
         </div>
 
         <div class="artists" id="artists"></div>
+        <div class="search-no-results hidden" id="no-results">К сожалению, ничего не нашлось</div>
 
         <div class="loader hidden" id="loader">
             <img src="/images/loader.svg">
@@ -56,13 +84,14 @@
     <script src="/js/utils/fetch.js?v={{version}}"></script>
     <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
     <script src="/js/utils/info_panels.js?v={{version}}"></script>
+    <script src="/js/utils/search.js?v={{version}}"></script>
     <script src="/js/entities/artist.js?v={{version}}"></script>
     <script src="/js/artists/artists.js?v={{version}}"></script>
     <script>
         let page = 0
-        let loading = false
+        let status = ""
         let infos = new InfoPanels()
-
+        let search = new Search("search", () => SearchArtists(), () => ClearSearchArtists())
         window.addEventListener("scroll", e => ScrollArtists())
     </script>
     {% include "components/footer.html" %}

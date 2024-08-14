@@ -1,7 +1,13 @@
 function GetSearchParams() {
+    let query = document.getElementById("query").value
     let order = document.getElementById("order").value
     let orderType = +document.getElementById("order-type").value
-    return {order: order, order_type: orderType}
+
+    return {
+        query: query,
+        order: order,
+        order_type: orderType
+    }
 }
 
 function SearchArtists() {
@@ -24,21 +30,30 @@ function LoadArtists(pageSize = 10) {
 
     let loader = document.getElementById("loader")
     let error = document.getElementById("error")
+    let noResults = document.getElementById("no-results")
 
-    loading = true
+    status = "loading"
     loader.classList.remove("hidden")
+    noResults.classList.add("hidden")
     error.innerText = ""
 
     let searchParams = GetSearchParams()
 
     SendRequest("/artists", {...searchParams, page: page, page_size: pageSize}).then(response => {
         loader.classList.add("hidden")
-        loading = false
+        status = "loaded"
 
         if (response.status != SUCCESS_STATUS) {
             error.innerText = response.error
+            status = ""
             return
         }
+
+        if (page == 0 && response.artists.length == 0)
+            noResults.classList.remove("hidden")
+
+        if (response.artists.length < pageSize)
+            status = "loading"
 
         page += 1
 
@@ -52,8 +67,21 @@ function LoadArtists(pageSize = 10) {
     })
 }
 
+function ClearSearchArtists() {
+    for (let shortArtists of document.getElementsByClassName("short-artists-block"))
+        shortArtists.classList.remove("hidden")
+
+    let artists = document.getElementById("artists")
+    let infoBlock = document.getElementById("info-block")
+    let noResults = document.getElementById("no-results")
+
+    artists.innerHTML = ""
+    infoBlock.innerHTML = ""
+    noResults.classList.add("hidden")
+}
+
 function ScrollArtists() {
-    if (page == 0 || loading)
+    if (page == 0 || status == "loading")
         return
 
     let artists = document.getElementById("artists")
