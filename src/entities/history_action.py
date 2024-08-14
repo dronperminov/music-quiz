@@ -11,6 +11,9 @@ class HistoryAction:
     username: str
     timestamp: datetime
 
+    def __post_init__(self) -> None:
+        self.timestamp = self.timestamp.replace(microsecond=0)
+
     @abc.abstractmethod
     def to_dict(self) -> dict:
         pass

@@ -38,15 +38,23 @@ class TestMusicDatabaseReal(AbstractTestMusicDatabase):
         self.assertEqual(artist.name, "Noize MC")
         self.assertEqual(artist.artist_type, ArtistType.PERFORMER_MALE)
         self.assertEqual(artist.genres, [Genre.HIP_HOP])
+        self.assertTrue(artist.metadata.is_initial())
 
     def test_2_insert_artist_all(self) -> None:
+        import time
+        time.sleep(2)
+
         self.add_from_yandex("real/artist_all.json")
         self.assertEqual(self.music_database.get_tracks_count(), 10)
         self.assertEqual(self.music_database.get_artists_count(), 4)
 
+        artist = self.music_database.get_artist(artist_id=1)
+        self.assertEqual(artist.name, "Noize MC")
+
         artist = self.music_database.get_artist(artist_id=3)
         self.assertEqual(artist.name, "Монеточка")
         self.assertEqual(artist.tracks[9], 6)
+        self.assertTrue(artist.metadata.is_initial())
 
     def test_3_insert_playlist(self) -> None:
         self.add_from_yandex("real/playlist.json")
