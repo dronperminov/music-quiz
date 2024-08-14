@@ -50,7 +50,15 @@ Artist.prototype.BuildInfo = function() {
         let img = MakeElement("", infoImage, {src: imageUrl, loading: "lazy"}, "img")
     }
 
-    MakeElement("info-header-line", info, {innerHTML: this.name})
+    if (this.source.name == "yandex") {
+        let header = MakeElement("info-header-line", info)
+        let link = MakeElement("", header, {href: `https://music.yandex.ru/artist/${this.source.yandex_id}`, target: "_blank"}, "a")
+        let img = MakeElement("", link, {src: "/images/ya_music.svg"}, "img")
+        let span = MakeElement("", header, {innerText: this.name}, "span")
+    }
+    else {
+        MakeElement("info-header-line", info, {innerHTML: this.name})
+    }
 
     if (this.description.length > 0)
         MakeElement("info-description-line", info, {innerHTML: this.description})

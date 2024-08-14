@@ -85,6 +85,10 @@
     margin-bottom: 0.5em;
 }
 
+.info-header-line img {
+    vertical-align: bottom;
+}
+
 .info-description-line {
     font-size: 1em;
     color: var(--text-color);

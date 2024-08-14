@@ -17,6 +17,11 @@
     text-align: center;
 }
 
+.artist-name img {
+    width: 1.2em;
+    vertical-align: bottom;
+}
+
 .artist-type {
     color: var(--subtext-color);
     font-size: 1em;
