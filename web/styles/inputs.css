@@ -5,7 +5,7 @@
     border-top: none;
     border-bottom-width: 1px;
     border-bottom-style: solid;
-    border-color: var(--border-color);
+    border-color: transparent;
     padding: 1px 0;
     background: transparent;
     outline: none;
@@ -127,4 +127,35 @@ iniut[type="search"]::-webkit-search-decoration {
 .input-error, .input-error:hover, .input-error:focus {
     color: var(--error-color) !important;
     border-color: var(--error-color) !important;
+}
+
+.icon-input {
+    display: grid;
+    grid-template-columns: 1.5em 1fr;
+    grid-gap: 0.2em;
+    align-items: center;
+    padding: 0.5em;
+    border-radius: 0.5em;
+
+    background: var(--icon-input-background);
+    border: 1px solid var(--icon-input-border);
+}
+
+.icon-input-icon svg {
+    fill: var(--icon-input-icon-color);
+    vertical-align: middle;
+}
+
+.icon-input-input input {
+    color: var(--icon-input-input-color);
+}
+
+
+.error-input {
+    color: var(--error-color) !important;
+    border-color: var(--error-color) !important;
+}
+
+.error-icon svg {
+    fill: var(--error-color);
 }

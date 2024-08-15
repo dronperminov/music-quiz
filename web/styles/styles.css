@@ -32,6 +32,12 @@
     --search-focus-background: #eddce9;
     --search-focus-border: var(--main-color);
 
+    /* icon-input  */
+    --icon-input-background: #f4f4f4;
+    --icon-input-border: var(--border-color);
+    --icon-input-icon-color: var(--main-color);
+    --icon-input-input-color: var(--text-color);
+
     /* interval-input */
     --interval-input-border: var(--border-color);
     --interval-input-background: #f4f4f4;
@@ -65,6 +71,11 @@
 @font-face {
     font-family: Inter;
     src: url("/fonts/Inter-Regular.ttf");
+}
+
+@font-face {
+    font-family: Montserrat;
+    src: url("/fonts/Montserrat-Regular.ttf");
 }
 
 * {
