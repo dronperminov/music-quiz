@@ -2,9 +2,14 @@ function GetSearchParams() {
     let query = document.getElementById("query").value
     let order = document.getElementById("order").value
     let orderType = +document.getElementById("order-type").value
+    let listenCount = listenCountInput.GetValue()
+
+    if (listenCount === null)
+        return null
 
     return {
         query: query,
+        listen_count: listenCount,
         genres: genresInput.GetValue(),
         artist_type: artistTypeInput.GetValue(),
         order: order,
@@ -40,6 +45,11 @@ function LoadArtists(pageSize = 10) {
     error.innerText = ""
 
     let searchParams = GetSearchParams()
+
+    if (searchParams === null)
+        return
+
+    search.CloseFiltersPopup()
 
     SendRequest("/artists", {...searchParams, page: page, page_size: pageSize}).then(response => {
         loader.classList.add("hidden")

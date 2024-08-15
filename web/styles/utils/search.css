@@ -1,7 +1,7 @@
 .search {
     position: relative;
     margin-bottom: 1em;
-    clip-path: polygon(0 0, 100% 0, 100% 100dvh, 0 100dvh);
+    clip-path: polygon(0 0, 100% 0, 100% 10000px, 0 10000px);
 }
 
 .search-main {
@@ -114,7 +114,7 @@
 }
 
 .search-filters:hover svg, .search-filters-open svg {
-    fill: var(--main-color);
+    fill: var(--main-color) !important;
 }
 
 .search-no-results {
@@ -171,4 +171,10 @@
 
 .search-filter-button {
     text-align: right;
+}
+
+@media (max-width: 767px) {
+    .search-filters-popup {
+        max-width: unset;
+    }
 }

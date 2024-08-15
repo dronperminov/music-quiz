@@ -40,7 +40,6 @@ Search.prototype.QueryKeyDown = function(e) {
 
 Search.prototype.Search = function() {
     this.block.classList.remove("search-focus")
-    this.filtersPopup.classList.remove("search-filters-popup-open")
     this.queryInput.blur()
 
     this.onSearch()
@@ -63,6 +62,11 @@ Search.prototype.QueryFocus = function() {
 
 Search.prototype.QueryFocusOut = function() {
     this.block.classList.remove("search-focus")
+}
+
+Search.prototype.CloseFiltersPopup = function() {
+    this.filtersPopup.classList.remove("search-filters-popup-open")
+    this.filters.classList.remove("search-filters-open")
 }
 
 Search.prototype.ToggleFiltersPopup = function() {

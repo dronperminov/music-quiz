@@ -78,6 +78,10 @@ SwipeHandler.prototype.GetDeltaY = function(y) {
     return dy
 }
 
+SwipeHandler.prototype.IsSwiped = function() {
+    return Math.abs(this.deltaX) >= this.moveDelta || Math.abs(this.deltaY) >= this.moveDelta
+}
+
 SwipeHandler.prototype.MouseMove = function(point) {
     if (!this.isPressed || point === null)
         return
@@ -85,7 +89,7 @@ SwipeHandler.prototype.MouseMove = function(point) {
     this.deltaX = this.GetDeltaX(point.x)
     this.deltaY = this.GetDeltaY(point.y)
 
-    if (Math.abs(this.deltaX) < this.moveDelta && Math.abs(this.deltaY) < this.moveDelta)
+    if (!this.IsSwiped())
         return
 
     point.e.preventDefault()
@@ -95,10 +99,12 @@ SwipeHandler.prototype.MouseMove = function(point) {
 SwipeHandler.prototype.MouseUp  = function() {
     this.isPressed = false
 
-    if (Math.abs(this.deltaX) > this.block.clientWidth * this.swipePart || Math.abs(this.deltaY) > this.block.clientHeight * this.swipePart)
-        this.onSwipe()
-    else
-        this.block.style.transform = `translate(0, 0)`
+    if (this.IsSwiped()) {
+        if (Math.abs(this.deltaX) > this.block.clientWidth * this.swipePart || Math.abs(this.deltaY) > this.block.clientHeight * this.swipePart)
+            this.onSwipe()
+        else
+            this.block.style.transform = `translate(0, 0)`
+    }
 
     this.deltaX = 0
     this.deltaY = 0

@@ -94,3 +94,15 @@
     color: var(--text-color);
     margin-bottom: 0.5em;
 }
+
+@media (max-width: 767px) {
+    .info {
+        max-width: unset;
+    }
+}
+
+@media (orientation: landscape) and (max-width: 767px) {
+    .info {
+        max-height: calc(100dvh + 12px);
+    }
+}

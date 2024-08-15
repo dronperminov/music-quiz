@@ -56,6 +56,21 @@
                 <div class="search-filter-line"></div>
 
                 <div class="search-filter">
+                    <label onclick="listenCountInput.Clear()">Количество прослушиваний</label>
+                    <div class="interval-input" id="listen-count-filter">
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">от</span> <input class="basic-input" type="text">
+                        </div>
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">до</span> <input class="basic-input" type="text">
+                        </div>
+                    </div>
+                    <div class="error" id="listen-count-filter-error"></div>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter">
                     <label onclick="genresInput.Clear()">Жанры</label>
                     <div class="multi-select" id="genres-filter">
                         {% for genre in genres %}<div class="multi-select-option" data-name="{{genre.value}}">{{genre.to_rus()}}</div>{% endfor %}
@@ -112,6 +127,7 @@
     <script src="/js/utils/info_panels.js?v={{version}}"></script>
     <script src="/js/utils/search.js?v={{version}}"></script>
     <script src="/js/inputs/multi_select.js?v={{version}}"></script>
+    <script src="/js/inputs/interval_input.js?v={{version}}"></script>
     <script src="/js/entities/artist.js?v={{version}}"></script>
     <script src="/js/artists/artists.js?v={{version}}"></script>
     <script>
@@ -119,8 +135,10 @@
         let status = ""
         let infos = new InfoPanels()
 
+        let listenCountInput = new IntervalInput("listen-count-filter")
         let genresInput = new MultiSelect("genres-filter")
         let artistTypeInput = new MultiSelect("artist-type-filter")
+
         let search = new Search("search", () => SearchArtists(), () => ClearSearchArtists())
 
         window.addEventListener("scroll", e => ScrollArtists())

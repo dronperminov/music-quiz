@@ -32,6 +32,12 @@
     --search-focus-background: #eddce9;
     --search-focus-border: var(--main-color);
 
+    /* interval-input */
+    --interval-input-border: var(--border-color);
+    --interval-input-background: #f4f4f4;
+    --interval-input-label-color: #888888;
+    --interval-input-color: var(--text-color);
+
     /* multi-select  */
     --multi-select-border: #aaaaaa;
     --multi-select-background: #f4f4f4;
@@ -101,7 +107,6 @@ h3 {
     border-radius: 10px;
     padding: 10px;
     min-height: calc(100dvh - 20px);
-    overflow: hidden;
 }
 
 .link {

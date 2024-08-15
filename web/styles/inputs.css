@@ -99,3 +99,32 @@ iniut[type="search"]::-webkit-search-decoration {
     cursor: pointer;
     outline: none;
 }
+
+.interval-input {
+    padding-top: 0.4em;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0.5em;
+}
+
+.interval-input-cell {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    grid-gap: 0.3em;
+    padding: 0.25em 0.3em;
+    border-radius: 0.5em;
+
+    background: var(--interval-input-background);
+    border: 1px solid var(--interval-input-border);
+    color: var(--interval-input-label-color);
+}
+
+.interval-input-cell input {
+    color: var(--interval-input-color);
+    border: none;
+}
+
+.input-error, .input-error:hover, .input-error:focus {
+    color: var(--error-color) !important;
+    border-color: var(--error-color) !important;
+}
