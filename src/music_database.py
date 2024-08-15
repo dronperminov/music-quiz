@@ -37,11 +37,8 @@ class MusicDatabase:
         artists = self.database.artists.find(params.to_query()).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
         return [Artist.from_dict(artist) for artist in artists]
 
-    def get_last_added_artists(self, count: int) -> List[Artist]:
-        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort("metadata.created_at", -1).limit(count)]
-
-    def get_top_listened_artists(self, count: int) -> List[Artist]:
-        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort("listen_count", -1).limit(count)]
+    def get_last_artists(self, order_field: str, order_type: int, count: int) -> List[Artist]:
+        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort(order_field, order_type).limit(count)]
 
     def get_artist_tracks(self, artist_id: int) -> List[Track]:
         tracks = self.database.tracks.find({"artists": artist_id})

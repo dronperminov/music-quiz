@@ -175,6 +175,7 @@ h1 + .description {
     height: 0.1em;
     right: 0;
     background: var(--text-color);
+    z-index: -2;
 }
 
 .arrow-link:before {

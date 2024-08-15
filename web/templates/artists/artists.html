@@ -96,6 +96,16 @@
 
         <div class="short-artists-block">
             <h2 class="short-artist-header">
+                <span>Самые прослушиваемые</span>
+                <span class="arrow-link" onclick="SearchShortArtists('listen_count', '-1')"></span>
+            </h2>
+            <div class="short-artists">
+                {% for artist in top_listened_artists %}{% include "components/short_artist.html" %}{% endfor %}
+            </div>
+        </div>
+
+        <div class="short-artists-block">
+            <h2 class="short-artist-header">
                 <span>Недавно добавленные</span>
                 <span class="arrow-link" onclick="SearchShortArtists('metadata.created_at', '-1')"></span>
             </h2>
@@ -106,11 +116,11 @@
 
         <div class="short-artists-block">
             <h2 class="short-artist-header">
-                <span>Самые прослушиваемые</span>
-                <span class="arrow-link" onclick="SearchShortArtists('listen_count', '-1')"></span>
+                <span>Недавно обновлённые</span>
+                <span class="arrow-link" onclick="SearchShortArtists('metadata.updated_at', '-1')"></span>
             </h2>
             <div class="short-artists">
-                {% for artist in top_listened_artists %}{% include "components/short_artist.html" %}{% endfor %}
+                {% for artist in last_updated_artists %}{% include "components/short_artist.html" %}{% endfor %}
             </div>
         </div>
 

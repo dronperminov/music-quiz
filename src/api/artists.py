@@ -13,8 +13,9 @@ router = APIRouter()
 
 @router.get("/artists")
 def get_artists() -> HTMLResponse:
-    last_added_artists = music_database.get_last_added_artists(count=10)
-    top_listened_artists = music_database.get_top_listened_artists(count=10)
+    last_added_artists = music_database.get_last_artists(order_field="metadata.created_at", order_type=-1, count=10)
+    last_updated_artists = music_database.get_last_artists(order_field="metadata.updated_at", order_type=-1, count=10)
+    top_listened_artists = music_database.get_last_artists(order_field="listen_count", order_type=-1, count=10)
 
     template = templates.get_template("artists/artists.html")
     content = template.render(
@@ -22,6 +23,7 @@ def get_artists() -> HTMLResponse:
         version=get_static_hash(),
         artists_count=music_database.get_artists_count(),
         last_added_artists=last_added_artists,
+        last_updated_artists=last_updated_artists,
         top_listened_artists=top_listened_artists,
         get_word_form=get_word_form,
         genres=Genre,
