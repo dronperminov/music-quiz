@@ -97,14 +97,14 @@
         {% if not track.metadata.is_initial() %}<div class="info-line"><b>Обновлён:</b> {{track.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.updated_by }}</div>{% endif %}
 
         {% if track.lyrics %}
-        <div class="details">
+        <div class="details details-open">
             <div class="details-header" onclick="this.parentNode.classList.toggle('details-open')"><span class="details-icon"></span> Текст</div>
             <div class="details-content">
                 <div class="track-lyrics">
                     {% set indices = track.lyrics.get_chorus_indices() %}
                     {% for line in track.lyrics.lines %}
                     <div class="track-lyrics-line{% if loop.index0 in indices %} track-lyrics-line-chorus{% endif %}">{{line.text}}</div>
-                    {% if (loop.index0 in indices) != (loop.index in indices) %}<br>{% endif %}
+                    {% if indices.get(loop.index0, -1) != indices.get(loop.index, -1) %}<br>{% endif %}
                     {% endfor %}
                 </div>
             </div>

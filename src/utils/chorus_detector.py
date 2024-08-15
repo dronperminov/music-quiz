@@ -19,7 +19,7 @@ class ChorusDetector:
 
         if chorus_length >= self.min_chorus_length * 2:
             chorus = self.detect([lines[indices[chorus_start + i]] for i in range(chorus_length)])
-            if chorus:
+            if chorus and self.__is_repeated_chorus(chorus, chorus_length):
                 start, end = chorus[0]
                 chorus_length = end - start + 1
 
@@ -47,6 +47,16 @@ class ChorusDetector:
                     chorus_start, chorus_length = start + i, end - start
 
         return chorus_start, chorus_length
+
+    def __is_repeated_chorus(self, chorus: List[Tuple[int, int]], chorus_length: int) -> bool:
+        if chorus[0][0] != 0 or chorus[-1][1] != chorus_length - 1:
+            return False
+
+        for i, (start, _) in enumerate(chorus[1:]):
+            if start != chorus[i][1] + 1:
+                return False
+
+        return True
 
     def __get_all_choruses(self, indices: List[int], similarity: List[List[bool]], chorus_start: int, chorus_length: int) -> List[Tuple[int, int]]:
         chorus = []
