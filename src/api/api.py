@@ -1,14 +1,27 @@
-from fastapi import APIRouter, Body
-from fastapi.responses import JSONResponse
+from typing import Optional
+
+from fastapi import APIRouter, Body, Depends
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from src import yandex_music_parser
+from src.api import templates
+from src.entities.user import User
+from src.utils.auth import get_user
+from src.utils.common import get_static_hash
 
 router = APIRouter()
 
 
 @router.get("/")
-def index() -> JSONResponse:
-    return JSONResponse({"status": "OK"})
+def index(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+    template = templates.get_template("index.html")
+    content = template.render(
+        user=user,
+        page="index",
+        version=get_static_hash()
+    )
+
+    return HTMLResponse(content=content)
 
 
 @router.post("/get-direct-link")
