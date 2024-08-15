@@ -7,6 +7,11 @@ function Logout() {
     location.href="/logout"
 }
 
+function CloseMenu() {
+    for (let checkbox of document.getElementsByClassName("subnav-checkbox"))
+        checkbox.checked = false
+}
+
 function GetCookieToken() {
     for (let cookie of document.cookie.split(';')) {
         while (cookie.charAt(0) == ' ')
