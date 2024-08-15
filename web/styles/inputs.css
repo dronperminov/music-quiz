@@ -58,3 +58,44 @@ iniut[type="search"]::-webkit-search-decoration {
     color: var(--input-disabled-color);
     border: none;
 }
+
+.multi-select {
+    padding-top: 0.4em;
+}
+
+.multi-select-option {
+    padding: 0.25em 0.6em;
+    background: var(--multi-select-background);
+    border: 1px solid var(--multi-select-border);
+    color: var(--multi-select-color);
+    border-radius: 0.8em;
+    display: inline-block;
+    margin: 0.2em 0;
+    cursor: pointer;
+    position: relative;
+    margin-right: 0.5em;
+}
+
+.multi-select-option-checked {
+    background: var(--multi-select-checked-background);
+    border-color: var(--multi-select-checked-border);
+    color: var(--multi-select-checked-color);
+}
+
+.multi-select-option-unchecked {
+    background: var(--multi-select-unchecked-background);
+    border-color: var(--multi-select-unchecked-border);
+    color: var(--multi-select-unchecked-color);
+}
+
+.gradient-button {
+    background: var(--gradient-button-background);
+    color: var(--gradient-button-color);
+    text-decoration: none;
+    padding: 0.4em 0.6em;
+    border: 1px solid var(--gradient-button-border);
+    border-radius: 0.6em;
+    font-size: 0.9em;
+    cursor: pointer;
+    outline: none;
+}

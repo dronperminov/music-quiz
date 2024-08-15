@@ -65,15 +65,6 @@
     margin-bottom: 10px;
 }
 
-.artist-button {
-    background: linear-gradient(45deg, #e9273f 0%, #c239a3 100%);
-    color: var(--gradient-button-color);
-    text-decoration: none;
-    padding: 0.4em 0.6em;
-    border-radius: 0.6em;
-    font-size: 0.9em;
-}
-
 .artist-controls {
     display: grid;
     grid-template-columns: min-content min-content;

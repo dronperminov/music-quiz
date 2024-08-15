@@ -1,6 +1,7 @@
 .search {
     position: relative;
     margin-bottom: 1em;
+    clip-path: polygon(0 0, 100% 0, 100% 100dvh, 0 100dvh);
 }
 
 .search-main {
@@ -160,4 +161,14 @@
 
 .search-filter label {
     font-weight: bold;
+}
+
+.search-filter-line {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.5em 0;
+}
+
+.search-filter-button {
+    text-align: right;
 }

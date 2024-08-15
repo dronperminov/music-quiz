@@ -28,7 +28,7 @@ Artist.prototype.Build = function() {
     let artistType = MakeElement("artist-type", artistInfo, {innerText: this.ArtistTypeToRus()})
     let artistControls = MakeElement("artist-controls", artistInfo)
     let div = MakeElement("", artistControls)
-    let link = MakeElement("artist-button", div, {href: `/artists/${this.artistId}`, innerText: "Смотреть"}, "a")
+    let link = MakeElement("gradient-button", div, {href: `/artists/${this.artistId}`, innerText: "Смотреть"}, "a")
 
     let artistMenu = MakeElement("artist-menu", artist)
     let verticalHam = MakeElement("vertical-ham", artistMenu, {innerHTML: "<div></div><div></div><div></div>"})

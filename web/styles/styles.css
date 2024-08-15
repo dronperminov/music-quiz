@@ -15,6 +15,8 @@
     --block-background: #f4f4f4;
 
     --gradient-button-color: #fff;
+    --gradient-button-border: var(--main-color);
+    --gradient-button-background: linear-gradient(45deg, #e9273f 0%, #c239a3 100%);
 
     /* status */
     --error-color: #f44336;
@@ -29,6 +31,19 @@
     --search-focus-icon-color: var(--text-color);
     --search-focus-background: #eddce9;
     --search-focus-border: var(--main-color);
+
+    /* multi-select  */
+    --multi-select-border: #aaaaaa;
+    --multi-select-background: #f4f4f4;
+    --multi-select-color: #888888;
+
+    --multi-select-checked-border: #4caf50;
+    --multi-select-checked-background: #d4e7d5;
+    --multi-select-checked-color: #4caf50;
+
+    --multi-select-unchecked-border: #f44336;
+    --multi-select-unchecked-background: #f4d3d0;
+    --multi-select-unchecked-color: #f44336;
 
     /* player */
     --player-progress-bar-color: #eeeeee;

@@ -5,6 +5,7 @@ function GetSearchParams() {
 
     return {
         query: query,
+        genres: genresInput.GetValue(),
         order: order,
         order_type: orderType
     }

@@ -1,6 +1,5 @@
 import logging
 import os
-import re
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -34,9 +33,8 @@ class MusicDatabase:
         return Artist.from_dict(artist) if artist else None
 
     def search_artists(self, params: ArtistsSearch) -> List[Artist]:
-        query = {"name": {"$regex": re.escape(params.query), "$options": "i"}}
         skip = params.page_size * params.page
-        artists = self.database.artists.find(query).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
+        artists = self.database.artists.find(params.to_query()).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
         return [Artist.from_dict(artist) for artist in artists]
 
     def get_last_added_artists(self, count: int) -> List[Artist]:
