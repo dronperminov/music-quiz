@@ -19,13 +19,19 @@ class ArtistsSearch:
 
     def to_query(self) -> dict:
         query = {
-            "name": {"$regex": re.escape(self.query), "$options": "i"},
+            **self.__to_name_query(),
             **self.__to_interval_query("listen_count", self.listen_count),
             **self.__to_enum_query("genres", self.genres),
             **self.__to_enum_query("artist_type", self.artist_type),
         }
 
         return query
+
+    def __to_name_query(self) -> dict:
+        if not self.query:
+            return {}
+
+        return {"name": {"$regex": re.escape(self.query), "$options": "i"}}
 
     def __to_interval_query(self, name: str, interval: List[Union[str, float]]) -> dict:
         value_from, value_to = interval

@@ -103,3 +103,21 @@ function ScrollArtists() {
     if (scroll >= end - 100)
         LoadArtists()
 }
+
+function SearchShortArtists(order, orderType) {
+    let queryInput = document.getElementById("query")
+    let orderInput = document.getElementById("order")
+    let orderTypeInput = document.getElementById("order-type")
+
+    page = 0
+    status = ""
+
+    queryInput.value = ""
+    orderInput.value = order
+    orderTypeInput.value = orderType
+    listenCountInput.Clear()
+    genresInput.Clear()
+    artistTypeInput.Clear()
+
+    SearchArtists()
+}

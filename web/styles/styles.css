@@ -161,6 +161,36 @@ h1 + .description {
     background: var(--main-color);
 }
 
+.arrow-link {
+    width: 1em;
+    height: 1em;
+    position: relative;
+    cursor: pointer;
+}
+
+.arrow-link:before, .arrow-link:after {
+    content: "";
+    position: absolute;
+    width: 65%;
+    height: 0.1em;
+    right: 0;
+    background: var(--text-color);
+}
+
+.arrow-link:before {
+    bottom: 0.25em;
+    transform: rotate(-45deg);
+}
+
+.arrow-link:after {
+    top: 0.25em;
+    transform: rotate(45deg);
+}
+
+.arrow-link:hover:before, .arrow-link:hover:after {
+    background-color: var(--main-color);
+}
+
 .details .details-header {
     font-weight: bold;
     font-size: 1.1em;

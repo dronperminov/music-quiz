@@ -95,14 +95,20 @@
         </div>
 
         <div class="short-artists-block">
-            <h2>Недавно добавленные</h2>
+            <h2 class="short-artist-header">
+                <span>Недавно добавленные</span>
+                <span class="arrow-link" onclick="SearchShortArtists('metadata.created_at', '-1')"></span>
+            </h2>
             <div class="short-artists">
                 {% for artist in last_added_artists %}{% include "components/short_artist.html" %}{% endfor %}
             </div>
         </div>
 
         <div class="short-artists-block">
-            <h2>Самые прослушиваемые</h2>
+            <h2 class="short-artist-header">
+                <span>Самые прослушиваемые</span>
+                <span class="arrow-link" onclick="SearchShortArtists('listen_count', '-1')"></span>
+            </h2>
             <div class="short-artists">
                 {% for artist in top_listened_artists %}{% include "components/short_artist.html" %}{% endfor %}
             </div>
