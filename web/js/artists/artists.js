@@ -6,6 +6,7 @@ function GetSearchParams() {
     return {
         query: query,
         genres: genresInput.GetValue(),
+        artist_type: artistTypeInput.GetValue(),
         order: order,
         order_type: orderType
     }

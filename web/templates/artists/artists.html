@@ -64,6 +64,15 @@
 
                 <div class="search-filter-line"></div>
 
+                <div class="search-filter">
+                    <label onclick="artistTypeInput.Clear()">Форма записи</label>
+                    <div class="multi-select" id="artist-type-filter">
+                        {% for artist_type in artist_types %}<div class="multi-select-option" data-name="{{artist_type.value}}">{{artist_type.to_rus(True)}}</div>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="search-filter-line"></div>
+
                 <div class="search-filter-button">
                     <button class="gradient-button" onclick="search.Search()">Искать</button>
                 </div>
@@ -111,6 +120,7 @@
         let infos = new InfoPanels()
 
         let genresInput = new MultiSelect("genres-filter")
+        let artistTypeInput = new MultiSelect("artist-type-filter")
         let search = new Search("search", () => SearchArtists(), () => ClearSearchArtists())
 
         window.addEventListener("scroll", e => ScrollArtists())

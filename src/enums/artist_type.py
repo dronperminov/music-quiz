@@ -43,7 +43,7 @@ class ArtistType(Enum):
         matched_variants = re.findall(rf'\b({"|".join(variants)})\b', description)
         return variant2artist_type[matched_variants[0]] if len(matched_variants) > 0 else ArtistType.UNKNOWN
 
-    def to_rus(self) -> str:
+    def to_rus(self, with_unknown: bool = False) -> str:
         artist_type2rus = {
             ArtistType.SINGER_MALE: "певец",
             ArtistType.SINGER_FEMALE: "певица",
@@ -55,7 +55,7 @@ class ArtistType(Enum):
             ArtistType.TRIO: "трио",
             ArtistType.DJ: "ди-джей",
             ArtistType.VIA: "ВИА",
-            ArtistType.UNKNOWN: ""
+            ArtistType.UNKNOWN: "неизвестна" if with_unknown else ""
         }
 
         return artist_type2rus[self]
