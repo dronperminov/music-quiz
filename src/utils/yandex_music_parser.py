@@ -3,7 +3,7 @@ from collections import defaultdict
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from yandex_music import Artist, Client, DownloadInfo, Playlist, Track
-from yandex_music.exceptions import BadRequestError, NetworkError, NotFoundError
+from yandex_music.exceptions import BadRequestError, NotFoundError, TimedOutError
 
 from src.entities.lyrics import Lyrics
 from src.enums import ArtistType, Genre, Language
@@ -23,9 +23,12 @@ class YandexMusicParser:
         tracks = self.__request(func=lambda: self.client.artists_tracks(artist_id, page_size=max_tracks))
         return self.__parse_tracks(tracks, max_tracks=max_tracks, max_artists=max_artists)
 
-    def parse_playlist(self, playlist_id: str, playlist_username: str, max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
-        playlist = self.__request(func=lambda: self.client.users_playlists(playlist_id, playlist_username))
-        return self.__parse_tracks([track.track for track in playlist.tracks], max_tracks=max_tracks, max_artists=max_artists)
+    def parse_playlist(self, playlist_id: str, playlist_username: str, max_tracks: int, max_artists: int = 10) -> Optional[Tuple[List[dict], List[dict]]]:
+        try:
+            playlist = self.__request(func=lambda: self.client.users_playlists(playlist_id, playlist_username))
+            return self.__parse_tracks([track.track for track in playlist.tracks], max_tracks=max_tracks, max_artists=max_artists)
+        except NotFoundError:
+            return None
 
     def parse_chart(self, max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
         chart = self.__request(func=lambda: self.client.chart())
@@ -188,7 +191,7 @@ class YandexMusicParser:
         for _ in range(max_retries):
             try:
                 return func()
-            except NetworkError:
+            except (BadRequestError, TimedOutError):
                 continue
 
         raise ValueError("Unable to make request")
