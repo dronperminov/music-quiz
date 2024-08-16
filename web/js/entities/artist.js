@@ -93,7 +93,9 @@ Artist.prototype.FormatMetadataDate = function(date) {
 }
 
 Artist.prototype.GetStats = function() {
-    return `${this.FormatListenCount()} прослушиваний | ${GetWordForm(Object.keys(this.tracks).length, ['трек', 'трека', 'треков'])}`
+    let listenCount = this.listenCount < 1000 ? GetWordForm(this.listenCount, ['прослушивание', 'прослушивания', 'прослушиваний']) : `${this.FormatListenCount()} прослушиваний`
+    let tracksCount = GetWordForm(Object.keys(this.tracks).length, ['трек', 'трека', 'треков'])
+    return [listenCount, tracksCount].join(" | ")
 }
 
 Artist.prototype.ArtistTypeToRus = function() {

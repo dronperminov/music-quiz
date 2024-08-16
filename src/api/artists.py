@@ -27,6 +27,7 @@ def get_artists(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
         page="artists",
         version=get_static_hash(),
         artists_count=music_database.get_artists_count(),
+        tracks_count=music_database.get_tracks_count(),
         last_added_artists=last_added_artists,
         last_updated_artists=last_updated_artists,
         top_listened_artists=top_listened_artists,

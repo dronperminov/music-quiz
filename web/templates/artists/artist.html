@@ -14,7 +14,7 @@
         </div>
 
         <div class="artist-name">{% if artist.source.name == "yandex" %}<a href="https://music.yandex.ru/artist/{{artist.source.yandex_id}}" target="_blank"><img src="/images/ya_music.svg"></a>{% endif %}{{artist.name}}</div>
-        <div class="artist-stats">{% if artist.artist_type.to_rus() %}{{artist.artist_type.to_rus()}} | {% endif %}{{artist.format_listen_count()}} прослушиваний | {{get_word_form(artist.tracks|length, ['трек', 'трека', 'треков'])}}</div>
+        <div class="artist-stats">{% if artist.artist_type.to_rus() %}{{artist.artist_type.to_rus()}} | {% endif %}{% if artist.listen_count >= 1000 %}{{artist.format_listen_count()}} прослушиваний{% else %}{{get_word_form(artist.listen_count, ['прослушивание', 'прослушивания', 'прослушиваний'])}}{% endif %} | {{get_word_form(artist.tracks|length, ['трек', 'трека', 'треков'])}}</div>
 
         <div class="details">
             <div class="details-header" onclick="this.parentNode.classList.toggle('details-open')"><span class="details-icon"></span> Об исполнителе</div>
