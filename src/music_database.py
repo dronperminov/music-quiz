@@ -173,6 +173,10 @@ class MusicDatabase:
 
         self.__update_artist_yandex_tracks(artist_id2yandex_tracks, username)
 
+    def validate(self) -> None:
+        self.__validate_artists()
+        self.__validate_tracks()
+
     def __add_yandex_artist(self, yandex_artist: dict, yandex2artist_id: Dict[str, int], artist_id2yandex_tracks: Dict[int, List[str]], username: str) -> None:
         yandex_id: str = yandex_artist["yandex_id"]
         yandex_tracks = yandex_artist.pop("tracks")
@@ -229,3 +233,29 @@ class MusicDatabase:
             artist = self.get_artist(artist_id)
             tracks.extend([track_data for track_data in artist.get_tracks_dict() if track_data["track_id"] not in track_ids])
             self.update_artist(artist_id=artist_id, diff=artist.get_diff({"tracks": tracks}), username=username)
+
+    def __validate_artists(self) -> None:
+        for artist in self.database.artists.find({}):
+            if artist["source"]["name"] == YandexSource.name:
+                assert isinstance(artist["source"]["yandex_id"], str)
+
+            artist = Artist.from_dict(artist)
+
+            for track_id in artist.tracks:
+                track = self.get_track(track_id)
+                assert track is not None, f"track {track_id} is None"
+                assert len(track.artists) > 0, f'track "{track.title}" ({track.track_id}) have no artists'
+                assert artist.artist_id in track.artists, f'artist "{artist.name}" ({artist.artist_id}) not in track ({track.track_id}) artists'
+
+    def __validate_tracks(self) -> None:
+        for track in self.database.tracks.find({}):
+            if track["source"]["name"] == YandexSource.name:
+                assert isinstance(track["source"]["yandex_id"], str)
+
+            track = Track.from_dict(track)
+
+            for artist_id in track.artists:
+                artist = self.get_artist(artist_id)
+                assert artist is not None, f"artist {artist_id} is None"
+                assert len(artist.tracks) > 0, f'artist "{artist.name}" ({artist.artist_id}) have no tracks'
+                assert track.track_id in artist.tracks, f'track "{track.title}" ({track.track_id}) not in artist ({artist.artist_id}) tracks'

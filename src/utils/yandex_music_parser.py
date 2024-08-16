@@ -1,9 +1,9 @@
 import re
 from collections import defaultdict
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
 from yandex_music import Artist, Client, DownloadInfo, Playlist, Track
-from yandex_music.exceptions import BadRequestError, NotFoundError, TimedOutError
+from yandex_music.exceptions import BadRequestError, NetworkError, NotFoundError, TimedOutError
 
 from src.entities.lyrics import Lyrics
 from src.enums import ArtistType, Genre, Language
@@ -53,10 +53,15 @@ class YandexMusicParser:
             for yandex_artist_id in track["artists"]:
                 artist_id2tracks[yandex_artist_id][track["yandex_id"]] = self.__preprocess_title(track["title"])
 
-        artists = [self.__get_artist(yandex_artist_id, track_id2title) for yandex_artist_id, track_id2title in artist_id2tracks.items()]
+        lost_track_ids = set()
+        artists = []
 
-        track_ids = {track_id for artist in artists for track_id in artist["tracks"]}
-        tracks = [track for track in tracks if track["yandex_id"] in track_ids]
+        for yandex_artist_id, track_id2title in artist_id2tracks.items():
+            artist, artist_lost_track_ids = self.__get_artist(yandex_artist_id, track_id2title)
+            artists.append(artist)
+            lost_track_ids.update(artist_lost_track_ids)
+
+        tracks, artists = self.__remove_lost_tracks(tracks, artists, lost_track_ids)
 
         artist2genres = {artist["yandex_id"]: artist["genres"] for artist in artists}
         for track in tracks:
@@ -64,7 +69,15 @@ class YandexMusicParser:
 
         return tracks, artists
 
-    def __get_artist(self, artist_id: str, track_id2title: Dict[str, str]) -> dict:
+    def __remove_lost_tracks(self, tracks: List[dict], artists: List[dict], lost_track_ids: Set[str]) -> Tuple[List[dict], List[dict]]:
+        for artist in artists:
+            artist["tracks"] = {track_id: position for track_id, position in artist["tracks"].items() if track_id not in lost_track_ids}
+
+        tracks = [track for track in tracks if track["yandex_id"] not in lost_track_ids]
+        artists = [artist for artist in artists if artist["tracks"]]
+        return tracks, artists
+
+    def __get_artist(self, artist_id: str, track_id2title: Dict[str, str]) -> Tuple[dict, Set[str]]:
         brief_info: dict = self.__request(func=lambda: self.client._request.get(f"{self.client.base_url}/artists/{artist_id}/brief-info"))
         artist_data = brief_info["artist"]
 
@@ -77,7 +90,7 @@ class YandexMusicParser:
         if not cover_urls and "cover" in artist_data:
             cover_urls.append(f'https://{artist_data["cover"]["uri"].replace("%%", self.covers_size)}')
 
-        return {
+        artist = {
             "yandex_id": artist_id,
             "name": artist_data["name"],
             "artist_type": ArtistType.from_description(description).value,
@@ -88,6 +101,9 @@ class YandexMusicParser:
             "tracks_count": artist_data["counts"]["tracks"],
             "image_urls": cover_urls
         }
+
+        lost_track_ids = {track_id for track_id in track_id2title if track_id not in tracks}
+        return artist, lost_track_ids
 
     def __get_artist_track_positions(self, artist_id: str, track_id2title: Dict[str, str], page_size: int = 20, max_pages: int = 250) -> Dict[str, int]:
         track_id2position = dict()
@@ -193,5 +209,10 @@ class YandexMusicParser:
                 return func()
             except (BadRequestError, TimedOutError):
                 continue
+            except NetworkError as error:
+                if str(error) == "Bad Gateway":
+                    continue
+
+                raise error
 
         raise ValueError("Unable to make request")
