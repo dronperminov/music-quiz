@@ -11,6 +11,7 @@ from src.entities.history_action import AddArtistAction, AddTrackAction, EditArt
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
+from src.enums import ArtistsCount
 from src.query_params.artists_search import ArtistsSearch
 from src.utils.yandex_music_parser import YandexMusicParser
 
@@ -33,8 +34,23 @@ class MusicDatabase:
         return Artist.from_dict(artist) if artist else None
 
     def search_artists(self, params: ArtistsSearch) -> List[Artist]:
+        query = params.to_query()
+
+        if params.artists_count != "any":
+            artist_ids = {ArtistsCount.SOLO: set(), ArtistsCount.FEAT: set()}
+
+            for track in self.database.tracks.find({}, {"artists": 1}):
+                artists_count = ArtistsCount.SOLO if len(track["artists"]) == 1 else ArtistsCount.FEAT
+                for artist_id in track["artists"]:
+                    artist_ids[artists_count].add(artist_id)
+
+            if params.artists_count == "solo":
+                query["artist_id"] = {"$in": list(artist_ids[ArtistsCount.SOLO]), "$nin": list(artist_ids[ArtistsCount.FEAT])}
+            elif params.artists_count == "feat":
+                query["artist_id"] = {"$in": list(artist_ids[ArtistsCount.FEAT]), "$nin": list(artist_ids[ArtistsCount.SOLO])}
+
         skip = params.page_size * params.page
-        artists = self.database.artists.find(params.to_query()).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
+        artists = self.database.artists.find(query).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
         return [Artist.from_dict(artist) for artist in artists]
 
     def get_last_artists(self, order_field: str, order_type: int, count: int) -> List[Artist]:

@@ -14,6 +14,7 @@ class ArtistsSearch:
     listen_count: List[Union[str, float]]
     genres: Dict[Genre, bool]
     artist_type: Dict[ArtistType, bool]
+    artists_count: str
     page: int
     page_size: int
 
@@ -22,7 +23,7 @@ class ArtistsSearch:
             **self.__to_name_query(),
             **self.__to_interval_query("listen_count", self.listen_count),
             **self.__to_enum_query("genres", self.genres),
-            **self.__to_enum_query("artist_type", self.artist_type),
+            **self.__to_enum_query("artist_type", self.artist_type)
         }
 
         return query
@@ -49,14 +50,14 @@ class ArtistsSearch:
         if not values:
             return {}
 
-        include_genres = [enum.value for enum, need in values.items() if need]
-        exclude_genres = [enum.value for enum, need in values.items() if not need]
-        genres = {}
+        include_values = [enum.value for enum, need in values.items() if need]
+        exclude_values = [enum.value for enum, need in values.items() if not need]
+        query = {}
 
-        if include_genres:
-            genres["$in"] = include_genres
+        if include_values:
+            query["$in"] = include_values
 
-        if exclude_genres:
-            genres["$nin"] = exclude_genres
+        if exclude_values:
+            query["$nin"] = exclude_values
 
-        return {name: genres}
+        return {name: query}

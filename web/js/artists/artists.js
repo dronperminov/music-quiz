@@ -1,19 +1,17 @@
 function GetSearchParams() {
-    let query = document.getElementById("query").value
-    let order = document.getElementById("order").value
-    let orderType = +document.getElementById("order-type").value
     let listenCount = listenCountInput.GetValue()
 
     if (listenCount === null)
         return null
 
     return {
-        query: query,
+        query: document.getElementById("query").value,
+        order: document.getElementById("order").value,
+        order_type: +document.getElementById("order-type").value,
         listen_count: listenCount,
         genres: genresInput.GetValue(),
         artist_type: artistTypeInput.GetValue(),
-        order: order,
-        order_type: orderType
+        artists_count: document.getElementById("artists-count").value
     }
 }
 
