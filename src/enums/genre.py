@@ -21,7 +21,7 @@ class Genre(Enum):
                 "turkishfolk", "turkishrock", "ukrrock"
             },
             Genre.HIP_HOP: {
-                "foreignrap", "israelirap", "modern", "phonkgenre", "rap", "reggaeton", "rusrap", "triphopgenre", "turkishrap"
+                "foreignrap", "israelirap", "modern", "phonkgenre", "rap", "reggaeton", "rusrap", "triphopgenre", "turkishrap", "kazakhrap"
             },
             Genre.POP: {
                 "arabicpop", "azerbaijanpop", "dance", "estrada", "hyperpopgenre", "israelipop", "japanesepop", "kpop", "newwave", "pop", "rusestrada", "ruspop", "shanson",

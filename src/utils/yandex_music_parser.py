@@ -85,7 +85,7 @@ class YandexMusicParser:
         listen_count = brief_info.get("stats", {}).get("last_month_listeners", 0)
         description = artist_data["description"]["text"] if "description" in artist_data else ""
         genres = [genre.value for genre in set(Genre.from_yandex(genre) for genre in artist_data["genres"]) if genre]
-        tracks = self.__get_artist_track_positions(artist_id=artist_id, track_id2title=track_id2title, page_size=max(20, len(track_id2title)))
+        tracks, tracks_count = self.__get_artist_track_positions(artist_id=artist_id, track_id2title=track_id2title, page_size=max(20, len(track_id2title)))
 
         cover_urls = [f'https://{cover["uri"].replace("%%", self.covers_size)}' for cover in brief_info.get("all_covers", [])]
         if not cover_urls and "cover" in artist_data:
@@ -99,19 +99,21 @@ class YandexMusicParser:
             "genres": sorted(genres),
             "description": description,
             "tracks": tracks,
-            "tracks_count": artist_data["counts"]["tracks"],
+            "tracks_count": tracks_count,
             "image_urls": cover_urls
         }
 
         lost_track_ids = {track_id for track_id in track_id2title if track_id not in tracks}
         return artist, lost_track_ids
 
-    def __get_artist_track_positions(self, artist_id: str, track_id2title: Dict[str, str], page_size: int = 20, max_pages: int = 250) -> Dict[str, int]:
+    def __get_artist_track_positions(self, artist_id: str, track_id2title: Dict[str, str], page_size: int = 20, max_pages: int = 250) -> Tuple[Dict[str, int], int]:
         track_id2position = dict()
         title2position = {}
+        tracks_count = 0
 
         for page in range(max_pages):
             tracks = self.__request(func=lambda: self.client.artists_tracks(artist_id, page_size=page_size, page=page))  # noqa
+            tracks_count = tracks.pager.total
 
             if not tracks:
                 break
@@ -125,14 +127,14 @@ class YandexMusicParser:
                     title2position[self.__preprocess_title(track.title)] = position
 
             if len(track_id2position) == len(track_id2title):
-                return track_id2position
+                return track_id2position, tracks_count
 
         # если не нашёлся трек по id, пытаемся найти его по названию
         for track_id, title in track_id2title.items():
             if title in title2position:
                 track_id2position[track_id] = title2position[title]
 
-        return track_id2position
+        return track_id2position, tracks_count
 
     def __process_track(self, track: Track) -> dict:
         lyrics = self.__get_lyrics(track)

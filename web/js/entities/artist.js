@@ -65,7 +65,7 @@ Artist.prototype.BuildInfo = function() {
     if (this.genres.length > 0)
         MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => this.GenreToRus(genre)).join(", ")}`})
 
-    MakeElement("info-line", info, {innerHTML: `<b>Всего треков:</b> ${this.tracksCount}`})
+    MakeElement("info-line", info, {innerHTML: `<b>Треков:</b> ${Object.keys(this.tracks).length} из ${this.tracksCount}`})
     MakeElement("info-line", info, {innerHTML: `<b>Добавлен:</b> ${this.FormatMetadataDate(this.metadata.created_at)} пользователем @${this.metadata.created_by}`})
 
     if (this.metadata.created_at != this.metadata.updated_at)
@@ -93,7 +93,7 @@ Artist.prototype.FormatMetadataDate = function(date) {
 
 Artist.prototype.GetStats = function() {
     let listenCount = this.listenCount < 1000 ? GetWordForm(this.listenCount, ['слушатель', 'слушателя', 'слушателей']) : `${this.FormatListenCount()} слушателей`
-    let tracksCount = GetWordForm(Object.keys(this.tracks).length, ['трек', 'трека', 'треков'])
+    let tracksCount = `${GetWordForm(Object.keys(this.tracks).length, ['трек', 'трека', 'треков'])} из ${this.tracksCount}`
     return [listenCount, tracksCount].join(" | ")
 }
 
