@@ -117,18 +117,12 @@
     fill: var(--main-color) !important;
 }
 
-.search-total-results {
+.search-results {
     color: var(--subtext-color);
     font-size: 0.8em;
     text-align: center;
     margin-top: -0.8em;
     margin-bottom: 0.8em;
-}
-
-.search-no-results {
-    color: var(--subtext-color);
-    font-size: 0.9em;
-    text-align: center;
 }
 
 .search-filters-popup {

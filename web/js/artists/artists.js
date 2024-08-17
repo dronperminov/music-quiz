@@ -20,11 +20,11 @@ function SearchArtists() {
     for (let shortArtists of document.getElementsByClassName("short-artists-block"))
         shortArtists.classList.add("hidden")
 
-    let results = document.getElementById("total-results")
+    let results = document.getElementById("search-results")
     let artists = document.getElementById("artists")
     let infoBlock = document.getElementById("info-block")
 
-    results.innerHTML = ""
+    results.innerText = ""
     artists.innerHTML = ""
     infoBlock.innerHTML = ""
     page = 0
@@ -33,17 +33,16 @@ function SearchArtists() {
 }
 
 function LoadArtists(pageSize = 10) {
-    let results = document.getElementById("total-results")
+    let results = document.getElementById("search-results")
     let artists = document.getElementById("artists")
     let infoBlock = document.getElementById("info-block")
 
     let loader = document.getElementById("loader")
     let error = document.getElementById("error")
-    let noResults = document.getElementById("no-results")
 
     status = "loading"
     loader.classList.remove("hidden")
-    noResults.classList.add("hidden")
+    results.innerText = ""
     error.innerText = ""
 
     let searchParams = GetSearchParams()
@@ -67,10 +66,11 @@ function LoadArtists(pageSize = 10) {
         }
 
         loader.classList.add("hidden")
-        results.innerText = `${GetWordForm(response.total, ['исполнитель нашёлся', 'исполнителя нашлось', 'исполнителей нашлось'])} по запросу`
 
-        if (page == 0 && response.artists.length == 0)
-            noResults.classList.remove("hidden")
+        if (response.total > 0)
+            results.innerText = `${GetWordForm(response.total, ['исполнитель нашёлся', 'исполнителя нашлось', 'исполнителей нашлось'])} по запросу`
+        else
+            results.innerText = "К сожалению, по запросу ничего не нашлось"
 
         if (response.artists.length < pageSize)
             status = "loading"
@@ -93,11 +93,11 @@ function ClearSearchArtists() {
 
     let artists = document.getElementById("artists")
     let infoBlock = document.getElementById("info-block")
-    let noResults = document.getElementById("no-results")
+    let results = document.getElementById("search-results")
 
     artists.innerHTML = ""
     infoBlock.innerHTML = ""
-    noResults.classList.add("hidden")
+    results.innerText = ""
 }
 
 function ScrollArtists() {
