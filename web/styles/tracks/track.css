@@ -70,9 +70,3 @@
 .track-lyrics-line-chorus {
     color: var(--main-color);
 }
-
-@media (max-width: 767px) {
-    .track-info {
-        max-width: unset;
-    }
-}

@@ -17,7 +17,7 @@ function Search(blockId = "search", onSearch, onClear) {
     this.filters.addEventListener("click", (e) => this.ToggleFiltersPopup())
     this.filtersPopup = this.block.getElementsByClassName("search-filters-popup")[0]
 
-    new SwipeHandler(this.filtersPopup, () => this.ToggleFiltersPopup(), SWIPE_HANDLER_UP)
+    new SwipeHandler(this.filtersPopup, () => this.ToggleFiltersPopup(), SWIPE_HANDLER_DOWN)
 }
 
 Search.prototype.GetQuery = function() {
@@ -67,9 +67,15 @@ Search.prototype.QueryFocusOut = function() {
 Search.prototype.CloseFiltersPopup = function() {
     this.filtersPopup.classList.remove("search-filters-popup-open")
     this.filters.classList.remove("search-filters-open")
+
+    let body = document.getElementsByTagName("body")[0]
+    body.classList.remove("no-overflow")
 }
 
 Search.prototype.ToggleFiltersPopup = function() {
     this.filtersPopup.classList.toggle("search-filters-popup-open")
     this.filters.classList.toggle("search-filters-open")
+
+    let body = document.getElementsByTagName("body")[0]
+    body.classList.toggle("no-overflow")
 }

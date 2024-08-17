@@ -22,6 +22,7 @@
     --error-color: #f44336;
 
     /* menu  */
+    --menu-height: 55px;
     --menu-background: #eeeeee;
     --menu-icon-color: #212121;
     --menu-border-color: var(--main-color);
@@ -133,7 +134,7 @@ h3 {
     border: 1px solid var(--border-color);
     border-radius: 0 0 10px 10px;
     padding: 10px;
-    min-height: calc(100dvh - 65px);
+    min-height: calc(100dvh - 10px - var(--menu-height));
 }
 
 .link {
@@ -295,10 +296,13 @@ h1 + .description {
 }
 
 @media (max-width: 767px) {
+    :root {
+        --max-width: unset;
+    }
+
     html {
         font-size: 14px;
         margin: 0;
-        max-width: unset;
     }
 
     .content {
