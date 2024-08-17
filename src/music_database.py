@@ -61,9 +61,18 @@ class MusicDatabase:
         if artist_ids_query:
             query["artist_id"] = {"$in": list(set.intersection(*artist_ids_query))}
 
-        skip = params.page_size * params.page
         total = self.database.artists.count_documents(query)
-        artists = self.database.artists.find(query).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
+        artists = self.database.artists.aggregate([
+            {"$match": query},
+            {"$addFields": {
+                "name_lowercase": {"$toLower": "$name"},
+                "added_tracks": {"$size": "$tracks"}
+            }},
+            {"$sort": {params.order: params.order_type}},
+            {"$skip": params.page_size * params.page},
+            {"$limit": params.page_size}
+        ])
+
         return total, [Artist.from_dict(artist) for artist in artists]
 
     def get_last_artists(self, order_field: str, order_type: int, count: int) -> List[Artist]:

@@ -58,10 +58,7 @@ function LoadArtists(pageSize = 10) {
         if (response.status != SUCCESS_STATUS) {
             error.innerText = response.message
             status = "error"
-            setTimeout(() => {
-                status = "";
-                LoadArtists(pageSize)
-            }, 2000)
+            setTimeout(RetrySearch, 2000)
             return
         }
 
@@ -87,6 +84,17 @@ function LoadArtists(pageSize = 10) {
     })
 }
 
+function RetrySearch(pageSize) {
+    if (status == "error") {
+        status = "";
+        LoadArtists(pageSize)
+    }
+    else {
+        error.innerText = ""
+        loader.classList.add("hidden")
+    }
+}
+
 function ClearSearchArtists() {
     for (let shortArtists of document.getElementsByClassName("short-artists-block"))
         shortArtists.classList.remove("hidden")
@@ -95,9 +103,15 @@ function ClearSearchArtists() {
     let infoBlock = document.getElementById("info-block")
     let results = document.getElementById("search-results")
 
+    let loader = document.getElementById("loader")
+    let error = document.getElementById("error")
+
     artists.innerHTML = ""
     infoBlock.innerHTML = ""
     results.innerText = ""
+    error.innerHTML = ""
+    loader.classList.add("hidden")
+    status = ""
 }
 
 function ScrollArtists() {
