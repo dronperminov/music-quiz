@@ -14,3 +14,12 @@ class Language(Enum):
         }
 
         return language2rus[self]
+
+    def to_artists_filter(self) -> str:
+        language2rus = {
+            Language.UNKNOWN: "неизвестно",
+            Language.RUSSIAN: "русское",
+            Language.FOREIGN: "зарубежное"
+        }
+
+        return language2rus[self]

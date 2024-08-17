@@ -11,7 +11,7 @@ from src.entities.history_action import AddArtistAction, AddTrackAction, EditArt
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
-from src.enums import ArtistsCount
+from src.enums import ArtistsCount, Language
 from src.query_params.artists_search import ArtistsSearch
 from src.utils.yandex_music_parser import YandexMusicParser
 
@@ -36,18 +36,30 @@ class MusicDatabase:
     def search_artists(self, params: ArtistsSearch) -> List[Artist]:
         query = params.to_query()
 
-        if params.artists_count != "any":
-            artist_ids = {ArtistsCount.SOLO: set(), ArtistsCount.FEAT: set()}
+        artist_ids_query = []
+
+        if artists_count_query := query.pop("artists_count", {}):
+            artists_count2artist_ids = {enum.value: set() for enum in ArtistsCount}
 
             for track in self.database.tracks.find({}, {"artists": 1}):
-                artists_count = ArtistsCount.SOLO if len(track["artists"]) == 1 else ArtistsCount.FEAT
+                enum = ArtistsCount.SOLO if len(track["artists"]) == 1 else ArtistsCount.FEAT
                 for artist_id in track["artists"]:
-                    artist_ids[artists_count].add(artist_id)
+                    artists_count2artist_ids[enum.value].add(artist_id)
 
-            if params.artists_count == "solo":
-                query["artist_id"] = {"$in": list(artist_ids[ArtistsCount.SOLO]), "$nin": list(artist_ids[ArtistsCount.FEAT])}
-            elif params.artists_count == "feat":
-                query["artist_id"] = {"$in": list(artist_ids[ArtistsCount.FEAT]), "$nin": list(artist_ids[ArtistsCount.SOLO])}
+            artist_ids_query.append(params.replace_enum_query(artists_count_query, artists_count2artist_ids))
+
+        if language_query := query.pop("language", {}):
+            language2artist_ids = {enum.value: set() for enum in Language}
+
+            for track in self.database.tracks.find({}, {"artists": 1, "language": 1}):
+                enum = Language(track["language"])
+                for artist_id in track["artists"]:
+                    language2artist_ids[enum.value].add(artist_id)
+
+            artist_ids_query.append(params.replace_enum_query(language_query, language2artist_ids))
+
+        if artist_ids_query:
+            query["artist_id"] = {"$in": list(set.intersection(*artist_ids_query))}
 
         skip = params.page_size * params.page
         artists = self.database.artists.find(query).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
@@ -136,9 +148,8 @@ class MusicDatabase:
 
     def download_tracks(self, output_path: str, username: str) -> None:
         tracks = list(self.database.tracks.find({"downloaded": False, "source.name": "yandex"}, {"track_id": 1, "source": 1}))
-        download_info = self.yandex_music_parser.get_download_info(track_ids=[track["source"]["yandex_id"] for track in tracks])
 
-        for track, info in zip(tracks, download_info):
+        for track, info in zip(tracks, self.yandex_music_parser.get_download_info(track_ids=[track["source"]["yandex_id"] for track in tracks])):
             info.download(os.path.join(output_path, f'{track["track_id"]}.mp3'))
             self.update_track(track_id=track["track_id"], diff={"downloaded": {"prev": False, "new": True}}, username=username)
 

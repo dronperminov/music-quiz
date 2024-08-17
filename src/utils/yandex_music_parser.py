@@ -1,6 +1,6 @@
 import re
 from collections import defaultdict
-from typing import Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 from yandex_music import Artist, Client, DownloadInfo, Playlist, Track
 from yandex_music.exceptions import BadRequestError, NetworkError, NotFoundError, TimedOutError
@@ -41,8 +41,9 @@ class YandexMusicParser:
         except BadRequestError:
             return None
 
-    def get_download_info(self, track_ids: List[str], bitrate: int = 192) -> List[DownloadInfo]:
-        return [track.get_specific_download_info("mp3", bitrate) for track in self.__request(func=lambda: self.client.tracks(track_ids))]
+    def get_download_info(self, track_ids: List[str], bitrate: int = 192) -> Iterable[DownloadInfo]:
+        for track in self.__request(func=lambda: self.client.tracks(track_ids)):
+            yield self.__request(func=lambda: track.get_specific_download_info("mp3", bitrate))  # noqa
 
     def __parse_tracks(self, tracks: List[Track], max_tracks: int, max_artists: int = 10) -> Tuple[List[dict], List[dict]]:
         tracks = [track for track in tracks if len(self.__get_artists(track)) <= max_artists][:max_tracks]

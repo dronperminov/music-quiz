@@ -11,7 +11,8 @@ function GetSearchParams() {
         listen_count: listenCount,
         genres: genresInput.GetValue(),
         artist_type: artistTypeInput.GetValue(),
-        artists_count: document.getElementById("artists-count").value
+        artists_count: artistsCountInput.GetValue(),
+        language: languageInput.GetValue()
     }
 }
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Union
 
-from src.enums import ArtistType, Genre
+from src.enums import ArtistType, ArtistsCount, Genre, Language
 
 
 @dataclass
@@ -14,7 +14,8 @@ class ArtistsSearch:
     listen_count: List[Union[str, float]]
     genres: Dict[Genre, bool]
     artist_type: Dict[ArtistType, bool]
-    artists_count: str
+    artists_count: Dict[ArtistsCount, bool]
+    language: Dict[Language, bool]
     page: int
     page_size: int
 
@@ -23,8 +24,21 @@ class ArtistsSearch:
             **self.__to_name_query(),
             **self.__to_interval_query("listen_count", self.listen_count),
             **self.__to_enum_query("genres", self.genres),
-            **self.__to_enum_query("artist_type", self.artist_type)
+            **self.__to_enum_query("artist_type", self.artist_type),
+            **self.__to_enum_query("artists_count", self.artists_count),
+            **self.__to_enum_query("language", self.language)
         }
+
+        return query
+
+    def replace_enum_query(self, enum_query: dict, enum2sets: Dict[str, set]) -> set:
+        query = set()
+
+        for value in enum_query.get("$in", []):
+            query.update(enum2sets[value])
+
+        for value in enum_query.get("$nin", []):
+            query.difference_update(enum2sets[value])
 
         return query
 

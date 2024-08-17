@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from src import music_database
 from src.api import templates
 from src.entities.user import User
-from src.enums import ArtistType, Genre
+from src.enums import ArtistType, ArtistsCount, Genre, Language
 from src.query_params.artists_search import ArtistsSearch
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash, get_word_form
@@ -32,8 +32,10 @@ def get_artists(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
         last_updated_artists=last_updated_artists,
         top_listened_artists=top_listened_artists,
         get_word_form=get_word_form,
-        genres=Genre,
-        artist_types=ArtistType
+        Genre=Genre,
+        ArtistType=ArtistType,
+        ArtistsCount=ArtistsCount,
+        Language=Language
     )
     return HTMLResponse(content=content)
 

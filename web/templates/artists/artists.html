@@ -35,7 +35,6 @@
                             <option value="listen_count">кол-во прослушиваний</option>
                             <option value="name">имя</option>
                             <option value="tracks_count">количество треков (всего)</option>
-                            <option value="tracks.size">количество добавленных треков</option>
                             <option value="metadata.created_at">время создания</option>
                             <option value="metadata.updated_at">время обновления</option>
                         </select>
@@ -73,7 +72,7 @@
                 <div class="search-filter">
                     <label onclick="genresInput.Clear()">Жанры</label>
                     <div class="multi-select" id="genres-filter">
-                        {% for genre in genres %}<div class="multi-select-option" data-name="{{genre.value}}">{{genre.to_rus()}}</div>{% endfor %}
+                        {% for genre in Genre %}<div class="multi-select-option" data-name="{{genre.value}}">{{genre.to_rus()}}</div>{% endfor %}
                     </div>
                 </div>
 
@@ -82,20 +81,26 @@
                 <div class="search-filter">
                     <label onclick="artistTypeInput.Clear()">Форма записи</label>
                     <div class="multi-select" id="artist-type-filter">
-                        {% for artist_type in artist_types %}<div class="multi-select-option" data-name="{{artist_type.value}}">{{artist_type.to_rus(True)}}</div>{% endfor %}
+                        {% for artist_type in ArtistType %}<div class="multi-select-option" data-name="{{artist_type.value}}">{{artist_type.to_rus(True)}}</div>{% endfor %}
                     </div>
                 </div>
 
                 <div class="search-filter-line"></div>
 
                 <div class="search-filter">
-                    <label>Треки:
-                        <select class="basic-select" id="artists-count">
-                            <option value="any">любые</option>
-                            <option value="solo">только сольные</option>
-                            <option value="feat">только фиты</option>
-                        </select>
-                    </label>
+                    <label onclick="artistsCountInput.Clear()">Треки:</label>
+                    <div class="multi-select" id="artists-count-filter">
+                        {% for artists_count in ArtistsCount %}<div class="multi-select-option" data-name="{{artists_count.value}}">{{artists_count.to_rus()}}</div>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter">
+                    <label>Творчество:</label>
+                    <div class="multi-select" id="language-filter">
+                        {% for language in Language %}<div class="multi-select-option" data-name="{{language.value}}">{{language.to_artists_filter()}}</div>{% endfor %}
+                    </div>
                 </div>
 
                 <div class="search-filter-line"></div>
@@ -166,6 +171,8 @@
         let listenCountInput = new IntervalInput("listen-count-filter")
         let genresInput = new MultiSelect("genres-filter")
         let artistTypeInput = new MultiSelect("artist-type-filter")
+        let artistsCountInput = new MultiSelect("artists-count-filter")
+        let languageInput = new MultiSelect("language-filter")
 
         let search = new Search("search", () => SearchArtists(), () => ClearSearchArtists())
 
