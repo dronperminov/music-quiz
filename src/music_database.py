@@ -64,10 +64,12 @@ class MusicDatabase:
         total = self.database.artists.count_documents(query)
         artists = self.database.artists.aggregate([
             {"$match": query},
-            {"$addFields": {
-                "name_lowercase": {"$toLower": "$name"},
-                "added_tracks": {"$size": "$tracks"}
-            }},
+            {
+                "$addFields": {
+                    "name_lowercase": {"$toLower": "$name"},
+                    "added_tracks": {"$size": "$tracks"}
+                }
+            },
             {"$sort": {params.order: params.order_type}},
             {"$skip": params.page_size * params.page},
             {"$limit": params.page_size}
