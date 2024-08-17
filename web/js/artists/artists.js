@@ -54,15 +54,19 @@ function LoadArtists(pageSize = 10) {
     search.CloseFiltersPopup()
 
     SendRequest("/artists", {...searchParams, page: page, page_size: pageSize}).then(response => {
-        loader.classList.add("hidden")
         status = "loaded"
 
         if (response.status != SUCCESS_STATUS) {
-            error.innerText = response.error
-            status = ""
+            error.innerText = response.message
+            status = "error"
+            setTimeout(() => {
+                status = "";
+                LoadArtists(pageSize)
+            }, 2000)
             return
         }
 
+        loader.classList.add("hidden")
         results.innerText = `${GetWordForm(response.total, ['исполнитель нашёлся', 'исполнителя нашлось', 'исполнителей нашлось'])} по запросу`
 
         if (page == 0 && response.artists.length == 0)
@@ -97,7 +101,7 @@ function ClearSearchArtists() {
 }
 
 function ScrollArtists() {
-    if (page == 0 || status == "loading")
+    if (page == 0 || status == "loading" || status == "error")
         return
 
     let artists = document.getElementById("artists")

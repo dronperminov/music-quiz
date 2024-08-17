@@ -1,5 +1,4 @@
 function Artist(data) {
-    console.log(data)
     this.artistId = data.artist_id
     this.source = data.source
     this.name = data.name
