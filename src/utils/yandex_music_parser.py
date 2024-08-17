@@ -142,7 +142,7 @@ class YandexMusicParser:
             "yandex_id": str(track.id),
             "title": track.title,
             "artists": self.__get_artists(track),
-            "year": min([album.year for album in track.albums], default=0),
+            "year": min([album.year for album in track.albums if album.year is not None], default=0),
             "language": language.value,
             "lyrics": lyrics.to_dict() if lyrics else None,
             "duration": round(track.duration_ms / 1000, 2) if track.duration_ms else 0,
