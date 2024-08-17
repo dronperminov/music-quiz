@@ -9,6 +9,7 @@ from src.api import templates
 from src.entities.user import User
 from src.enums import ArtistType, ArtistsCount, Genre, Language
 from src.query_params.artists_search import ArtistsSearch
+from src.query_params.artists_search_query import ArtistsSearchQuery
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash, get_word_form
 
@@ -16,7 +17,8 @@ router = APIRouter()
 
 
 @router.get("/artists")
-def get_artists(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+def get_artists(user: Optional[User] = Depends(get_user), params: ArtistsSearchQuery = Depends()) -> HTMLResponse:
+    search_params = params.to_search_params()
     last_added_artists = music_database.get_last_artists(order_field="metadata.created_at", order_type=-1, count=10)
     last_updated_artists = music_database.get_last_artists(order_field="metadata.updated_at", order_type=-1, count=10)
     top_listened_artists = music_database.get_last_artists(order_field="listen_count", order_type=-1, count=10)
@@ -35,7 +37,8 @@ def get_artists(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
         Genre=Genre,
         ArtistType=ArtistType,
         ArtistsCount=ArtistsCount,
-        Language=Language
+        Language=Language,
+        search_params=search_params
     )
     return HTMLResponse(content=content)
 

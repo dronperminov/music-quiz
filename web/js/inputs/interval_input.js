@@ -1,4 +1,4 @@
-function IntervalInput(blockId) {
+function IntervalInput(blockId, value = null) {
     this.block = document.getElementById(blockId)
     this.error = document.getElementById(`${blockId}-error`)
     this.scale2number = {"": 1, "K": 1000, "M": 1000000}
@@ -9,6 +9,8 @@ function IntervalInput(blockId) {
 
     this.minInput.addEventListener("input", () => this.ClearErrorInput(this.minInput))
     this.maxInput.addEventListener("input", () => this.ClearErrorInput(this.maxInput))
+
+    this.SetValue(value)
 }
 
 IntervalInput.prototype.ClearErrorInput = function(input) {
@@ -45,6 +47,19 @@ IntervalInput.prototype.GetInputValue = function(input, message) {
     throw new Error(message)
 }
 
+IntervalInput.prototype.PrettifyInputValue = function(value) {
+    if (value.match(/^\d+[kKкКmMмМ]$/g))
+        return value
+
+    if (value.match(/^\d+000000$/g))
+        return `${value.substr(0, value.length - 6)}M`
+
+    if (value.match(/^\d+000$/g))
+        return `${value.substr(0, value.length - 3)}K`
+
+    return value
+}
+
 IntervalInput.prototype.SwapValues = function(min, max) {
     if (min === "" || max === "" || min <= max)
         return [min, max]
@@ -69,6 +84,14 @@ IntervalInput.prototype.GetValue = function() {
         this.error.innerText = error.message
         return null
     }
+}
+
+IntervalInput.prototype.SetValue = function(value) {
+    if (value === null)
+        return
+
+    this.minInput.value = this.PrettifyInputValue(value[0].toString())
+    this.maxInput.value = this.PrettifyInputValue(value[1].toString())
 }
 
 IntervalInput.prototype.Clear = function() {

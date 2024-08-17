@@ -171,15 +171,22 @@
         let status = ""
         let infos = new InfoPanels()
 
-        let listenCountInput = new IntervalInput("listen-count-filter")
-        let genresInput = new MultiSelect("genres-filter")
-        let artistTypeInput = new MultiSelect("artist-type-filter")
-        let artistsCountInput = new MultiSelect("artists-count-filter")
-        let languageInput = new MultiSelect("language-filter")
+        let listenCountInput = new IntervalInput("listen-count-filter"{% if search_params %}, {{search_params.listen_count|tojson}}{% endif %})
+        let genresInput = new MultiSelect("genres-filter"{% if search_params %}, {{search_params.genres|tojson}}{% endif %})
+        let artistTypeInput = new MultiSelect("artist-type-filter"{% if search_params %}, {{search_params.artist_type|tojson}}{% endif %})
+        let artistsCountInput = new MultiSelect("artists-count-filter"{% if search_params %}, {{search_params.artists_count|tojson}}{% endif %})
+        let languageInput = new MultiSelect("language-filter"{% if search_params %}, {{search_params.language|tojson}}{% endif %})
 
         let search = new Search("search", () => SearchArtists(), () => ClearSearchArtists())
 
         window.addEventListener("scroll", e => ScrollArtists())
+
+        {% if search_params %}
+        document.getElementById("query").value = {{search_params.query|tojson}}
+        document.getElementById("order").value = {{search_params.order|tojson}}
+        document.getElementById("order-type").value = {{search_params.order_type|tojson}}
+        SearchArtists()
+        {% endif %}
     </script>
     {% include "components/footer.html" %}
 </body>

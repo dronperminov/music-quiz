@@ -1,5 +1,5 @@
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Union
 
@@ -8,16 +8,16 @@ from src.enums import ArtistType, ArtistsCount, Genre, Language
 
 @dataclass
 class ArtistsSearch:
-    query: str
-    order: str
-    order_type: int
-    listen_count: List[Union[str, float]]
-    genres: Dict[Genre, bool]
-    artist_type: Dict[ArtistType, bool]
-    artists_count: Dict[ArtistsCount, bool]
-    language: Dict[Language, bool]
-    page: int
-    page_size: int
+    query: str = ""
+    order: str = "listen_count"
+    order_type: int = -1
+    listen_count: List[Union[str, float]] = field(default_factory=lambda: ["", ""])
+    genres: Dict[Genre, bool] = field(default_factory=dict)
+    artist_type: Dict[ArtistType, bool] = field(default_factory=dict)
+    artists_count: Dict[ArtistsCount, bool] = field(default_factory=dict)
+    language: Dict[Language, bool] = field(default_factory=dict)
+    page: int = 0
+    page_size: int = 20
 
     def to_query(self) -> dict:
         query = {

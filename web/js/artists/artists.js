@@ -16,6 +16,31 @@ function GetSearchParams() {
     }
 }
 
+function PushUrlParams(params) {
+    let url = new URL(window.location.href)
+
+    if (params === null) {
+        let keys = []
+        for (let [key, value] of url.searchParams.entries())
+            keys.push(key)
+
+        for (let key of keys)
+            url.searchParams.delete(key)
+    }
+    else {
+        if (params.query !== "")
+            url.searchParams.set("query", params.query)
+
+        for (let key of ["order", "order_type", "listen_count"])
+            url.searchParams.set(key, params[key])
+
+        for (let key of ["listen_count", "genres", "artist_type", "artists_count", "language"])
+            url.searchParams.set(key, JSON.stringify(params[key]))
+    }
+
+    window.history.pushState(null, '', url.toString())
+}
+
 function SearchArtists() {
     for (let shortArtists of document.getElementsByClassName("short-artists-block"))
         shortArtists.classList.add("hidden")
@@ -51,6 +76,9 @@ function LoadArtists(pageSize = 10) {
         return
 
     search.CloseFiltersPopup()
+
+    if (page == 0)
+        PushUrlParams(searchParams)
 
     SendRequest("/artists", {...searchParams, page: page, page_size: pageSize}).then(response => {
         status = "loaded"
@@ -112,6 +140,8 @@ function ClearSearchArtists() {
     error.innerHTML = ""
     loader.classList.add("hidden")
     status = ""
+
+    PushUrlParams(null)
 }
 
 function ScrollArtists() {

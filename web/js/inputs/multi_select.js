@@ -1,4 +1,4 @@
-function MultiSelect(blockId) {
+function MultiSelect(blockId, value = null) {
     this.block = document.getElementById(blockId)
     this.options = {}
 
@@ -6,6 +6,8 @@ function MultiSelect(blockId) {
         option.addEventListener("click", () => this.ClickOption(option))
         this.options[option.getAttribute("data-name")] = option
     }
+
+    this.SetValue(value)
 }
 
 MultiSelect.prototype.GetOptionValue = function(option) {
@@ -16,6 +18,19 @@ MultiSelect.prototype.GetOptionValue = function(option) {
         return false
 
     return null
+}
+
+MultiSelect.prototype.SetOptionValue = function(option, value) {
+    option.classList.remove("multi-select-option-checked")
+    option.classList.remove("multi-select-option-unchecked")
+
+    if (value === null)
+        return
+
+    if (value)
+        option.classList.add("multi-select-option-checked")
+    else
+        option.classList.add("multi-select-option-unchecked")
 }
 
 MultiSelect.prototype.ClickOption = function(option) {
@@ -42,6 +57,16 @@ MultiSelect.prototype.GetValue = function() {
     }
 
     return value
+}
+
+MultiSelect.prototype.SetValue = function(value) {
+    if (value === null)
+        return
+
+    this.Clear()
+
+    for (let [name, nameValue] of Object.entries(value))
+        this.SetOptionValue(this.options[name], nameValue)
 }
 
 MultiSelect.prototype.Clear = function() {

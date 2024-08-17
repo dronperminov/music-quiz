@@ -66,7 +66,7 @@ class MusicDatabase:
             {"$match": query},
             {
                 "$addFields": {
-                    "name_lowercase": {"$toLower": "$name"},
+                    "name_lowercase": {"$replaceAll": {"input": {"$toLower": "$name"}, "find": "Ё", "replacement": "Е"}},
                     "added_tracks": {"$size": "$tracks"}
                 }
             },
