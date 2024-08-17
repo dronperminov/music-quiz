@@ -36,7 +36,7 @@ class MusicDatabase:
     def search_artists(self, params: ArtistsSearch) -> Tuple[int, List[Artist]]:
         query = params.to_query()
 
-        artist_ids_query = []
+        artist_ids_query = {"$in": [], "$nin": []}
 
         if artists_count_query := query.pop("artists_count", {}):
             artists_count2artist_ids = {enum.value: set() for enum in ArtistsCount}
@@ -46,7 +46,9 @@ class MusicDatabase:
                 for artist_id in track["artists"]:
                     artists_count2artist_ids[enum.value].add(artist_id)
 
-            artist_ids_query.append(params.replace_enum_query(artists_count_query, artists_count2artist_ids))
+            in_set, nin_set = params.replace_enum_query(artists_count_query, artists_count2artist_ids)
+            artist_ids_query["$in"].append(in_set)
+            artist_ids_query["$nin"].append(nin_set)
 
         if language_query := query.pop("language", {}):
             language2artist_ids = {enum.value: set() for enum in Language}
@@ -56,10 +58,22 @@ class MusicDatabase:
                 for artist_id in track["artists"]:
                     language2artist_ids[enum.value].add(artist_id)
 
-            artist_ids_query.append(params.replace_enum_query(language_query, language2artist_ids))
+            in_set, nin_set = params.replace_enum_query(language_query, language2artist_ids)
+            artist_ids_query["$in"].append(in_set)
+            artist_ids_query["$nin"].append(nin_set)
 
-        if artist_ids_query:
-            query["artist_id"] = {"$in": list(set.intersection(*artist_ids_query))}
+        if artist_ids_query["$in"]:
+            artist_ids_query["$in"] = set.intersection(*artist_ids_query["$in"])
+
+        if artist_ids_query["$nin"]:
+            artist_ids_query["$nin"] = set.union(*artist_ids_query["$nin"])
+
+        if artist_ids_query["$in"] and artist_ids_query["$nin"]:
+            query["artist_id"] = {"$in": list(artist_ids_query["$in"].difference(artist_ids_query["$nin"]))}
+        elif artist_ids_query["$in"]:
+            query["artist_id"] = {"$in": list(artist_ids_query["$in"])}
+        elif artist_ids_query["$nin"]:
+            query["artist_id"] = {"$nin": list(artist_ids_query["$nin"])}
 
         total = self.database.artists.count_documents(query)
         artists = self.database.artists.aggregate([

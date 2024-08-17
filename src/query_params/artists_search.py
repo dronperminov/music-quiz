@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 
 from src.enums import ArtistType, ArtistsCount, Genre, Language
 
@@ -31,16 +31,17 @@ class ArtistsSearch:
 
         return query
 
-    def replace_enum_query(self, enum_query: dict, enum2sets: Dict[str, set]) -> set:
-        query = set()
+    def replace_enum_query(self, enum_query: dict, enum2sets: Dict[str, set]) -> Tuple[set, set]:
+        query_add = set()
+        query_remove = set()
 
         for value in enum_query.get("$in", []):
-            query.update(enum2sets[value])
+            query_add.update(enum2sets[value])
 
         for value in enum_query.get("$nin", []):
-            query.difference_update(enum2sets[value])
+            query_remove.update(enum2sets[value])
 
-        return query
+        return query_add, query_remove
 
     def __to_name_query(self) -> dict:
         if not self.query:
