@@ -1,7 +1,7 @@
 import logging
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import wget
 
@@ -33,7 +33,7 @@ class MusicDatabase:
         artist = self.database.artists.find_one({"artist_id": artist_id})
         return Artist.from_dict(artist) if artist else None
 
-    def search_artists(self, params: ArtistsSearch) -> List[Artist]:
+    def search_artists(self, params: ArtistsSearch) -> Tuple[int, List[Artist]]:
         query = params.to_query()
 
         artist_ids_query = []
@@ -62,8 +62,9 @@ class MusicDatabase:
             query["artist_id"] = {"$in": list(set.intersection(*artist_ids_query))}
 
         skip = params.page_size * params.page
+        total = self.database.artists.count_documents(query)
         artists = self.database.artists.find(query).sort(params.order, params.order_type).skip(skip).limit(params.page_size)
-        return [Artist.from_dict(artist) for artist in artists]
+        return total, [Artist.from_dict(artist) for artist in artists]
 
     def get_last_artists(self, order_field: str, order_type: int, count: int) -> List[Artist]:
         return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort(order_field, order_type).limit(count)]

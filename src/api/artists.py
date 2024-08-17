@@ -42,8 +42,8 @@ def get_artists(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
 
 @router.post("/artists")
 def search_artists(params: ArtistsSearch) -> JSONResponse:
-    artists = music_database.search_artists(params=params)
-    return JSONResponse({"status": "success", "artists": jsonable_encoder(artists)})
+    total, artists = music_database.search_artists(params=params)
+    return JSONResponse({"status": "success", "total": total, "artists": jsonable_encoder(artists)})
 
 
 @router.get("/artists/{artist_id}")

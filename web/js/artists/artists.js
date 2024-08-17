@@ -20,9 +20,11 @@ function SearchArtists() {
     for (let shortArtists of document.getElementsByClassName("short-artists-block"))
         shortArtists.classList.add("hidden")
 
+    let results = document.getElementById("total-results")
     let artists = document.getElementById("artists")
     let infoBlock = document.getElementById("info-block")
 
+    results.innerHTML = ""
     artists.innerHTML = ""
     infoBlock.innerHTML = ""
     page = 0
@@ -31,6 +33,7 @@ function SearchArtists() {
 }
 
 function LoadArtists(pageSize = 10) {
+    let results = document.getElementById("total-results")
     let artists = document.getElementById("artists")
     let infoBlock = document.getElementById("info-block")
 
@@ -59,6 +62,8 @@ function LoadArtists(pageSize = 10) {
             status = ""
             return
         }
+
+        results.innerText = `${GetWordForm(response.total, ['исполнитель нашёлся', 'исполнителя нашлось', 'исполнителей нашлось'])} по запросу`
 
         if (page == 0 && response.artists.length == 0)
             noResults.classList.remove("hidden")
