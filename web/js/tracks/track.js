@@ -2,9 +2,6 @@ function LoadTrack(trackId) {
     let audio = document.getElementById(`audio-${trackId}`)
     let loader = document.getElementById(`loader-${trackId}`)
     let loadIcon = document.getElementById(`player-${trackId}-load`)
-    let error = document.getElementById(`error-${trackId}`)
-
-    error.innerText = ""
 
     if (audio.hasAttribute("data-src")) {
         return new Promise((resolve, reject) => {
@@ -17,7 +14,7 @@ function LoadTrack(trackId) {
         loader.classList.add("hidden")
 
         if (response.status != "success") {
-            error.innerText = response.message
+            ShowNotification(response.message, "error-notification")
             audio.classList.remove("loaded")
             loadIcon.classList.remove("hidden")
             return false

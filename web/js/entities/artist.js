@@ -31,14 +31,14 @@ Artist.prototype.Build = function() {
 
     let artistMenu = MakeElement("artist-menu", artist)
     let verticalHam = MakeElement("vertical-ham", artistMenu, {innerHTML: "<div></div><div></div><div></div>"})
-    verticalHam.addEventListener("click", () => infos.Show(this.artistId))
+    verticalHam.addEventListener("click", () => infos.Show(`artist-${this.artistId}`))
 
     return artist
 }
 
 Artist.prototype.BuildInfo = function() {
     let info = MakeElement("info")
-    info.setAttribute("id", `info-${this.artistId}`)
+    info.setAttribute("id", `info-artist-${this.artistId}`)
 
     let closeIcon = MakeElement("close-icon", info, {title: "Закрыть"})
     let infoImages = MakeElement("info-images", info)

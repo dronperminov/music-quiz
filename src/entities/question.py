@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+from src.entities.settings import Settings
 from src.entities.track_modifications import TrackModifications
 from src.enums import QuestionType
 
@@ -53,3 +54,13 @@ class Question:
             correct=data["correct"],
             timestamp=data["timestamp"]
         )
+
+    def init_base(self, settings: Settings, track_id: int, group_id: Optional[int]) -> None:
+        self.question_type = QuestionType.ARTIST_BY_TRACK
+        self.username = settings.username
+        self.group_id = group_id
+        self.track_id = track_id
+
+        self.track_modifications = TrackModifications.from_settings(settings.question_settings.track_modifications)
+        self.correct = None
+        self.timestamp = datetime.now()

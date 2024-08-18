@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Dict, List, Tuple, Union
 
 from src.enums import ArtistType, ArtistsCount, Genre, Language
+from src.utils.queries import interval_query
 
 
 @dataclass
@@ -12,6 +13,8 @@ class ArtistsSearch:
     order: str = "listen_count"
     order_type: int = -1
     listen_count: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
+    tracks_count: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
+    added_tracks: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
     genres: Dict[Genre, bool] = field(default_factory=dict)
     artist_type: Dict[ArtistType, bool] = field(default_factory=dict)
     artists_count: Dict[ArtistsCount, bool] = field(default_factory=dict)
@@ -22,7 +25,9 @@ class ArtistsSearch:
     def to_query(self) -> dict:
         query = {
             **self.__to_name_query(),
-            **self.__to_interval_query("listen_count", self.listen_count),
+            **interval_query("listen_count", self.listen_count),
+            **interval_query("tracks_count", self.tracks_count),
+            **interval_query("added_tracks", self.added_tracks),
             **self.__to_enum_query("genres", self.genres),
             **self.__to_enum_query("artist_type", self.artist_type),
             **self.__to_enum_query("artists_count", self.artists_count),
@@ -48,18 +53,6 @@ class ArtistsSearch:
             return {}
 
         return {"name": {"$regex": re.escape(self.query), "$options": "i"}}
-
-    def __to_interval_query(self, name: str, interval: List[Union[str, float, int]]) -> dict:
-        value_from, value_to = interval
-        query = {}
-
-        if isinstance(value_from, float) or isinstance(value_from, int):
-            query["$gte"] = value_from
-
-        if isinstance(value_to, float) or isinstance(value_to, int):
-            query["$lte"] = value_to
-
-        return {name: query} if query else {}
 
     def __to_enum_query(self, name: str, values: Dict[Enum, bool]) -> dict:
         if not values:

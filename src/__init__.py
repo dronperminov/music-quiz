@@ -5,6 +5,7 @@ import sys
 
 from src.database import Database
 from src.music_database import MusicDatabase
+from src.questions_database import QuestionsDatabase
 from src.utils.yandex_music_parser import YandexMusicParser
 
 secrets_path = os.path.join(os.path.dirname(__file__), "..", "secrets.json")
@@ -21,3 +22,4 @@ logger = logging.getLogger()
 
 database = Database(mongo_url="mongodb://localhost:27017/", database_name="music_quiz_db")
 music_database = MusicDatabase(database=database, yandex_music_parser=yandex_music_parser, logger=logger)
+questions_database = QuestionsDatabase(database=database, music_database=music_database, logger=logger)

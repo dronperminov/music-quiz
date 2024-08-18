@@ -4,11 +4,21 @@ function GetSearchParams() {
     if (listenCount === null)
         return null
 
+    let tracksCount = tracksCountInput.GetValue()
+    if (tracksCount === null)
+        return null
+
+    let addedTracks = addedTracksInput.GetValue()
+    if (addedTracks === null)
+        return null
+
     return {
         query: document.getElementById("query").value,
         order: document.getElementById("order").value,
         order_type: +document.getElementById("order-type").value,
         listen_count: listenCount,
+        tracks_count: tracksCount,
+        added_tracks: addedTracks,
         genres: genresInput.GetValue(),
         artist_type: artistTypeInput.GetValue(),
         artists_count: artistsCountInput.GetValue(),
@@ -33,8 +43,9 @@ function PushUrlParams(params) {
         for (let key of ["order", "order_type"])
             url.searchParams.set(key, params[key])
 
-        if (params.listen_count[0] !== "" || params.listen_count[1] !== "")
-            url.searchParams.set("listen_count", JSON.stringify(params.listen_count))
+        for (let key of ["listen_count", "tracks_count", "added_tracks"])
+            if (params[key][0] !== "" || params[key][1] !== "")
+                url.searchParams.set(key, JSON.stringify(params[key]))
 
         for (let key of ["genres", "artist_type", "artists_count", "language"])
             if (Object.keys(params[key]).length > 0)

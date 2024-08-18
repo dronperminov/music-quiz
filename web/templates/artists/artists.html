@@ -73,6 +73,36 @@
                 <div class="search-filter-line"></div>
 
                 <div class="search-filter">
+                    <label onclick="tracksCountInput.Clear()">Количество треков (всего)</label>
+                    <div class="interval-input" id="tracks-count-filter">
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">от</span> <input class="basic-input" type="text">
+                        </div>
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">до</span> <input class="basic-input" type="text">
+                        </div>
+                    </div>
+                    <div class="error" id="tracks-count-filter-error"></div>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter">
+                    <label onclick="addedTracksInput.Clear()">Количество треков (добавленных)</label>
+                    <div class="interval-input" id="added-tracks-filter">
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">от</span> <input class="basic-input" type="text">
+                        </div>
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">до</span> <input class="basic-input" type="text">
+                        </div>
+                    </div>
+                    <div class="error" id="added-tracks-filter-error"></div>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter">
                     <label onclick="genresInput.Clear()">Жанры</label>
                     <div class="multi-select" id="genres-filter">
                         {% for genre in Genre %}<div class="multi-select-option" data-name="{{genre.value}}">{{genre.to_rus()}}</div>{% endfor %}
@@ -172,6 +202,8 @@
         let infos = new InfoPanels()
 
         let listenCountInput = new IntervalInput("listen-count-filter"{% if search_params %}, {{search_params.listen_count|tojson}}{% endif %})
+        let tracksCountInput = new IntervalInput("tracks-count-filter"{% if search_params %}, {{search_params.tracks_count|tojson}}{% endif %})
+        let addedTracksInput = new IntervalInput("added-tracks-filter"{% if search_params %}, {{search_params.added_tracks|tojson}}{% endif %})
         let genresInput = new MultiSelect("genres-filter"{% if search_params %}, {{search_params.genres|tojson}}{% endif %})
         let artistTypeInput = new MultiSelect("artist-type-filter"{% if search_params %}, {{search_params.artist_type|tojson}}{% endif %})
         let artistsCountInput = new MultiSelect("artists-count-filter"{% if search_params %}, {{search_params.artists_count|tojson}}{% endif %})

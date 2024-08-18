@@ -43,6 +43,8 @@ class Database:
         self.tracks.create_index([("track_id", ASCENDING)], unique=True)
         self.tracks.create_index([("artists", ASCENDING)])
         self.tracks.create_index([("title", ASCENDING)])
+        self.tracks.create_index([("genres", ASCENDING)])
+        self.tracks.create_index([("language", ASCENDING)])
 
         self.questions = database["questions"]
         self.questions.create_index([("username", ASCENDING)])

@@ -146,13 +146,13 @@ h4 {
     min-height: calc(100dvh - 10px - var(--menu-height));
 }
 
-.link {
+.link[href] {
     color: var(--link-color);
     text-decoration: none;
     border-bottom: 1px dashed var(--link-color);
 }
 
-.link:hover {
+.link[href]:hover {
     border-bottom-style: solid;
 }
 
@@ -182,6 +182,7 @@ h1 + .description {
     padding: 0.15em;
 }
 
+
 .vertical-ham div {
     width: 0.3em;
     height: 0.3em;
@@ -196,6 +197,15 @@ h1 + .description {
 
 .vertical-ham:hover div {
     background: var(--main-color);
+}
+
+.vertical-ham[disabled] {
+    pointer-events: none;
+    user-select: none;
+}
+
+.vertical-ham[disabled] div {
+    background-color: var(--border-color);
 }
 
 .arrow-link {

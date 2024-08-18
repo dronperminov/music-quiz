@@ -65,3 +65,6 @@ class Lyrics:
                 indices[index] = i
 
         return indices
+
+    def __len__(self) -> int:
+        return len(self.lines)

@@ -1,0 +1,22 @@
+.question-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 0.6em;
+}
+
+.track {
+    margin-bottom: 1em;
+}
+
+.answer-block {
+    margin-top: 1em;
+}
+
+.answer {
+    background: var(--block-background);
+    border: 1px solid var(--border-color);
+    padding: 0.8em;
+    border-radius: 0.8em;
+    font-size: 1.1em;
+    margin-bottom: 1em;
+}

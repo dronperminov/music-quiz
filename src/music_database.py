@@ -75,24 +75,28 @@ class MusicDatabase:
         elif artist_ids_query["$nin"]:
             query["artist_id"] = {"$nin": list(artist_ids_query["$nin"])}
 
-        total = self.database.artists.count_documents(query)
-        artists = self.database.artists.aggregate([
-            {"$match": query},
+        results = self.database.artists.aggregate([
             {
                 "$addFields": {
                     "name_lowercase": {"$replaceAll": {"input": {"$toLower": "$name"}, "find": "Ё", "replacement": "Е"}},
                     "added_tracks": {"$size": "$tracks"}
                 }
             },
-            {"$sort": {params.order: params.order_type}},
-            {"$skip": params.page_size * params.page},
-            {"$limit": params.page_size}
+            {"$match": query},
+            {"$sort": {params.order: params.order_type, "_id": 1}},
+            {
+                "$facet": {
+                    "artists": [{"$skip": params.page_size * params.page}, {"$limit": params.page_size}],
+                    "total": [{"$count": "count"}]
+                }
+            }
         ])
 
-        return total, [Artist.from_dict(artist) for artist in artists]
+        results = list(results)[0]
+        return results["total"][0]["count"], [Artist.from_dict(artist) for artist in results["artists"]]
 
     def get_last_artists(self, order_field: str, order_type: int, count: int) -> List[Artist]:
-        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort(order_field, order_type).limit(count)]
+        return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort([(order_field, order_type), ("_id", 1)]).limit(count)]
 
     def get_artist_tracks(self, artist_id: int) -> List[Track]:
         tracks = self.database.tracks.find({"artists": artist_id})
@@ -143,6 +147,9 @@ class MusicDatabase:
     def get_track(self, track_id: int) -> Optional[Track]:
         track = self.database.tracks.find_one({"track_id": track_id})
         return Track.from_dict(track) if track else None
+
+    def get_track_artists(self, track: Track) -> Dict[int, Artist]:
+        return {artist["artist_id"]: Artist.from_dict(artist) for artist in self.database.artists.find({"artist_id": {"$in": track.artists}})}
 
     def add_track(self, track: Track, username: str) -> None:
         assert self.database.artists.count_documents({"artist_id": {"$in": track.artists}}) == len(track.artists)

@@ -18,3 +18,15 @@ class QuestionType(Enum):
         }
 
         return question_type2rus[self]
+
+    def to_query(self) -> dict:
+        if self == QuestionType.ARTIST_BY_INTRO:
+            return {"lyrics.lrc": True, "lyrics.lines.0.time": {"$gt": 15}}
+
+        if self == QuestionType.LINE_BY_TEXT:
+            return {"lyrics.lrc": True}
+
+        if self == QuestionType.LINE_BY_CHORUS:
+            return {"lyrics.lrc": True, "chorus": {"$ne": []}}
+
+        return {}

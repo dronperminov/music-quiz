@@ -53,9 +53,26 @@ class ArtistType(Enum):
             ArtistType.PROJECT: "проект",
             ArtistType.DUET: "дуэт",
             ArtistType.TRIO: "трио",
-            ArtistType.DJ: "ди-джей",
+            ArtistType.DJ: "диджей",
             ArtistType.VIA: "ВИА",
             ArtistType.UNKNOWN: "неизвестна" if with_unknown else ""
         }
 
         return artist_type2rus[self]
+
+    def to_title(self) -> str:
+        artist_type2title = {
+            ArtistType.SINGER_MALE: "певца",
+            ArtistType.SINGER_FEMALE: "певицу",
+            ArtistType.PERFORMER_MALE: "исполнителя",
+            ArtistType.PERFORMER_FEMALE: "исполнительницу",
+            ArtistType.BAND: "группу",
+            ArtistType.PROJECT: "проект",
+            ArtistType.DUET: "дуэт",
+            ArtistType.TRIO: "трио",
+            ArtistType.DJ: "диджея",
+            ArtistType.VIA: "ВИА",
+            ArtistType.UNKNOWN: "автора"
+        }
+
+        return artist_type2title[self]

@@ -1,0 +1,99 @@
+{% set title = "%s | Музыкальный квиз Плюшевой наковальни" % question.title %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/artists/artists.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/user/question.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+<div class="content">
+        <div class="question-title">{{question.title}}</div>
+
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="/audios/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} preload="metadata"></audio>
+
+        <div class="track">
+            <div class="track-main">
+                <div class="track-image">
+                    <img id="track-image" src="/images/tracks/default.png">
+                </div>
+                <div>
+                    <div class="track-title" id="track-title">НЕИЗВЕСТЕН</div>
+                    <div class="track-artists" id="track-artists">{% for artist_id in track.artists %}{% if loop.index0 %}, {% endif %}<a class="link" id="link-artist-{{artist_id}}">unknown</a>{% endfor %} (<span id="track-year">?</span>)</div>
+                </div>
+                <div class="track-controls">
+                    <div class="loader hidden" id="loader-{{track.track_id}}">
+                        <img src="/images/loader.svg">
+                    </div>
+
+                    <svg id="player-{{track.track_id}}-load" id="player-{{track.track_id}}-play" onclick="PlayTrack('{{track.track_id}}')" width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.495,2.573 L1.501,0.142 C0.832,-0.265 0,0.25 0,1.069 L0,5.931 C0,6.751 0.832,7.264 1.501,6.858 L5.495,4.428 C6.168,4.018 6.168,2.983 5.495,2.573" />
+                    </svg>
+
+                    <svg id="player-{{track.track_id}}-play" class="hidden" width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.495,2.573 L1.501,0.142 C0.832,-0.265 0,0.25 0,1.069 L0,5.931 C0,6.751 0.832,7.264 1.501,6.858 L5.495,4.428 C6.168,4.018 6.168,2.983 5.495,2.573" />
+                    </svg>
+
+                    <svg id="player-{{track.track_id}}-pause" class="hidden" width="1.25em" height="1.25em" viewBox="-0.7 -0.05 8.1 8.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1,0 C0.448,0 0,0.448 0,1 L0,7 C0,7.552 0.448,8 1,8 C1.552,8 2,7.552 2,7 L2,1 C2,0.448 1.552,0 1,0 M6,1 L6,7 C6,7.552 5.552,8 5,8 C4.448,8 4,7.552 4,7 L4,1 C4,0.448 4.448,0 5,0 C5.552,0 6,0.448 6,1" />
+                    </svg>
+                </div>
+                <div class="track-menu">
+                    <div class="vertical-ham" id="track-menu" disabled onclick="infos.Show('track-{{track.track_id}}')">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="player" id="player-{{track.track_id}}"></div>
+        </div>
+
+        <button class="gradient-button gradient-button-full-width" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
+
+        <div class="answer-block hidden" id="answer">
+            <div class="answer"><b>Ответ:</b> {{question.answer}}</div>
+
+            <h3>Исполнител{{ "и" if track.artists|length > 1 else "ь" }}:</h3>
+            <div id="artists"></div>
+        </div>
+    </div>
+
+    <div class="info-popup" id="info-popup"></div>
+    <div id="info-block"></div>
+
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
+    <script src="/js/utils/info_panels.js?v={{version}}"></script>
+    <script src="/js/utils/player.js?v={{version}}"></script>
+    <script src="/js/utils/player_collection.js?v={{version}}"></script>
+    <script src="/js/tracks/track.js?v={{version}}"></script>
+    <script src="/js/entities/artist.js?v={{version}}"></script>
+    <script src="/js/entities/track.js?v={{version}}"></script>
+    <script src="/js/user/question.js?v={{version}}"></script>
+    <script>
+        let players = new PlayerCollection()
+        let infos = new InfoPanels()
+
+        const track = {{jsonable_encoder(track)|tojson}}
+        const artists = [{% for artist_id in track.artists %}{{jsonable_encoder(artist_id2artist[artist_id])|tojson}},{% endfor %}]
+
+        let artistsBlock = document.getElementById("artists")
+        let infoBlock = document.getElementById("info-block")
+
+        for (let artist of artists) {
+            artist = new Artist(artist)
+            artistsBlock.appendChild(artist.Build())
+            infoBlock.appendChild(artist.BuildInfo())
+        }
+
+        infoBlock.appendChild(new Track(track).BuildInfo())
+
+        infos.Update()
+    </script>
+    {% include "components/footer.html" %}
+</body>
+</html>
