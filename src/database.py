@@ -1,5 +1,7 @@
 from pymongo import ASCENDING, MongoClient
 
+from src.entities.settings import Settings
+
 
 class Database:
     client: MongoClient = None
@@ -57,6 +59,13 @@ class Database:
         self.similar_artist_groups = database["similar_artist_groups"]
         self.similar_artist_groups.create_index([("group_id", ASCENDING)], unique=True)
         self.similar_artist_groups.create_index([("creator", ASCENDING)])
+
+    def get_settings(self, username: str) -> Settings:
+        settings = self.settings.find_one_and_update({"username": username}, {"$setOnInsert": Settings.default(username).to_dict()}, upsert=True, return_document=True)
+        return Settings.from_dict(settings)
+
+    def update_settings(self, settings: Settings) -> None:
+        self.settings.update_one({"username": settings.username}, {"$set": settings.to_dict()})
 
     def drop(self) -> None:
         self.client.drop_database(self.database_name)

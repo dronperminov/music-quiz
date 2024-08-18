@@ -1,0 +1,52 @@
+{% set title = "Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/user/settings.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Настройки</h1>
+
+        <div class="profile">
+            <img src="{{user.avatar_url}}">
+        </div>
+
+        <div class="profile-name">{{user.full_name}}</div>
+
+        <h3>Общие настройки</h3>
+
+        <div class="settings-block">
+            <div class="settings-item settings-checkbox-item">
+                <div class="settings-name">
+                    <label for="show-progress">Показывать прогресс</label>
+                </div>
+                <div class="settings-checkbox">
+                    <label class="switch-checkbox">
+                        <input type="checkbox" id="show-progress"{% if settings.show_progress %}checked{% endif %} onchange="UpdateMainSettings()">
+                        <span class="switch-checkbox-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-checkbox-item">
+                <div class="settings-name">
+                    <label for="autoplay">Автовоспроизведение аудио</label>
+                </div>
+                <div class="settings-checkbox">
+                    <label class="switch-checkbox">
+                        <input type="checkbox" id="autoplay"{% if settings.autoplay %}checked{% endif %} onchange="UpdateMainSettings()">
+                        <span class="switch-checkbox-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/user/settings.js?v={{version}}"></script>
+    {% include "components/footer.html" %}
+</body>
+</html>

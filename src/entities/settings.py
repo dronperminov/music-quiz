@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from src.entities.question_settings import QuestionSettings
+from src.query_params.main_settings import MainSettings
 
 
 @dataclass
@@ -30,3 +31,19 @@ class Settings:
             autoplay=data["autoplay"],
             updated_at=data["updated_at"]
         )
+
+    @classmethod
+    def default(cls: "Settings", username: str) -> "Settings":
+        return cls(
+            username=username,
+            show_progress=True,
+            question_settings=QuestionSettings.default(),
+            autoplay=True,
+            updated_at=datetime.now().replace(microsecond=0)
+        )
+
+    def update_main(self, main_settings: MainSettings) -> "Settings":
+        self.autoplay = main_settings.autoplay
+        self.show_progress = main_settings.show_progress
+        self.updated_at = datetime.now()
+        return self
