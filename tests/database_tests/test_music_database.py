@@ -3,6 +3,7 @@ from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
 from src.enums import ArtistType, Genre, Language
+from src.query_params.artists_search import ArtistsSearch
 from tests.database_tests.abstract_music_database_test import AbstractTestMusicDatabase
 
 
@@ -131,3 +132,22 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
 
         self.assertEqual(self.music_database.get_artists_count(), 7)
         self.assertEqual(self.music_database.get_tracks_count(), 9)
+
+    def test_8_search_artists(self) -> None:
+        total, artists = self.music_database.search_artists(ArtistsSearch(query="as", order_type=-1, order="listen_count"))
+        self.assertEqual(total, 2)
+        self.assertEqual(len(artists), 2)
+        self.assertEqual(artists[0].name, "ANNA ASTI")
+        self.assertEqual(artists[1].name, "RasKar")
+
+        total, artists = self.music_database.search_artists(ArtistsSearch(page_size=3, page=1, order="name", order_type=1))
+        self.assertEqual(total, 7)
+        self.assertEqual(len(artists), 3)
+        self.assertEqual(artists[0].name, "Noize MC")
+        self.assertEqual(artists[2].name, "Каста")
+
+        total, artists = self.music_database.search_artists(ArtistsSearch(listen_count=[2_000_000, 4_500_000], order_type=1, order="tracks_count"))
+        self.assertEqual(total, 3)
+        self.assertEqual(len(artists), 3)
+        self.assertEqual(artists[1].name, "Noize MC")
+        self.assertEqual(artists[2].name, "Каста")

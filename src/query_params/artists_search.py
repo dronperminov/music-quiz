@@ -11,7 +11,7 @@ class ArtistsSearch:
     query: str = ""
     order: str = "listen_count"
     order_type: int = -1
-    listen_count: List[Union[str, float]] = field(default_factory=lambda: ["", ""])
+    listen_count: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
     genres: Dict[Genre, bool] = field(default_factory=dict)
     artist_type: Dict[ArtistType, bool] = field(default_factory=dict)
     artists_count: Dict[ArtistsCount, bool] = field(default_factory=dict)
@@ -49,14 +49,14 @@ class ArtistsSearch:
 
         return {"name": {"$regex": re.escape(self.query), "$options": "i"}}
 
-    def __to_interval_query(self, name: str, interval: List[Union[str, float]]) -> dict:
+    def __to_interval_query(self, name: str, interval: List[Union[str, float, int]]) -> dict:
         value_from, value_to = interval
         query = {}
 
-        if isinstance(value_from, float):
+        if isinstance(value_from, float) or isinstance(value_from, int):
             query["$gte"] = value_from
 
-        if isinstance(value_to, float):
+        if isinstance(value_to, float) or isinstance(value_to, int):
             query["$lte"] = value_to
 
         return {name: query} if query else {}
