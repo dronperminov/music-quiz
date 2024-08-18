@@ -182,20 +182,47 @@ iniut[type="search"]::-webkit-search-decoration {
 }
 
 .balance-input {
+    font-size: 0.9em;
+}
+
+.balance-input-mode {
+    margin-top: 0.5em;
+    font-weight: bold;
+}
+
+.balance-input-balance-mode {
     padding: 0.8em 0 0.4em 0;
     display: grid;
     align-items: center;
     grid-template-columns: 1fr 15em 1.8em;
     grid-gap: 0.8em 0.5em;
-    font-size: 0.9em;
+    padding: 0.5em;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5em;
+    margin-top: 0.5em;
 }
 
-.balance-input input {
+.balance-input-balance-mode input {
     width: 100%;
 }
 
 .balance-input-option-name {
     text-align: right;
+    font-weight: bold;
+}
+
+.balance-input-checkbox-mode {
+    display: grid;
+    grid-template-columns: 2em 1fr;
+    align-items: center;
+    grid-gap: 0.5em 0.2em;
+    padding: 0.5em;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5em;
+    margin-top: 0.5em;
+}
+
+.balance-input-checkbox-mode label {
     font-weight: bold;
 }
 

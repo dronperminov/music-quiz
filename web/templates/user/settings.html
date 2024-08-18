@@ -62,8 +62,18 @@
             <div class="settings-line"></div>
 
             <div class="settings-item">
-                <div><b onclick="genresInput.Clear()">Жанры</b></div>
+                <div><b>Жанры</b></div>
+
                 <div class="balance-input" id="genres">
+                    <div class="balance-input-mode">
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="genres-mode">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="genres-mode">Режим баланса</label>
+                    </div>
+
+                    <div class="balance-input-balance-mode">
                     {% for genre in Genre %}
                         <div class="balance-input-option-name"><label for="genres-{{genre.value}}">{{genre.to_rus()}}</label></div>
                         <div class="balance-input-option-track">
@@ -71,6 +81,16 @@
                         </div>
                         <div class="balance-input-option-value" id="genres-{{genre.value}}-value">50</div>
                     {% endfor %}
+                    </div>
+                    <div class="balance-input-checkbox-mode">
+                    {% for genre in Genre %}
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="genres-{{genre.value}}-checkbox">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="genres-{{genre.value}}-checkbox">{{genre.to_rus()}}</label>
+                    {% endfor %}
+                    </div>
                 </div>
                 <div class="error" id="genres-error"></div>
             </div>
@@ -78,8 +98,18 @@
             <div class="settings-line"></div>
 
             <div class="settings-item">
-                <div><b onclick="yearsInput.Clear()">Годы выхода</b></div>
+                <div><b>Годы выхода</b></div>
+
                 <div class="balance-input" id="years">
+                    <div class="balance-input-mode">
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="years-mode">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="years-mode">Режим баланса</label>
+                    </div>
+
+                    <div class="balance-input-balance-mode">
                     {% for start_year, end_year in question_settings.year_intervals() %}
                         <div class="balance-input-option-name"><label for="years-{{start_year}}-{{end_year}}">{{start_year if start_year else "..."}} - {{end_year if end_year else today.year}}</label></div>
                         <div class="balance-input-option-track">
@@ -87,6 +117,16 @@
                         </div>
                         <div class="balance-input-option-value" id="years-{{start_year}}-{{end_year}}-value">50</div>
                     {% endfor %}
+                    </div>
+                    <div class="balance-input-checkbox-mode">
+                    {% for start_year, end_year in question_settings.year_intervals() %}
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="years-{{start_year}}-{{end_year}}-checkbox">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="years-{{start_year}}-{{end_year}}-checkbox">{{start_year if start_year else "..."}} - {{end_year if end_year else today.year}}</label>
+                    {% endfor %}
+                    </div>
                 </div>
                 <div class="error" id="years-error"></div>
             </div>
@@ -94,8 +134,18 @@
             <div class="settings-line"></div>
 
             <div class="settings-item">
-                <div><b onclick="languagesInput.Clear()">Язык</b></div>
+                <div><b>Язык</b></div>
+
                 <div class="balance-input" id="languages">
+                    <div class="balance-input-mode">
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="languages-mode">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="languages-mode">Режим баланса</label>
+                    </div>
+
+                    <div class="balance-input-balance-mode">
                     {% for language in Language %}
                     {% if language != Language.UNKNOWN %}
                         <div class="balance-input-option-name"><label for="languages-{{language.value}}">{{language.to_rus()}}</label></div>
@@ -105,6 +155,18 @@
                         <div class="balance-input-option-value" id="languages-{{language.value}}-value">50</div>
                     {% endif %}
                     {% endfor %}
+                    </div>
+                    <div class="balance-input-checkbox-mode">
+                    {% for language in Language %}
+                    {% if language != Language.UNKNOWN %}
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="languages-{{language.value}}-checkbox">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="languages-{{language.value}}-checkbox">{{language.to_rus()}}</label>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
                 </div>
                 <div class="error" id="languages-error"></div>
             </div>
@@ -112,8 +174,18 @@
             <div class="settings-line"></div>
 
             <div class="settings-item">
-                <div><b onclick="artistsCountInput.Clear()">Треки (по количеству исполнителей)</b></div>
+                <div><b>Треки (по количеству исполнителей)</b></div>
+
                 <div class="balance-input" id="artists-count">
+                    <div class="balance-input-mode">
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="artists-count-mode">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="artists-count-mode">Режим баланса</label>
+                    </div>
+
+                    <div class="balance-input-balance-mode">
                     {% for artists_count in ArtistsCount %}
                         <div class="balance-input-option-name"><label for="artists-count-{{artists_count.value}}">{{artists_count.to_rus()}}</label></div>
                         <div class="balance-input-option-track">
@@ -121,6 +193,16 @@
                         </div>
                         <div class="balance-input-option-value" id="artists-count-{{artists_count.value}}-value">50</div>
                     {% endfor %}
+                    </div>
+                    <div class="balance-input-checkbox-mode">
+                    {% for artists_count in ArtistsCount %}
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="artists-count-{{artists_count.value}}-checkbox">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="artists-count-{{artists_count.value}}-checkbox">{{artists_count.to_rus()}}</label>
+                    {% endfor %}
+                    </div>
                 </div>
                 <div class="error" id="artists-count-error"></div>
             </div>
@@ -144,9 +226,18 @@
             <div class="settings-line"></div>
 
             <div class="settings-item">
-                <div><b onclick="questionTypesInput.Clear()">Вопросы</b></div>
+                <div><b>Вопросы</b></div>
 
                 <div class="balance-input" id="question-types">
+                    <div class="balance-input-mode">
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="question-types-mode">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="question-types-mode">Режим баланса</label>
+                    </div>
+
+                    <div class="balance-input-balance-mode">
                     {% for question_type in QuestionType %}
                         <div class="balance-input-option-name"><label for="question-types-{{question_type.value}}">{{question_type.to_rus()}}</label></div>
                         <div class="balance-input-option-track">
@@ -154,6 +245,16 @@
                         </div>
                         <div class="balance-input-option-value" id="question-types-{{question_type.value}}-value">50</div>
                     {% endfor %}
+                    </div>
+                    <div class="balance-input-checkbox-mode">
+                    {% for question_type in QuestionType %}
+                        <label class="switch-checkbox">
+                            <input type="checkbox" id="question-types-{{question_type.value}}-checkbox">
+                            <span class="switch-checkbox-slider"></span>
+                        </label>
+                        <label for="question-types-{{question_type.value}}-checkbox">{{question_type.to_rus()}}</label>
+                    {% endfor %}
+                    </div>
                 </div>
                 <div class="error" id="question-types-error"></div>
             </div>
@@ -190,20 +291,6 @@
         <h4>Модификация треков</h4>
 
         <div class="settings-block">
-            <div class="settings-item settings-checkbox-item">
-                <div class="settings-name">
-                    <label for="change-playback-rate"><b>Изменять скорость трека</b></label>
-                </div>
-                <div class="settings-checkbox">
-                    <label class="switch-checkbox">
-                        <input type="checkbox" id="change-playback-rate"{% if question_settings.track_modifications.change_playback_rate %}checked{% endif %} onchange="ChangeSetting()">
-                        <span class="switch-checkbox-slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="settings-line"></div>
-
             <div class="settings-item settings-input-item">
                 <div class="settings-name">
                     <label id="track-modifications-probability-label" for="track-modifications-probability">Вероятность модификаций (%):</label>
@@ -215,6 +302,20 @@
 
             <div class="settings-item-description">Вероятность применения модификации трека.</div>
             <div class="error" id="track-modifications-probability-error"></div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-checkbox-item">
+                <div class="settings-name">
+                    <label for="change-playback-rate"><b>Изменять скорость трека</b></label>
+                </div>
+                <div class="settings-checkbox">
+                    <label class="switch-checkbox">
+                        <input type="checkbox" id="change-playback-rate"{% if question_settings.track_modifications.change_playback_rate %}checked{% endif %} onchange="ChangeSetting()">
+                        <span class="switch-checkbox-slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <button class="gradient-button hidden" id="save-button" onclick="UpdateQuestionSettings()">Сохранить настройки вопросов</button>
