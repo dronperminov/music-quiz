@@ -1,4 +1,4 @@
-function IntervalInput(blockId, value = null) {
+function IntervalInput(blockId, value = null, onChange = null) {
     this.block = document.getElementById(blockId)
     this.error = document.getElementById(`${blockId}-error`)
     this.scale2number = {"": 1, "K": 1000, "M": 1000000}
@@ -7,14 +7,18 @@ function IntervalInput(blockId, value = null) {
     this.minInput = inputs[0]
     this.maxInput = inputs[1]
 
-    this.minInput.addEventListener("input", () => this.ClearErrorInput(this.minInput))
-    this.maxInput.addEventListener("input", () => this.ClearErrorInput(this.maxInput))
+    for (let input of inputs) {
+        input.addEventListener("input", () => this.ClearErrorInput(input))
+
+        if (onChange !== null)
+            input.addEventListener("change", () => onChange())
+    }
 
     this.SetValue(value)
 }
 
 IntervalInput.prototype.ClearErrorInput = function(input) {
-    input.classList.remove("input-error")
+    input.parentNode.classList.remove("error-input")
     this.error.innerText = ""
 }
 
@@ -42,7 +46,7 @@ IntervalInput.prototype.GetInputValue = function(input, message) {
     }
 
     input.focus()
-    input.classList.add("input-error")
+    input.parentNode.classList.add("error-input")
 
     throw new Error(message)
 }
@@ -82,6 +86,7 @@ IntervalInput.prototype.GetValue = function() {
     }
     catch (error) {
         this.error.innerText = error.message
+        this.block.scrollIntoView({behavior: 'smooth'})
         return null
     }
 }

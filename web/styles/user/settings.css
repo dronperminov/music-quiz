@@ -29,18 +29,36 @@
 }
 
 .settings-item {
-    padding: 0.4em 0;
+    padding: 0.7em 0;
+}
+
+.settings-item-description {
+    color: var(--subtext-color);
+    font-size: 0.7em;
+    margin-top: -0.5em;
+    margin-bottom: 0.5em;
 }
 
 .settings-checkbox-item {
     display: grid;
     grid-template-columns: 1fr 2em;
     align-items: center;
+    grid-gap: 0.6em;
+}
+
+.settings-input-item {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    align-items: center;
     grid-gap: 0.5em;
 }
 
 .settings-checkbox-item .settings-name {
     border-right: 1px solid var(--border-color);
+}
+
+.settings-item .settings-name {
+    font-weight: bold;
 }
 
 .settings-item .settings-name label {
@@ -52,7 +70,16 @@
     padding-top: 0.3em;
 }
 
+.settings-input-item select {
+    width: 100%;
+}
+
 .settings-line {
     height: 1px;
     background-color: var(--border-color);
+}
+
+.gradient-button {
+    width: 100%;
+    padding: 0.8em;
 }

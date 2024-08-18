@@ -6,7 +6,7 @@
     border-bottom-width: 1px;
     border-bottom-style: solid;
     border-color: transparent;
-    padding: 1px 0;
+    padding: 0;
     background: transparent;
     outline: none;
     font-size: 1em;
@@ -151,6 +151,12 @@ iniut[type="search"]::-webkit-search-decoration {
     outline: none;
 }
 
+.gradient-button[disabled] {
+    background: var(--disabled-color);
+    border-color: var(--border-color);
+    color: var(--subtext-color);
+}
+
 .interval-input {
     padding-top: 0.4em;
     display: grid;
@@ -175,9 +181,22 @@ iniut[type="search"]::-webkit-search-decoration {
     border: none;
 }
 
-.input-error, .input-error:hover, .input-error:focus {
-    color: var(--error-color) !important;
-    border-color: var(--error-color) !important;
+.balance-input {
+    padding: 0.8em 0 0.4em 0;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 15em 1.8em;
+    grid-gap: 0.8em 0.5em;
+    font-size: 0.9em;
+}
+
+.balance-input input {
+    width: 100%;
+}
+
+.balance-input-option-name {
+    text-align: right;
+    font-weight: bold;
 }
 
 .icon-input {
@@ -201,10 +220,13 @@ iniut[type="search"]::-webkit-search-decoration {
     color: var(--icon-input-input-color);
 }
 
-
 .error-input {
     color: var(--error-color) !important;
     border-color: var(--error-color) !important;
+}
+
+.error-input * {
+    color: var(--error-color) !important;
 }
 
 .error-icon svg {

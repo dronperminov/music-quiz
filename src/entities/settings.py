@@ -47,3 +47,8 @@ class Settings:
         self.show_progress = main_settings.show_progress
         self.updated_at = datetime.now()
         return self
+
+    def update_question(self, question_settings: QuestionSettings) -> "Settings":
+        self.question_settings = question_settings
+        self.updated_at = datetime.now()
+        return self

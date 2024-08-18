@@ -12,7 +12,7 @@ QUESTION_YEARS = ["", 1980, 1990, 2000, 2010, 2015, 2020, ""]
 class QuestionSettings:
     answer_time: float
     genres: Dict[Genre, float]
-    years: Dict[Tuple[Union[int, str], Union[int, str]], float]
+    years: Dict[Union[Tuple[Union[int, str], Union[int, str]], str], float]
     languages: Dict[Language, float]
     artists_count: Dict[ArtistsCount, float]
     listen_count: Tuple[Union[int, str], Union[int, str]]
@@ -21,6 +21,9 @@ class QuestionSettings:
     black_list: List[int]
     track_modifications: TrackModificationSettings
     repeat_incorrect_probability: float
+
+    def __post_init__(self) -> None:
+        self.years = {self.__fix_years_key(years): value for years, value in self.years.items()}
 
     def to_dict(self) -> dict:
         return {
@@ -77,5 +80,14 @@ class QuestionSettings:
 
         for i, year in enumerate(QUESTION_YEARS[:-1]):
             years.append((year, QUESTION_YEARS[i + 1] - 1 if QUESTION_YEARS[i + 1] != "" else ""))
+
+        return years
+
+    def __fix_years_key(self, years: Union[Tuple[Union[int, str], Union[int, str]], str]) -> Tuple[Union[int, str], Union[int, str]]:
+        if isinstance(years, str):
+            start, end = years.split("-")
+            start = "" if start == "" else int(start)
+            end = "" if end == "" else int(end)
+            return start, end
 
         return years
