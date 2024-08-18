@@ -19,23 +19,26 @@ function GetSearchParams() {
 function PushUrlParams(params) {
     let url = new URL(window.location.href)
 
-    if (params === null) {
-        let keys = []
-        for (let [key, value] of url.searchParams.entries())
-            keys.push(key)
+    let keys = []
+    for (let [key, value] of url.searchParams.entries())
+        keys.push(key)
 
-        for (let key of keys)
-            url.searchParams.delete(key)
-    }
-    else {
+    for (let key of keys)
+        url.searchParams.delete(key)
+
+    if (params !== null) {
         if (params.query !== "")
             url.searchParams.set("query", params.query)
 
-        for (let key of ["order", "order_type", "listen_count"])
+        for (let key of ["order", "order_type"])
             url.searchParams.set(key, params[key])
 
-        for (let key of ["listen_count", "genres", "artist_type", "artists_count", "language"])
-            url.searchParams.set(key, JSON.stringify(params[key]))
+        if (params.listen_count[0] !== "" || params.listen_count[1] !== "")
+            url.searchParams.set("listen_count", JSON.stringify(params.listen_count))
+
+        for (let key of ["genres", "artist_type", "artists_count", "language"])
+            if (Object.keys(params[key]).length > 0)
+                url.searchParams.set(key, JSON.stringify(params[key]))
     }
 
     window.history.pushState(null, '', url.toString())
