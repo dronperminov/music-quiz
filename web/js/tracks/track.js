@@ -3,10 +3,14 @@ function LoadTrack(trackId) {
     let loader = document.getElementById(`loader-${trackId}`)
     let loadIcon = document.getElementById(`player-${trackId}-load`)
 
-    if (audio.hasAttribute("src"))
+    if (audio.hasAttribute("src")) {
+        loader.classList.add("hidden")
         return new Promise((resolve, reject) => resolve(true))
+    }
 
     if (audio.hasAttribute("data-src")) {
+        loader.classList.add("hidden")
+
         return new Promise((resolve, reject) => {
             audio.src = audio.getAttribute("data-src")
             resolve(true)

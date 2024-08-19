@@ -30,7 +30,9 @@ function ShowAnswer() {
     answerBlock.classList.remove("hidden")
 
     let player = players.GetPlayer()
-    player.SetTimecode("")
+
+    if (player !== null)
+        player.SetTimecode("")
 }
 
 function SendAnswer(correct) {

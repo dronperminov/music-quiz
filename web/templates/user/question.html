@@ -1,5 +1,6 @@
 {% set title = "%s | Музыкальный квиз Плюшевой наковальни" % question.title %}
 {% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/lyrics_updater.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
@@ -12,7 +13,7 @@
 <div class="content">
         <div class="question-title">{{question.title}}</div>
 
-        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="/audios/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" preload="metadata"></audio>
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" preload="metadata"></audio>
 
         <div class="track" id="track-{{track.track_id}}">
             <div class="track-main">
@@ -67,6 +68,18 @@
 
             <h3>Исполнител{{ "и" if track.artists|length > 1 else "ь" }}:</h3>
             <div id="artists"></div>
+
+            {% if track.lyrics and track.lyrics.lrc %}
+            <h3>Текст</h3>
+            <div class="lyrics-updater" id="lyrics-updater-{{track.track_id}}">
+                <div class="lyrics-lines">
+                    {% set indices = track.lyrics.get_chorus_indices() %}
+                    {% for line in track.lyrics.lines %}
+                    <div class="lyrics-line{% if loop.index0 in indices %} lyrics-line-chorus{% endif %}" data-time="{{line.time}}">{{line.text}}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -77,6 +90,7 @@
     <script src="/js/utils/fetch.js?v={{version}}"></script>
     <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
     <script src="/js/utils/info_panels.js?v={{version}}"></script>
+    <script src="/js/utils/lyrics_updater.js?v={{version}}"></script>
     <script src="/js/utils/player.js?v={{version}}"></script>
     <script src="/js/utils/parse.js?v={{version}}"></script>
     <script src="/js/utils/player_collection.js?v={{version}}"></script>

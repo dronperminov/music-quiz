@@ -3,7 +3,7 @@ function PlayerCollection() {
 }
 
 PlayerCollection.prototype.Add = function(trackId, audio) {
-    let player = new Player(`player-${trackId}`, audio)
+    let player = new Player(trackId, audio)
     this.players.push(player)
     return player
 }
@@ -15,5 +15,8 @@ PlayerCollection.prototype.Pause = function(audio) {
 }
 
 PlayerCollection.prototype.GetPlayer = function() {
+    if (this.players.length == 0)
+        return null
+
     return this.players[this.players.length - 1]
 }

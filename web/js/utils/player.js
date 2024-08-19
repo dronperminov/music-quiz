@@ -1,8 +1,7 @@
-function Player(playerId, audio) {
-    this.block = document.getElementById(playerId)
+function Player(trackId, audio) {
     this.audio = audio
 
-    this.Build(playerId)
+    this.Build(trackId)
     this.InitEvents()
     this.InitMediaSessionHandlers()
     this.InitAudioParams()
@@ -10,15 +9,22 @@ function Player(playerId, audio) {
     setInterval(() => this.UpdateLoop(), 10)
 }
 
-Player.prototype.Build = function(playerId) {
-    this.loadIcon = document.getElementById(`${playerId}-load`)
-    this.playIcon = document.getElementById(`${playerId}-play`)
-    this.pauseIcon = document.getElementById(`${playerId}-pause`)
+Player.prototype.Build = function(trackId) {
+    this.block = document.getElementById(`player-${trackId}`)
+
+    this.loadIcon = document.getElementById(`player-${trackId}-load`)
+    this.playIcon = document.getElementById(`player-${trackId}-play`)
+    this.pauseIcon = document.getElementById(`player-${trackId}-pause`)
 
     this.progress = this.BuildElement("player-progress", this.block)
     this.progressBar = this.BuildElement("player-progress-bar", this.progress)
     this.progressCurrent = this.BuildElement("player-progress-current", this.progressBar)
     this.time = this.BuildElement("player-time", this.block)
+
+    this.lyricsUpdater = null
+
+    if (document.getElementById(`lyrics-updater-${trackId}`) !== null)
+        this.lyricsUpdater = new LyricsUpdater(`lyrics-updater-${trackId}`, (seek) => this.Seek(seek))
 }
 
 Player.prototype.InitEvents = function() {
@@ -114,6 +120,9 @@ Player.prototype.UpdateProgressBar = function() {
 
     let currentTime = Math.max(this.audio.currentTime - this.startTime, 0)
     let duration = Math.max(this.endTime - this.startTime, 0.01)
+
+    if (this.lyricsUpdater !== null)
+        this.lyricsUpdater.Update(this.audio.currentTime)
 
     this.progressCurrent.style.width = `${currentTime / duration * 100}%`
     this.time.innerText = `${this.TimeToString(currentTime)} / ${this.TimeToString(duration)}`
