@@ -26,7 +26,7 @@ class QuestionSettings:
     def __post_init__(self) -> None:
         self.genres = {genre: value for genre, value in self.genres.items() if value > 0}
         self.years = {self.__fix_years_key(years): value for years, value in self.years.items() if value > 0}
-        self.languages = {language: value for language, value in self.languages.items()}
+        self.languages = {language: value for language, value in self.languages.items() if value > 0}
         self.artists_count = {artists_count: value for artists_count, value in self.artists_count.items() if value > 0}
         self.question_types = {question_type: value for question_type, value in self.question_types.items() if value > 0}
 
