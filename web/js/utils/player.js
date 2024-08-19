@@ -4,6 +4,7 @@ function Player(playerId, audio) {
 
     this.Build(playerId)
     this.InitEvents()
+    this.InitMediaSessionHandlers()
     this.InitAudioParams()
 
     setInterval(() => this.UpdateLoop(), 10)
@@ -21,18 +22,8 @@ Player.prototype.Build = function(playerId) {
 }
 
 Player.prototype.InitEvents = function() {
-    this.audio.addEventListener("pause", () => {
-        this.playIcon.classList.remove("hidden")
-        this.pauseIcon.classList.add("hidden")
-        this.loadIcon.classList.add("hidden")
-    })
-
-    this.audio.addEventListener("play", () => {
-        this.playIcon.classList.add("hidden")
-        this.pauseIcon.classList.remove("hidden")
-        this.loadIcon.classList.add("hidden")
-    })
-
+    this.audio.addEventListener("pause", () => this.PauseEvent())
+    this.audio.addEventListener("play", () => this.PlayEvent())
     this.audio.addEventListener("seeking", () => this.UpdateProgressBar())
 
     this.playIcon.addEventListener("click", () => this.Play())
@@ -47,6 +38,13 @@ Player.prototype.InitEvents = function() {
     this.progress.addEventListener("mousemove", (e) => this.ProgressMouseMove(this.PointToSeek(e)))
     this.progress.addEventListener("mouseup", (e) => this.ProgressMouseUp())
     this.progress.addEventListener("mouseleave", (e) => this.ProgressMouseUp())
+}
+
+Player.prototype.InitMediaSessionHandlers = function() {
+    if (!("mediaSession" in navigator))
+        return
+
+    navigator.mediaSession.setActionHandler("seekto", details => this.Seek(this.startTime + details.seekTime))
 }
 
 Player.prototype.InitAudioParams = function() {
@@ -119,6 +117,9 @@ Player.prototype.UpdateProgressBar = function() {
 
     this.progressCurrent.style.width = `${currentTime / duration * 100}%`
     this.time.innerText = `${this.TimeToString(currentTime)} / ${this.TimeToString(duration)}`
+
+    if ("mediaSession" in navigator)
+        navigator.mediaSession.setPositionState({duration: duration, playbackRate: this.audio.playbackRate, position: currentTime})
 }
 
 Player.prototype.ProgressMouseDown = function(seek) {
@@ -142,4 +143,22 @@ Player.prototype.ProgressMouseUp = function() {
 
     if (!this.paused)
         this.audio.play()
+}
+
+Player.prototype.PlayEvent = function() {
+    this.playIcon.classList.add("hidden")
+    this.pauseIcon.classList.remove("hidden")
+    this.loadIcon.classList.add("hidden")
+
+    if ("mediaSession" in navigator)
+        navigator.mediaSession.playbackState = "playing"
+}
+
+Player.prototype.PauseEvent = function() {
+    this.playIcon.classList.remove("hidden")
+    this.pauseIcon.classList.add("hidden")
+    this.loadIcon.classList.add("hidden")
+
+    if ("mediaSession" in navigator)
+        navigator.mediaSession.playbackState = "paused"
 }
