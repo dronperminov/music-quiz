@@ -323,6 +323,7 @@ h1 + .description {
     bottom: 15px;
     opacity: 0;
     padding: 0.8em 1em;
+    z-index: 9999;
     background-color: var(--block-background);
     border: 1px solid var(--border-color);
     border-radius: 0.8em;
