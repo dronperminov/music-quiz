@@ -38,7 +38,7 @@
 
             <div class="track" id="track-{{track.track_id}}">
                 <div class="track-main">
-                    <div class="track-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy"></div>
+                    <div class="track-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy" onclick="PlayPauseTrack('{{track.track_id}}')"></div>
                     <div>
                         <div class="track-title">{{track.title}}</div>
                         <div class="track-artists">

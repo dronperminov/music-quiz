@@ -15,6 +15,7 @@
     width: 100%;
     border-radius: 1.1em;
     vertical-align: top;
+    cursor: pointer;
 }
 
 .track-title {

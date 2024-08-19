@@ -46,6 +46,20 @@ function PlayTrack(trackId) {
     LoadTrack(trackId)
 }
 
+function PlayPauseTrack(trackId) {
+    let audio = document.getElementById(`audio-${trackId}`)
+
+    if (!audio.classList.contains("loaded")) {
+        PlayTrack(trackId)
+    }
+    else if (audio.paused) {
+        audio.play()
+    }
+    else {
+        audio.pause()
+    }
+}
+
 function LoadedMetadata(trackId, audio) {
     let player = players.Add(trackId, audio)
     let playResult = player.Play()
