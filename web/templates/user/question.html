@@ -12,7 +12,7 @@
 <div class="content">
         <div class="question-title">{{question.title}}</div>
 
-        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="/audios/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} preload="metadata"></audio>
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="/audios/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" preload="metadata"></audio>
 
         <div class="track">
             <div class="track-main">

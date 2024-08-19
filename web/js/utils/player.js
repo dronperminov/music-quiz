@@ -4,6 +4,7 @@ function Player(playerId, audio) {
 
     this.Build(playerId)
     this.InitEvents()
+    this.InitAudioParams()
 
     setInterval(() => this.UpdateLoop(), 10)
 }
@@ -32,6 +33,8 @@ Player.prototype.InitEvents = function() {
         this.loadIcon.classList.add("hidden")
     })
 
+    this.audio.addEventListener("seeking", () => this.UpdateProgressBar())
+
     this.playIcon.addEventListener("click", () => this.Play())
     this.pauseIcon.addEventListener("click", () => this.Pause())
 
@@ -44,6 +47,11 @@ Player.prototype.InitEvents = function() {
     this.progress.addEventListener("mousemove", (e) => this.ProgressMouseMove(this.GetPoint(e)))
     this.progress.addEventListener("mouseup", (e) => this.ProgressMouseUp())
     this.progress.addEventListener("mouseleave", (e) => this.ProgressMouseUp())
+}
+
+Player.prototype.InitAudioParams = function() {
+    let seek = this.audio.hasAttribute("data-seek") ? +this.audio.getAttribute("data-seek") : 0
+    this.Seek(seek)
 }
 
 Player.prototype.BuildElement = function(className, parent) {
@@ -72,6 +80,10 @@ Player.prototype.Pause = function() {
     return this.audio.pause()
 }
 
+Player.prototype.Seek = function(seek) {
+    this.audio.currentTime = Math.max(0, Math.min(this.audio.duration, seek))
+}
+
 Player.prototype.GetPoint = function(e) {
     if (e.touches)
         return e.touches[0].clientX - this.progress.offsetLeft
@@ -94,8 +106,6 @@ Player.prototype.ProgressMouseDown = function(x) {
     let part = Math.max(0, Math.min(1, x / this.progressBar.clientWidth))
     this.audio.currentTime = part * this.audio.duration
     this.audio.pause()
-
-    this.UpdateProgressBar()
 }
 
 Player.prototype.ProgressMouseMove = function(x) {
@@ -104,7 +114,6 @@ Player.prototype.ProgressMouseMove = function(x) {
 
     let part = Math.max(0, Math.min(1, x / this.progressBar.clientWidth))
     this.audio.currentTime = part * this.audio.duration
-    this.UpdateProgressBar()
 }
 
 Player.prototype.ProgressMouseUp = function() {
