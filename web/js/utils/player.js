@@ -15,6 +15,7 @@ Player.prototype.Build = function(trackId) {
     this.loadIcon = document.getElementById(`player-${trackId}-load`)
     this.playIcon = document.getElementById(`player-${trackId}-play`)
     this.pauseIcon = document.getElementById(`player-${trackId}-pause`)
+    this.lyricsIcon = document.getElementById(`player-${trackId}-lyrics`)
 
     this.progress = this.BuildElement("player-progress", this.block)
     this.progressBar = this.BuildElement("player-progress-bar", this.progress)
@@ -23,8 +24,9 @@ Player.prototype.Build = function(trackId) {
 
     this.lyricsUpdater = null
 
-    if (document.getElementById(`lyrics-updater-${trackId}`) !== null)
+    if (document.getElementById(`lyrics-updater-${trackId}`) !== null) {
         this.lyricsUpdater = new LyricsUpdater(`lyrics-updater-${trackId}`, (seek) => this.Seek(seek))
+    }
 }
 
 Player.prototype.InitEvents = function() {

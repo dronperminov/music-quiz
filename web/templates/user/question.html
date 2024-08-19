@@ -76,6 +76,7 @@
                     {% set indices = track.lyrics.get_chorus_indices() %}
                     {% for line in track.lyrics.lines %}
                     <div class="lyrics-line{% if loop.index0 in indices %} lyrics-line-chorus{% endif %}" data-time="{{line.time}}">{{line.text}}</div>
+                    {% if indices.get(loop.index0, -1) != indices.get(loop.index, -1) %}<br>{% endif %}
                     {% endfor %}
                 </div>
             </div>

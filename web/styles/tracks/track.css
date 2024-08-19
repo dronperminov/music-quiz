@@ -6,7 +6,7 @@
 
 .track-main {
     display: grid;
-    grid-template-columns: 5em 1fr 1.5em 1.5em;
+    grid-template-columns: 5em 1fr min-content 1.5em;
     grid-gap: 0.5em;
 }
 
@@ -35,6 +35,9 @@
     display: grid;
     align-content: center;
     justify-content: center;
+    white-space: nowrap;
+    grid-auto-flow: column;
+    grid-gap: 1em;
 }
 
 .track-controls svg {
@@ -44,6 +47,12 @@
 
 .track-controls svg:hover {
     fill: var(--main-color);
+}
+
+.track-controls .loader {
+    padding: 0;
+    height: 1.25em;
+    width: 1.25em;
 }
 
 .track-controls .loader img {
@@ -70,4 +79,8 @@
 
 .track-lyrics-line-chorus {
     color: var(--main-color);
+}
+
+.track .lyrics-updater {
+    margin-top: 1em;
 }

@@ -44,8 +44,11 @@ function PlayTrack(trackId) {
     loader.classList.remove("hidden")
     loadIcon.classList.add("hidden")
 
-    audio.addEventListener("loadedmetadata", () => LoadedMetadata(trackId, audio))
-    audio.addEventListener("play", () => players.Pause(audio))
+    if (!audio.classList.contains("event-added")) {
+        audio.classList.add("event-added")
+        audio.addEventListener("loadedmetadata", () => LoadedMetadata(trackId, audio))
+        audio.addEventListener("play", () => players.Pause(audio))
+    }
 
     SetMediaSessionMetadata(trackId)
     LoadTrack(trackId)

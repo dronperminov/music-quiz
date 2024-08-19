@@ -48,3 +48,7 @@
     right: -2px;
     background: var(--player-progress-current-color);
 }
+
+.player-showed-lyrics {
+    fill: var(--player-progress-current-color) !important;
+}

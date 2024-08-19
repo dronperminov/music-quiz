@@ -1,5 +1,7 @@
 function LyricsUpdater(blockId, seek, deltaTime = 4000) {
     this.block = document.getElementById(blockId)
+    this.block.classList.remove("lyrics-updater-disabled")
+
     this.deltaTime = deltaTime
     this.wheelTime = null
 
@@ -50,4 +52,8 @@ LyricsUpdater.prototype.Update = function(time) {
 
 LyricsUpdater.prototype.Wheel = function() {
     this.wheelTime = performance.now()
+}
+
+LyricsUpdater.prototype.Toggle = function() {
+    this.block.classList.toggle("hidden")
 }
