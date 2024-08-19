@@ -1,5 +1,7 @@
 function Search(blockId = "search", onSearch, onClear) {
     this.block = document.getElementById(blockId)
+    this.block.addEventListener("click", (e) => this.ClickBlock(e))
+
     this.onSearch = onSearch
     this.onClear = onClear
 
@@ -43,6 +45,14 @@ Search.prototype.Search = function() {
     this.queryInput.blur()
 
     this.onSearch()
+}
+
+Search.prototype.ClickBlock = function(e) {
+    if (this.clear.contains(e.target) || this.filters.contains(e.target) || this.filtersPopup.contains(e.target))
+        return
+
+    e.preventDefault()
+    this.queryInput.focus()
 }
 
 Search.prototype.QueryInput = function(e) {
