@@ -1,5 +1,7 @@
 from enum import Enum
 
+INTRO_MIN_TIME = 15
+
 
 class QuestionType(Enum):
     ARTIST_BY_TRACK = "artist_by_track"
@@ -21,7 +23,7 @@ class QuestionType(Enum):
 
     def to_query(self) -> dict:
         if self == QuestionType.ARTIST_BY_INTRO:
-            return {"lyrics.lrc": True, "lyrics.lines.0.time": {"$gt": 15}}
+            return {"lyrics.lrc": True, "lyrics.lines.0.time": {"$gt": INTRO_MIN_TIME}}
 
         if self == QuestionType.LINE_BY_TEXT:
             return {"lyrics.lrc": True}

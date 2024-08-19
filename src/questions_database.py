@@ -10,6 +10,7 @@ from src.entities.questions.artist_by_intro_question import ArtistByIntroQuestio
 from src.entities.questions.artist_by_track_question import ArtistByTrackQuestion
 from src.entities.questions.name_by_track_question import NameByTrackQuestion
 from src.entities.settings import Settings
+from src.entities.track import Track
 from src.enums import QuestionType
 
 
@@ -22,10 +23,12 @@ class QuestionsDatabase:
     def generate_question(self, settings: Settings) -> Question:
         track_ids = self.get_question_track_ids(settings.question_settings)
         track_id = random.choice(track_ids)
+        track = self.music_database.get_track(track_id=track_id)
 
         # TODO: statists, balance, etc...
-        question_type = random.choice([QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK])
-        question = self.__generate_question_by_type(question_type, track_id, settings)
+        question_types = set(settings.question_settings.question_types).intersection(track.get_question_types())
+        question_type = random.choice(list(question_types))
+        question = self.__generate_question_by_type(question_type, track, settings)
         return question
 
     def get_question_track_ids(self, settings: QuestionSettings) -> List[int]:
@@ -42,8 +45,7 @@ class QuestionsDatabase:
 
         return [track["track_id"] for track in tracks_ids]
 
-    def __generate_question_by_type(self, question_type: QuestionType, track_id: int, settings: Settings) -> Question:
-        track = self.music_database.get_track(track_id=track_id)
+    def __generate_question_by_type(self, question_type: QuestionType, track: Track, settings: Settings) -> Question:
         artist_id2artist = self.music_database.get_track_artists(track=track)
 
         if question_type == QuestionType.ARTIST_BY_TRACK:

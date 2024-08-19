@@ -4,7 +4,8 @@ from typing import List, Optional
 from src.entities.lyrics import Lyrics
 from src.entities.metadata import Metadata
 from src.entities.source import Source
-from src.enums import Genre, Language
+from src.enums import Genre, Language, QuestionType
+from src.enums.question_type import INTRO_MIN_TIME
 
 
 @dataclass
@@ -68,3 +69,19 @@ class Track:
     def format_duration(self) -> str:
         seconds = round(self.duration)
         return f"{seconds // 60:02d}:{seconds % 60:02d}"
+
+    def get_question_types(self) -> List[QuestionType]:
+        question_types = [QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK]
+
+        if not self.lyrics or not self.lyrics.lrc:
+            return question_types
+
+        question_types.append(QuestionType.LINE_BY_TEXT)
+
+        if self.lyrics.lines[0].time > INTRO_MIN_TIME:
+            question_types.append(QuestionType.ARTIST_BY_INTRO)
+
+        if self.lyrics.chorus:
+            question_types.append(QuestionType.LINE_BY_CHORUS)
+
+        return question_types
