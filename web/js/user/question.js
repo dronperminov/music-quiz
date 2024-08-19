@@ -27,3 +27,8 @@ function ShowAnswer() {
     let answerBlock = document.getElementById("answer")
     answerBlock.classList.remove("hidden")
 }
+
+function SendAnswer(correct) {
+    // TODO
+    location.reload()
+}

@@ -3,6 +3,9 @@ function LoadTrack(trackId) {
     let loader = document.getElementById(`loader-${trackId}`)
     let loadIcon = document.getElementById(`player-${trackId}-load`)
 
+    if (audio.hasAttribute("src"))
+        return new Promise((resolve, reject) => resolve(true))
+
     if (audio.hasAttribute("data-src")) {
         return new Promise((resolve, reject) => {
             audio.src = audio.getAttribute("data-src")
@@ -37,8 +40,21 @@ function PlayTrack(trackId) {
     loader.classList.remove("hidden")
     loadIcon.classList.add("hidden")
 
-    audio.addEventListener("loadedmetadata", () => players.Add(trackId, audio, true))
+    audio.addEventListener("loadedmetadata", () => LoadedMetadata(trackId, audio))
     audio.addEventListener("play", () => players.Pause(audio))
 
     LoadTrack(trackId)
+}
+
+function LoadedMetadata(trackId, audio) {
+    let player = players.Add(trackId, audio)
+    let playResult = player.Play()
+    playResult.catch(() => PlayError(trackId))
+}
+
+function PlayError(trackId) {
+    let playIcon = document.getElementById(`player-${trackId}-play`)
+    playIcon.classList.remove("hidden")
+
+    ShowNotification("Не удалось запустить трек, требуется ручное нажатие", "error-notification")
 }

@@ -13,9 +13,6 @@ Player.prototype.Build = function(playerId) {
     this.playIcon = document.getElementById(`${playerId}-play`)
     this.pauseIcon = document.getElementById(`${playerId}-pause`)
 
-    this.loadIcon.classList.add("hidden")
-    this.pauseIcon.classList.remove("hidden")
-
     this.progress = this.BuildElement("player-progress", this.block)
     this.progressBar = this.BuildElement("player-progress-bar", this.progress)
     this.progressCurrent = this.BuildElement("player-progress-current", this.progressBar)
@@ -26,11 +23,13 @@ Player.prototype.InitEvents = function() {
     this.audio.addEventListener("pause", () => {
         this.playIcon.classList.remove("hidden")
         this.pauseIcon.classList.add("hidden")
+        this.loadIcon.classList.add("hidden")
     })
 
     this.audio.addEventListener("play", () => {
         this.playIcon.classList.add("hidden")
         this.pauseIcon.classList.remove("hidden")
+        this.loadIcon.classList.add("hidden")
     })
 
     this.playIcon.addEventListener("click", () => this.Play())
@@ -66,11 +65,11 @@ Player.prototype.TimeToString = function(time) {
 }
 
 Player.prototype.Play = function() {
-    this.audio.play()
+    return this.audio.play()
 }
 
 Player.prototype.Pause = function() {
-    this.audio.pause()
+    return this.audio.pause()
 }
 
 Player.prototype.GetPoint = function(e) {

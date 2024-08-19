@@ -56,6 +56,15 @@
         <div class="answer-block hidden" id="answer">
             <div class="answer"><b>Ответ:</b> {{question.answer}}</div>
 
+            <div class="answer-buttons">
+                <div>
+                    <button class="basic-button green-button" onclick="SendAnswer(true)">Знаю</button>
+                </div>
+                <div>
+                    <button class="basic-button red-button" onclick="SendAnswer(false)">Не знаю</button>
+                </div>
+            </div>
+
             <h3>Исполнител{{ "и" if track.artists|length > 1 else "ь" }}:</h3>
             <div id="artists"></div>
         </div>
@@ -93,6 +102,8 @@
         infoBlock.appendChild(new Track(track).BuildInfo())
 
         infos.Update()
+
+        {% if settings.autoplay %}PlayTrack('{{track.track_id}}'){% endif %}
     </script>
     {% include "components/footer.html" %}
 </body>

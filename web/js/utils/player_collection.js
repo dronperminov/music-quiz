@@ -2,12 +2,10 @@ function PlayerCollection() {
     this.players = []
 }
 
-PlayerCollection.prototype.Add = function(trackId, audio, play = true) {
+PlayerCollection.prototype.Add = function(trackId, audio) {
     let player = new Player(`player-${trackId}`, audio)
     this.players.push(player)
-
-    if (play)
-        player.Play()
+    return player
 }
 
 PlayerCollection.prototype.Pause = function(audio) {

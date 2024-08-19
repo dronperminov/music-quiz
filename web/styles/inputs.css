@@ -163,6 +163,31 @@ iniut[type="search"]::-webkit-search-decoration {
     font-size: 1em !important;
 }
 
+.basic-button {
+    background: var(--block-background);
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 0.6em 0.8em;
+    border: 1px solid var(--text-color);
+    border-radius: 0.6em;
+    font-size: 1em;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+}
+
+.green-button {
+    background-color: var(--success-background);
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.red-button {
+    background-color: var(--error-background);
+    color: var(--error-color);
+    border-color: var(--error-color);
+}
+
 .interval-input {
     padding-top: 0.4em;
     display: grid;
