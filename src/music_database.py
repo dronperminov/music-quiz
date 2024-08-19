@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 import wget
+from pydub import AudioSegment
 
 from src.database import Database
 from src.entities.artist import Artist
@@ -180,10 +181,17 @@ class MusicDatabase:
         self.logger.info(f'Updated track "{track["title"]}" ({track_id}) by @{username} (keys: {[key for key in diff]})')
 
     def download_tracks(self, output_path: str, username: str) -> None:
-        tracks = list(self.database.tracks.find({"downloaded": False, "source.name": "yandex"}, {"track_id": 1, "source": 1}))
+        tracks = list(self.database.tracks.find({"downloaded": False, "source.name": "yandex"}, {"track_id": 1, "title": 1, "source": 1}))
 
         for track, info in zip(tracks, self.yandex_music_parser.get_download_info(track_ids=[track["source"]["yandex_id"] for track in tracks])):
-            info.download(os.path.join(output_path, f'{track["track_id"]}.mp3'))
+            if info is None:
+                logging.error(f'Unable download track "{track["title"]}" ({track["track_id"]})')
+                continue
+
+            track_path = os.path.join(output_path, f'{track["track_id"]}.mp3')
+            info.download(track_path)
+            sound = AudioSegment.from_file(track_path)
+            sound.export(track_path, format="mp3", bitrate="128k")
             self.update_track(track_id=track["track_id"], diff={"downloaded": {"prev": False, "new": True}}, username=username)
 
     def download_tracks_image(self, output_path: str, username: str) -> None:
