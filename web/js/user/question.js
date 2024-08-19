@@ -13,6 +13,8 @@ function ReplaceTrackData() {
         link.setAttribute("href", `/artists/${artist.artist_id}`)
         link.innerText = artist.name
     }
+
+    SetMediaSessionMetadata(track.track_id)
 }
 
 function ShowAnswer() {

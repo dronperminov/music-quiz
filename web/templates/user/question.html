@@ -14,7 +14,7 @@
 
         <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="/audios/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" preload="metadata"></audio>
 
-        <div class="track">
+        <div class="track" id="track-{{track.track_id}}">
             <div class="track-main">
                 <div class="track-image">
                     <img id="track-image" src="/images/tracks/default.png" onclick="PlayPauseTrack('{{track.track_id}}')">
@@ -103,8 +103,7 @@
         infoBlock.appendChild(new Track(track).BuildInfo())
 
         infos.Update()
-
-        {% if settings.autoplay %}PlayTrack('{{track.track_id}}'){% endif %}
+        {% if settings.autoplay %}PlayTrack({{track.track_id}}){% endif %}
     </script>
     {% include "components/footer.html" %}
 </body>
