@@ -38,19 +38,22 @@ Player.prototype.InitEvents = function() {
     this.playIcon.addEventListener("click", () => this.Play())
     this.pauseIcon.addEventListener("click", () => this.Pause())
 
-    this.progress.addEventListener("touchstart", (e) => this.ProgressMouseDown(this.GetPoint(e)))
-    this.progress.addEventListener("touchmove", (e) => this.ProgressMouseMove(this.GetPoint(e)))
+    this.progress.addEventListener("touchstart", (e) => this.ProgressMouseDown(this.PointToSeek(e)))
+    this.progress.addEventListener("touchmove", (e) => this.ProgressMouseMove(this.PointToSeek(e)))
     this.progress.addEventListener("touchend", (e) => this.ProgressMouseUp())
     this.progress.addEventListener("touchleave", (e) => this.ProgressMouseUp())
 
-    this.progress.addEventListener("mousedown", (e) => this.ProgressMouseDown(this.GetPoint(e)))
-    this.progress.addEventListener("mousemove", (e) => this.ProgressMouseMove(this.GetPoint(e)))
+    this.progress.addEventListener("mousedown", (e) => this.ProgressMouseDown(this.PointToSeek(e)))
+    this.progress.addEventListener("mousemove", (e) => this.ProgressMouseMove(this.PointToSeek(e)))
     this.progress.addEventListener("mouseup", (e) => this.ProgressMouseUp())
     this.progress.addEventListener("mouseleave", (e) => this.ProgressMouseUp())
 }
 
 Player.prototype.InitAudioParams = function() {
     let seek = this.audio.hasAttribute("data-seek") ? +this.audio.getAttribute("data-seek") : 0
+    let timecode = this.audio.hasAttribute("data-timecode") ? this.audio.getAttribute("data-timecode") : ""
+
+    this.SetTimecode(timecode)
     this.Seek(seek)
 }
 
@@ -81,39 +84,54 @@ Player.prototype.Pause = function() {
 }
 
 Player.prototype.Seek = function(seek) {
-    this.audio.currentTime = Math.max(0, Math.min(this.audio.duration, seek))
+    this.audio.currentTime = Math.max(this.startTime, Math.min(this.endTime - this.startTime, seek))
 }
 
-Player.prototype.GetPoint = function(e) {
-    if (e.touches)
-        return e.touches[0].clientX - this.progress.offsetLeft
+Player.prototype.SetTimecode = function(timecode = "") {
+    [this.startTime, this.endTime] = this.ParseTimecode(timecode)
+    this.UpdateProgressBar()
+}
 
-    return e.offsetX
+Player.prototype.ParseTimecode = function(timecode) {
+    if (timecode === "")
+        return [0, this.audio.duration]
+
+    let timestamps = timecode.split(",")
+
+    if (timestamps.length == 1)
+        return [+timecode, this.audio.duration]
+
+    return [+timestamps[0], +timestamps[1]]
+}
+
+Player.prototype.PointToSeek = function(e) {
+    let x = e.touches ? e.touches[0].clientX - this.progress.offsetLeft : e.offsetX
+    let part = Math.max(0, Math.min(1, x / this.progressBar.clientWidth))
+    return this.startTime + part * (this.endTime - this.startTime)
 }
 
 Player.prototype.UpdateProgressBar = function() {
-    let currentTime = Math.max(this.audio.currentTime, 0)
-    let duration = Math.max(this.audio.duration, 0.01)
+    if (this.audio.currentTime >= this.endTime || this.audio.ended)
+        this.audio.currentTime = this.startTime
+
+    let currentTime = Math.max(this.audio.currentTime - this.startTime, 0)
+    let duration = Math.max(this.endTime - this.startTime, 0.01)
 
     this.progressCurrent.style.width = `${currentTime / duration * 100}%`
     this.time.innerText = `${this.TimeToString(currentTime)} / ${this.TimeToString(duration)}`
 }
 
-Player.prototype.ProgressMouseDown = function(x) {
+Player.prototype.ProgressMouseDown = function(seek) {
     this.paused = this.audio.paused
     this.pressed = true
 
-    let part = Math.max(0, Math.min(1, x / this.progressBar.clientWidth))
-    this.audio.currentTime = part * this.audio.duration
+    this.Seek(seek)
     this.audio.pause()
 }
 
-Player.prototype.ProgressMouseMove = function(x) {
-    if (!this.pressed)
-        return
-
-    let part = Math.max(0, Math.min(1, x / this.progressBar.clientWidth))
-    this.audio.currentTime = part * this.audio.duration
+Player.prototype.ProgressMouseMove = function(seek) {
+    if (this.pressed)
+        this.Seek(seek)
 }
 
 Player.prototype.ProgressMouseUp = function() {

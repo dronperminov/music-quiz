@@ -26,6 +26,9 @@ function ShowAnswer() {
 
     let answerBlock = document.getElementById("answer")
     answerBlock.classList.remove("hidden")
+
+    let player = players.GetPlayer()
+    player.SetTimecode("")
 }
 
 function SendAnswer(correct) {

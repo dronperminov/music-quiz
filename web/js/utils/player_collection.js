@@ -13,3 +13,7 @@ PlayerCollection.prototype.Pause = function(audio) {
         if (player.audio !== audio)
             player.Pause()
 }
+
+PlayerCollection.prototype.GetPlayer = function() {
+    return this.players[this.players.length - 1]
+}
