@@ -75,10 +75,10 @@ function PlayError(trackId) {
 }
 
 function SetMediaSessionMetadata(trackId) {
-    let track = document.getElementById(`track-${trackId}`)
-    let title = track.getElementsByClassName("track-title")[0].innerText
-    let artists = track.getElementsByClassName("track-artists")[0].innerText
-    let image = track.getElementsByClassName("track-image")[0].getElementsByTagName("img")[0]
+    let trackBlock = document.getElementById(`track-${trackId}`)
+    let title = trackBlock.getElementsByClassName("track-title")[0].innerText
+    let artists = trackBlock.getElementsByClassName("track-artists")[0].innerText
+    let image = trackBlock.getElementsByClassName("track-image")[0].getElementsByTagName("img")[0]
 
     if ("mediaSession" in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({

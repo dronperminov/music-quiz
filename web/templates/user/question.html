@@ -88,7 +88,7 @@
         let players = new PlayerCollection()
         let infos = new InfoPanels()
 
-        const track = {{jsonable_encoder(track)|tojson}}
+        const track = new Track({{jsonable_encoder(track)|tojson}})
         const artists = [{% for artist_id in track.artists %}{{jsonable_encoder(artist_id2artist[artist_id])|tojson}},{% endfor %}]
 
         let artistsBlock = document.getElementById("artists")
@@ -100,10 +100,10 @@
             infoBlock.appendChild(artist.BuildInfo())
         }
 
-        infoBlock.appendChild(new Track(track).BuildInfo())
+        infoBlock.appendChild(track.BuildInfo())
 
         infos.Update()
-        {% if settings.autoplay %}PlayTrack({{track.track_id}}){% endif %}
+        {% if settings.autoplay %}PlayTrack(track.trackId){% endif %}
     </script>
     {% include "components/footer.html" %}
 </body>

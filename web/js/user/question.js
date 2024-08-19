@@ -1,6 +1,6 @@
 function ReplaceTrackData() {
     let image = document.getElementById("track-image")
-    image.setAttribute("src", track.image_url)
+    image.setAttribute("src", track.imageUrl)
 
     let title = document.getElementById("track-title")
     title.innerText = track.title
@@ -14,7 +14,7 @@ function ReplaceTrackData() {
         link.innerText = artist.name
     }
 
-    SetMediaSessionMetadata(track.track_id)
+    SetMediaSessionMetadata(track.trackId)
 }
 
 function ShowAnswer() {
