@@ -31,23 +31,23 @@ class QuestionsDatabase:
         self.database.questions.update_one({"username": username, "correct": None}, {"$set": question.to_dict()})
 
     def generate_question(self, settings: Settings) -> Question:
+        tracks = self.get_question_tracks(settings.question_settings)
+
         if question := self.__get_user_question(username=settings.username):
-            return question
+            if question.track_id in {track["track_id"] for track in tracks}:
+                return question
 
-        track = self.get_question_track(settings.question_settings)
+            self.database.questions.delete_one({"username": settings.username, "correct": None})
 
-        question_types = list(set(settings.question_settings.question_types).intersection(track.get_question_types()))
+        track = self.music_database.get_track(track_id=random.choice(tracks)["track_id"])
+
+        implemented_question_types = {QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK, QuestionType.ARTIST_BY_INTRO}
+        question_types = list(set(settings.question_settings.question_types).intersection(track.get_question_types()).intersection(implemented_question_types))
         question_weights = [settings.question_settings.question_types[question_type] for question_type in question_types]
         question_type = random.choices(question_types, weights=question_weights, k=1)[0]
         question = self.__generate_question_by_type(question_type, track, settings)
         self.database.questions.insert_one(question.to_dict())
         return question
-
-    def get_question_track(self, settings: QuestionSettings) -> Track:
-        tracks = self.get_question_tracks(settings)
-        # TODO: balance
-        track_dict = random.choice(tracks)
-        return self.music_database.get_track(track_id=track_dict["track_id"])
 
     def get_question_tracks(self, settings: QuestionSettings) -> List[dict]:
         possible_track_ids = set()
