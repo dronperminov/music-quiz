@@ -40,6 +40,10 @@ function ShowAnswer() {
 
     ReplaceTrackData()
 
+    let trackModifications = document.getElementById("track-modifications")
+    if (trackModifications !== null)
+        trackModifications.classList.add("hidden")
+
     let showAnswerButton = document.getElementById("show-answer")
     showAnswerButton.classList.add("hidden")
 
@@ -52,6 +56,7 @@ function ShowAnswer() {
         return
 
     player.SetTimecode("")
+    player.SetPlaybackRate(1)
     player.ShowIcons()
 }
 

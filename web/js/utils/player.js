@@ -86,8 +86,10 @@ Player.prototype.InitMediaSessionHandlers = function() {
 Player.prototype.InitAudioParams = function() {
     let seek = this.audio.hasAttribute("data-seek") ? +this.audio.getAttribute("data-seek") : 0
     let timecode = this.audio.hasAttribute("data-timecode") ? this.audio.getAttribute("data-timecode") : ""
+    let playbackRate = this.audio.hasAttribute("data-playback-rate") ? this.audio.getAttribute("data-playback-rate") : ""
 
     this.SetTimecode(timecode)
+    this.SetPlaybackRate(playbackRate)
     this.Seek(seek)
 }
 
@@ -128,6 +130,10 @@ Player.prototype.Seek = function(seek) {
 Player.prototype.SetTimecode = function(timecode = "") {
     [this.startTime, this.endTime] = this.ParseTimecode(timecode)
     this.UpdateProgressBar()
+}
+
+Player.prototype.SetPlaybackRate = function(playbackRate) {
+    this.audio.playbackRate = Math.max(0.25, Math.min(4, playbackRate))
 }
 
 Player.prototype.ToggleLyrics = function() {

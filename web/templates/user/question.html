@@ -13,7 +13,7 @@
 <div class="content">
         <div class="question-title">{{question.title}}</div>
 
-        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" preload="metadata" onplay="InitQuestion()"></audio>
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" data-playback-rate="{{question.track_modifications.playback_rate}}" preload="metadata" onplay="InitQuestion()"></audio>
 
         <div class="track" id="track-{{track.track_id}}">
             <div class="track-main">
@@ -51,6 +51,10 @@
             </div>
             <div class="player" id="player-{{track.track_id}}"></div>
         </div>
+
+        {% if question.track_modifications.playback_rate != 1 %}
+        <div class="track-modifications" id="track-modifications">Внимание, <b>скорость трека изменена</b>: {{question.track_modifications.playback_rate|round(2)}}x</div>
+        {% endif %}
 
         <button class="gradient-button gradient-button-full-width hidden" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
 

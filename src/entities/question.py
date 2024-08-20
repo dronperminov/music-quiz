@@ -68,9 +68,7 @@ class Question:
         self.track_id = track_id
 
         self.track_modifications = TrackModifications.from_settings(settings.question_settings.track_modifications)
-        self.correct = None
-        self.answer_time = None
-        self.timestamp = datetime.now()
+        self.remove_answer()
 
     def set_answer(self, answer: QuestionAnswer) -> None:
         self.correct = answer.correct
