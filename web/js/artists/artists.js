@@ -77,12 +77,10 @@ function LoadArtists(pageSize = 10) {
     let infoBlock = document.getElementById("info-block")
 
     let loader = document.getElementById("loader")
-    let error = document.getElementById("error")
 
     status = "loading"
     loader.classList.remove("hidden")
     results.innerText = ""
-    error.innerText = ""
 
     let searchParams = GetSearchParams()
 
@@ -98,9 +96,9 @@ function LoadArtists(pageSize = 10) {
         status = "loaded"
 
         if (response.status != SUCCESS_STATUS) {
-            error.innerText = response.message
+            ShowNotification(response.message, "error-notification", 1500)
             status = "error"
-            setTimeout(RetrySearch, 2000)
+            setTimeout(RetrySearch, 3500)
             return
         }
 
@@ -132,7 +130,6 @@ function RetrySearch(pageSize) {
         LoadArtists(pageSize)
     }
     else {
-        error.innerText = ""
         loader.classList.add("hidden")
     }
 }
@@ -146,12 +143,10 @@ function ClearSearchArtists() {
     let results = document.getElementById("search-results")
 
     let loader = document.getElementById("loader")
-    let error = document.getElementById("error")
 
     artists.innerHTML = ""
     infoBlock.innerHTML = ""
     results.innerText = ""
-    error.innerHTML = ""
     loader.classList.add("hidden")
     status = ""
 
