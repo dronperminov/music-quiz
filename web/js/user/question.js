@@ -1,4 +1,7 @@
 function InitQuestion() {
+    if (answerTime !== null)
+        return
+
     let showAnswerButton = document.getElementById("show-answer")
     showAnswerButton.classList.remove("hidden")
 
