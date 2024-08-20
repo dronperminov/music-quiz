@@ -24,11 +24,11 @@ class QuestionSettings:
     repeat_incorrect_probability: float
 
     def __post_init__(self) -> None:
-        self.genres = {genre: value for genre, value in self.genres.items() if value > 0}
-        self.years = {self.__fix_years_key(years): value for years, value in self.years.items() if value > 0}
-        self.languages = {language: value for language, value in self.languages.items() if value > 0}
-        self.artists_count = {artists_count: value for artists_count, value in self.artists_count.items() if value > 0}
-        self.question_types = {question_type: value for question_type, value in self.question_types.items() if value > 0}
+        self.genres = self.__normalize_balance(self.genres)
+        self.years = self.__normalize_balance({self.__fix_years_key(years): value for years, value in self.years.items()})
+        self.languages = self.__normalize_balance(self.languages)
+        self.artists_count = self.__normalize_balance(self.artists_count)
+        self.question_types = self.__normalize_balance(self.question_types)
 
     def to_dict(self) -> dict:
         return {
@@ -98,21 +98,14 @@ class QuestionSettings:
 
     def to_tracks_query(self) -> dict:
         question_type_queries = [question_type.to_query() for question_type in self.question_types]
-        years = [self.__replace_years(start_year, end_year) for start_year, end_year in self.years]
+        years = [self.replace_years(start_year, end_year) for start_year, end_year in self.years]
 
-        query = {}
-
-        if len(self.genres) < len(Genre):
-            query["genres"] = {"$in": [genre.value for genre in self.genres]}
-
-        if len(years) < len(QUESTION_YEARS) - 1:
-            query["year"] = {"$in": self.__get_years_list(years)}
-
-        if len(self.languages) < len(Language) - 1:  # ignore UNKNOWN
-            query["language"] = {"$in": [language.value for language in self.languages]}
-
-        if len(self.artists_count) < len(ArtistsCount):
-            query["artists_count"] = {"$in": [artists_count.value for artists_count in self.artists_count]}
+        query = {
+            "genres": {"$in": [genre.value for genre in self.genres]},
+            "year": {"$in": self.__get_years_list(years)},
+            "language": {"$in": [language.value for language in self.languages]},
+            "artists_count": {"$in": [artists_count.value for artists_count in self.artists_count]}
+        }
 
         if {} in question_type_queries:
             return query
@@ -133,7 +126,7 @@ class QuestionSettings:
 
         return years
 
-    def __replace_years(self, start_year: Union[int, str], end_year: Union[int, str]) -> Tuple[int, int]:
+    def replace_years(self, start_year: Union[int, str], end_year: Union[int, str]) -> Tuple[int, int]:
         if start_year == "":
             start_year = 1950
 
@@ -150,3 +143,10 @@ class QuestionSettings:
                 years.append(year)
 
         return sorted(years)
+
+    def __normalize_balance(self, balance_dict: dict) -> dict:
+        total = sum(balance_dict.values())
+        if total == 0:
+            total = 1
+
+        return {enum: value / total for enum, value in balance_dict.items() if value > 0}

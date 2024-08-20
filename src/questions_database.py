@@ -1,6 +1,6 @@
 import logging
 import random
-from typing import List
+from typing import List, Optional
 
 from src import MusicDatabase
 from src.database import Database
@@ -12,6 +12,7 @@ from src.entities.questions.name_by_track_question import NameByTrackQuestion
 from src.entities.settings import Settings
 from src.entities.track import Track
 from src.enums import QuestionType
+from src.query_params.question_answer import QuestionAnswer
 
 
 class QuestionsDatabase:
@@ -20,30 +21,44 @@ class QuestionsDatabase:
         self.music_database = music_database
         self.logger = logger
 
-    def generate_question(self, settings: Settings) -> Question:
-        track_ids = self.get_question_track_ids(settings.question_settings)
-        track_id = random.choice(track_ids)
-        track = self.music_database.get_track(track_id=track_id)
+    def have_question(self, username: str) -> bool:
+        return self.__get_user_question(username=username) is not None
 
-        # TODO: statists, balance, etc...
-        question_types = set(settings.question_settings.question_types).intersection(track.get_question_types())
-        question_type = random.choice(list(question_types))
+    def answer_question(self, username: str, answer: QuestionAnswer) -> None:
+        question = self.__get_user_question(username=username)
+        question.correct = answer.correct
+        self.database.questions.update_one({"username": username, "correct": None}, {"$set": question.to_dict()})
+
+    def generate_question(self, settings: Settings) -> Question:
+        if question := self.__get_user_question(username=settings.username):
+            return question
+
+        track = self.get_question_track(settings.question_settings)
+
+        question_types = list(set(settings.question_settings.question_types).intersection(track.get_question_types()))
+        question_weights = [settings.question_settings.question_types[question_type] for question_type in question_types]
+        question_type = random.choices(question_types, weights=question_weights, k=1)[0]
         question = self.__generate_question_by_type(question_type, track, settings)
+        self.database.questions.insert_one(question.to_dict())
         return question
 
-    def get_question_track_ids(self, settings: QuestionSettings) -> List[int]:
+    def get_question_track(self, settings: QuestionSettings) -> Track:
+        tracks = self.get_question_tracks(settings)
+        # TODO: balance
+        track_dict = random.choice(tracks)
+        return self.music_database.get_track(track_id=track_dict["track_id"])
+
+    def get_question_tracks(self, settings: QuestionSettings) -> List[dict]:
         possible_track_ids = set()
 
         for artist in self.database.artists.find(settings.to_artist_query(), {"tracks": 1}):
             possible_track_ids.update(settings.hits.filter_tracks(artist["tracks"]))
 
-        tracks_ids = self.database.tracks.aggregate([
+        return list(self.database.tracks.aggregate([
             {"$addFields": {"artists_count": {"$cond": [{"$gt": [{"$size": "$artists"}, 1]}, "feat", "solo"]}}},
             {"$match": {**settings.to_tracks_query(), "track_id": {"$in": list(possible_track_ids)}}},
-            {"$project": {"track_id": 1}}
-        ])
-
-        return [track["track_id"] for track in tracks_ids]
+            {"$project": {"track_id": 1, "genres": 1, "language": 1, "year": 1, "artists_count": 1, "lyrics.lrc": 1, "lyrics.chorus": 1}}
+        ]))
 
     def __generate_question_by_type(self, question_type: QuestionType, track: Track, settings: Settings) -> Question:
         artist_id2artist = self.music_database.get_track_artists(track=track)
@@ -58,3 +73,7 @@ class QuestionsDatabase:
             return NameByTrackQuestion(track, settings, None)
 
         raise ValueError("Invalid question type")
+
+    def __get_user_question(self, username: str) -> Optional[Question]:
+        question = self.database.questions.find_one({"username": username, "correct": None})
+        return Question.from_dict(question) if question else None

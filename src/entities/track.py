@@ -23,6 +23,10 @@ class Track:
     image_url: Optional[str]
     metadata: Metadata
 
+    @property
+    def artists_count(self) -> str:
+        return "solo" if len(self.artists) == 1 else "feat"
+
     def to_dict(self) -> dict:
         return {
             "track_id": self.track_id,

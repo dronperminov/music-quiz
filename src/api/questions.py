@@ -3,11 +3,12 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import database, music_database, questions_database
 from src.api import templates
 from src.entities.user import User
+from src.query_params.question_answer import QuestionAnswer
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash
 
@@ -36,3 +37,15 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
         jsonable_encoder=jsonable_encoder
     )
     return HTMLResponse(content=content)
+
+
+@router.post("/answer-question")
+def answer_question(answer: QuestionAnswer, user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    if not questions_database.have_question(user.username):
+        return JSONResponse({"status": "error", "message": "В базе отсутствует вопрос, на который можно ответить"})
+
+    questions_database.answer_question(user.username, answer)
+    return JSONResponse({"status": "success"})

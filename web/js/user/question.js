@@ -39,6 +39,12 @@ function ShowAnswer() {
 }
 
 function SendAnswer(correct) {
-    // TODO
-    location.reload()
+    SendRequest("/answer-question", {correct: correct}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            ShowNotification(response.message, "error-notification")
+            return
+        }
+
+        location.reload()
+    })
 }
