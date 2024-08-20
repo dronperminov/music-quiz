@@ -13,7 +13,7 @@ function GetSearchParams() {
         return null
 
     return {
-        query: document.getElementById("query").value,
+        query: document.getElementById("query").value.trim(),
         order: document.getElementById("order").value,
         order_type: +document.getElementById("order-type").value,
         listen_count: listenCount,

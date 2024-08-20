@@ -71,6 +71,7 @@ Search.prototype.QueryFocus = function() {
 }
 
 Search.prototype.QueryFocusOut = function() {
+    this.queryInput.value = this.GetQuery()
     this.block.classList.remove("search-focus")
 }
 

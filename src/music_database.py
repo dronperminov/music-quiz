@@ -94,7 +94,8 @@ class MusicDatabase:
         ])
 
         results = list(results)[0]
-        return results["total"][0]["count"], [Artist.from_dict(artist) for artist in results["artists"]]
+        total = 0 if not results["total"] else results["total"][0]["count"]
+        return total, [Artist.from_dict(artist) for artist in results["artists"]]
 
     def get_last_artists(self, order_field: str, order_type: int, count: int) -> List[Artist]:
         return [Artist.from_dict(artist) for artist in self.database.artists.find({}).sort([(order_field, order_type), ("_id", 1)]).limit(count)]
