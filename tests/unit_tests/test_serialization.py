@@ -98,6 +98,7 @@ class TestSerialization(TestCase):
             listen_count=(20000, 100000),
             question_types={QuestionType.ARTIST_BY_TRACK: 0.75, QuestionType.NAME_BY_TRACK: 0.25},
             hits=Hits.ALL,
+            start_from_chorus=True,
             black_list=[1, 4, 8],
             track_modifications=track_modifications,
             repeat_incorrect_probability=0.04

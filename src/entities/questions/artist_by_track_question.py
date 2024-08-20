@@ -14,7 +14,7 @@ class ArtistByTrackQuestion(Question):
         self.answer = ", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists)
 
         self.question_timecode = ""
-        self.question_seek = self.get_random_seek(track)
+        self.question_seek = self.get_random_seek(track, settings.question_settings.start_from_chorus)
         self.answer_seek = None
 
     def __get_title(self, track: Track, artist_id2artist: Dict[int, Artist]) -> str:

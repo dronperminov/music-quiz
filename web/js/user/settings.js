@@ -41,6 +41,7 @@ function GetQuestionSettings() {
         return null
 
     let hits = document.getElementById("hits").value
+    let startFromChorus = document.getElementById("start-from-chorus").checked
     let blackList = []
 
     let trackModificationSettings = GetTrackModificationSettings()
@@ -60,6 +61,7 @@ function GetQuestionSettings() {
         listen_count: listenCount,
         question_types: questionTypes,
         hits: hits,
+        start_from_chorus: startFromChorus,
         black_list: blackList,
         track_modifications: trackModificationSettings,
         repeat_incorrect_probability: repeatIncorrectProbability / 100

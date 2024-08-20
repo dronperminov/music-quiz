@@ -13,5 +13,5 @@ class NameByTrackQuestion(Question):
         self.answer = track.title
 
         self.question_timecode = ""
-        self.question_seek = self.get_random_seek(track)
+        self.question_seek = self.get_random_seek(track, settings.question_settings.start_from_chorus)
         self.answer_seek = None

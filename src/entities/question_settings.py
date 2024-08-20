@@ -19,6 +19,7 @@ class QuestionSettings:
     listen_count: Tuple[Union[int, str], Union[int, str]]
     question_types: Dict[QuestionType, float]
     hits: Hits
+    start_from_chorus: bool
     black_list: List[int]
     track_modifications: TrackModificationSettings
     repeat_incorrect_probability: float
@@ -40,6 +41,7 @@ class QuestionSettings:
             "listen_count": self.listen_count,
             "question_types": {question_type.value: value for question_type, value in self.question_types.items()},
             "hits": self.hits.value,
+            "start_from_chorus": self.start_from_chorus,
             "black_list": self.black_list,
             "track_modifications": self.track_modifications.to_dict(),
             "repeat_incorrect_probability": self.repeat_incorrect_probability
@@ -56,6 +58,7 @@ class QuestionSettings:
             listen_count=data["listen_count"],
             question_types={QuestionType(question_type): value for question_type, value in data["question_types"].items()},
             hits=Hits(data["hits"]),
+            start_from_chorus=data["start_from_chorus"],
             black_list=data["black_list"],
             track_modifications=TrackModificationSettings.from_dict(data["track_modifications"]),
             repeat_incorrect_probability=data["repeat_incorrect_probability"]
@@ -74,6 +77,7 @@ class QuestionSettings:
             listen_count=("", ""),
             question_types={question_type: 1 / len(QuestionType) for question_type in QuestionType},
             hits=Hits.ALL,
+            start_from_chorus=False,
             black_list=[],
             track_modifications=TrackModificationSettings(change_playback_rate=False, probability=0),
             repeat_incorrect_probability=0.04
