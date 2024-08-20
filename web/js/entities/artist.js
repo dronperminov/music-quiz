@@ -54,7 +54,7 @@ Artist.prototype.BuildInfo = function() {
         let img = MakeElement("", link, {src: "/images/ya_music.svg"}, "img")
         let span = MakeElement("", header, {innerText: this.name}, "span")
 
-        let buttonBlock = MakeElement("info-line", info)
+        let buttonBlock = MakeElement("info-line admin-block", info)
         let button = MakeElement("gradient-button gradient-button-full-width", buttonBlock, {innerText: "Распарсить"}, "button")
         button.addEventListener("click", () => ParseArtist(button, this.source.yandex_id))
     }

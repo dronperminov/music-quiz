@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html {% if user and user.role.value != "user" %}data-user-role="admin"{% endif %}>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10">
