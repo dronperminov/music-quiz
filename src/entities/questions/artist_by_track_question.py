@@ -1,4 +1,3 @@
-import random
 from typing import Dict, Optional
 
 from src.entities.artist import Artist
@@ -15,7 +14,7 @@ class ArtistByTrackQuestion(Question):
         self.answer = ", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists)
 
         self.question_timecode = ""
-        self.question_seek = self.__get_question_seek(track)
+        self.question_seek = self.get_random_seek(track)
         self.answer_seek = None
 
     def __get_title(self, track: Track, artist_id2artist: Dict[int, Artist]) -> str:
@@ -25,10 +24,3 @@ class ArtistByTrackQuestion(Question):
             return f"Назовите {artist_types[0]}"
 
         return f'Назовите {", ".join(artist_types[:-1])} и {artist_types[-1]}'
-
-    def __get_question_seek(self, track: Track) -> float:
-        if track.lyrics is None or not track.lyrics.lrc:
-            return 0
-
-        line = random.choice(track.lyrics.lines[:len(track.lyrics) * 3 // 4])
-        return line.time

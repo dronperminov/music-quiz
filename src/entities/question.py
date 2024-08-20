@@ -1,8 +1,10 @@
+import random
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from src.entities.settings import Settings
+from src.entities.track import Track
 from src.entities.track_modifications import TrackModifications
 from src.enums import QuestionType
 
@@ -64,3 +66,13 @@ class Question:
         self.track_modifications = TrackModifications.from_settings(settings.question_settings.track_modifications)
         self.correct = None
         self.timestamp = datetime.now()
+
+    def get_random_seek(self, track: Track) -> float:
+        if track.lyrics and track.lyrics.lrc:
+            line = random.choice(track.lyrics.lines[:len(track.lyrics) * 3 // 4])
+            return line.time
+
+        if track.duration > 0:
+            return round(random.random() * track.duration * 0.75, 2)
+
+        return 0

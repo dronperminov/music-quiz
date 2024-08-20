@@ -1,4 +1,3 @@
-import random
 from typing import Optional
 
 from src.entities.question import Question
@@ -14,12 +13,5 @@ class NameByTrackQuestion(Question):
         self.answer = track.title
 
         self.question_timecode = ""
-        self.question_seek = self.__get_question_seek(track)
+        self.question_seek = self.get_random_seek(track)
         self.answer_seek = None
-
-    def __get_question_seek(self, track: Track) -> float:
-        if track.lyrics is None or not track.lyrics.lrc:
-            return 0
-
-        line = random.choice(track.lyrics.lines[:len(track.lyrics) * 3 // 4])
-        return line.time
