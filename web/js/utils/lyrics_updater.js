@@ -11,12 +11,16 @@ function LyricsUpdater(blockId, seek, deltaTime = 4000) {
 
 LyricsUpdater.prototype.InitLines = function(seek) {
     this.lines = []
+    this.chorusTimes = []
 
     for (let line of this.block.getElementsByClassName("lyrics-line")) {
         let time = +line.getAttribute("data-time")
         this.lines.push({line: line, time: time})
 
         line.addEventListener("click", () => seek(time))
+
+        if (line.classList.contains("lyrics-line-chorus") && (this.lines.length == 1 || !this.lines[this.lines.length - 2].line.classList.contains("lyrics-line-chorus")))
+            this.chorusTimes.push(time)
     }
 }
 
@@ -64,4 +68,22 @@ LyricsUpdater.prototype.Close = function() {
 
 LyricsUpdater.prototype.IsOpen = function() {
     return !this.block.classList.contains("hidden")
+}
+
+LyricsUpdater.prototype.HaveChorus = function() {
+    return this.chorusTimes.length > 0
+}
+
+LyricsUpdater.prototype.GetChorusTime = function(currentTime) {
+    for (let time of this.chorusTimes)
+        if (time >= currentTime)
+            return time
+
+    let nearestTime = 0
+
+    for (let time of this.chorusTimes)
+        if (time < currentTime)
+            nearestTime = time
+
+    return nearestTime
 }

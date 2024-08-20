@@ -4,9 +4,10 @@
 }
 
 .player-icons {
-    display: table-cell;
-    width: 0;
-    vertical-align: middle;
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 0.8em;
+    align-items: center;
     padding-right: 0.5em;
 }
 
