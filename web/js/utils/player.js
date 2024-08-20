@@ -86,7 +86,7 @@ Player.prototype.InitMediaSessionHandlers = function() {
 Player.prototype.InitAudioParams = function() {
     let seek = this.audio.hasAttribute("data-seek") ? +this.audio.getAttribute("data-seek") : 0
     let timecode = this.audio.hasAttribute("data-timecode") ? this.audio.getAttribute("data-timecode") : ""
-    let playbackRate = this.audio.hasAttribute("data-playback-rate") ? this.audio.getAttribute("data-playback-rate") : ""
+    let playbackRate = this.audio.hasAttribute("data-playback-rate") ? +this.audio.getAttribute("data-playback-rate") : 1
 
     this.SetTimecode(timecode)
     this.SetPlaybackRate(playbackRate)
