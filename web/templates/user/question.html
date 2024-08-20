@@ -70,8 +70,10 @@
             <div id="artists"></div>
 
             {% if track.lyrics and track.lyrics.lrc %}
+            <div id="lyrics-updater-{{track.track_id}}">
             <h3>Текст</h3>
-            <div class="lyrics-updater" id="lyrics-updater-{{track.track_id}}">
+
+            <div class="lyrics-updater">
                 <div class="lyrics-lines">
                     {% set indices = track.lyrics.get_chorus_indices() %}
                     {% for line in track.lyrics.lines %}
@@ -100,7 +102,7 @@
     <script src="/js/entities/track.js?v={{version}}"></script>
     <script src="/js/user/question.js?v={{version}}"></script>
     <script>
-        let players = new PlayerCollection()
+        let players = new PlayerCollection({withIcons: false})
         let infos = new InfoPanels()
 
         const track = new Track({{jsonable_encoder(track)|tojson}})

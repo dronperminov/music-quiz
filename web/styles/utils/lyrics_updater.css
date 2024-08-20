@@ -21,7 +21,6 @@
     font-size: 1em;
     color: var(--subtext-color);
     cursor: pointer;
-    text-align: center;
 }
 
 .lyrics-updater .lyrics-line:hover {

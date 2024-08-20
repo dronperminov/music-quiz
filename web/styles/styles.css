@@ -79,6 +79,7 @@
     --multi-select-unchecked-color: #f44336;
 
     /* player */
+    --player-icon-color: var(--subtext-color);
     --player-progress-bar-color: #eeeeee;
     --player-progress-current-color: var(--main-color);
     --player-time-color: var(--subtext-color);

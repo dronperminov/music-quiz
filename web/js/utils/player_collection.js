@@ -1,9 +1,10 @@
-function PlayerCollection() {
+function PlayerCollection(config = null) {
     this.players = []
+    this.config = config === null ? {withIcons: true} : config
 }
 
 PlayerCollection.prototype.Add = function(trackId, audio) {
-    let player = new Player(trackId, audio)
+    let player = new Player(trackId, audio, this.config)
     this.players.push(player)
     return player
 }

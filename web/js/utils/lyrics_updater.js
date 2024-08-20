@@ -54,6 +54,14 @@ LyricsUpdater.prototype.Wheel = function() {
     this.wheelTime = performance.now()
 }
 
-LyricsUpdater.prototype.Toggle = function() {
-    this.block.classList.toggle("hidden")
+LyricsUpdater.prototype.Open = function() {
+    this.block.classList.remove("hidden")
+}
+
+LyricsUpdater.prototype.Close = function() {
+    this.block.classList.add("hidden")
+}
+
+LyricsUpdater.prototype.IsOpen = function() {
+    return !this.block.classList.contains("hidden")
 }

@@ -1,5 +1,25 @@
 .player {
     display: table;
+    padding-top: 3px;
+}
+
+.player-icons {
+    display: table-cell;
+    width: 0;
+    vertical-align: middle;
+    padding-right: 0.5em;
+}
+
+.player-icon {
+    cursor: pointer;
+}
+
+.player-icon svg {
+    fill: var(--player-icon-color);
+}
+
+.player-icon:hover svg, .player-icon-pressed svg {
+    fill: var(--player-progress-current-color);
 }
 
 .player-progress {

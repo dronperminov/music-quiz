@@ -31,8 +31,11 @@ function ShowAnswer() {
 
     let player = players.GetPlayer()
 
-    if (player !== null)
-        player.SetTimecode("")
+    if (player === null)
+        return
+
+    player.SetTimecode("")
+    player.ShowIcons()
 }
 
 function SendAnswer(correct) {

@@ -18,13 +18,12 @@ Artist.prototype.Build = function() {
     let artistImageLink = MakeElement("", artistImage, {href: `/artists/${this.artistId}`}, "a")
     let artistImageImg = MakeElement("", artistImageLink, {src: this.imageUrls[0], loading: "lazy"}, "img")
 
-    let artistInfo = MakeElement("", artist)
+    let artistInfo = MakeElement("artist-data", artist)
 
     let artistName = MakeElement("artist-name", artistInfo)
     let artistNameLink = MakeElement("", artistName, {href: `/artists/${this.artistId}`, innerText: this.name}, "a")
 
-    let artistStats = MakeElement("artist-stats", artistInfo, {innerText: this.GetStats()})
-    let artistType = MakeElement("artist-type", artistInfo, {innerText: this.ArtistTypeToRus()})
+    let artistStats = MakeElement("artist-stats", artistInfo, {innerHTML: this.GetStats()})
     let artistControls = MakeElement("artist-controls", artistInfo)
     let div = MakeElement("", artistControls)
     let link = MakeElement("gradient-button", div, {href: `/artists/${this.artistId}`, innerText: "Смотреть"}, "a")
@@ -98,7 +97,12 @@ Artist.prototype.FormatMetadataDate = function(date) {
 Artist.prototype.GetStats = function() {
     let listenCount = this.listenCount < 1000 ? GetWordForm(this.listenCount, ['слушатель', 'слушателя', 'слушателей']) : `${this.FormatListenCount()} слушателей`
     let tracksCount = `${GetWordForm(Object.keys(this.tracks).length, ['трек', 'трека', 'треков'])} из ${this.tracksCount}`
-    return [listenCount, tracksCount].join(" | ")
+    let stats = [listenCount, tracksCount]
+
+    if (this.artistType != "unknown")
+        stats.push(this.ArtistTypeToRus())
+
+    return stats.join(" | ")
 }
 
 Artist.prototype.ArtistTypeToRus = function() {
