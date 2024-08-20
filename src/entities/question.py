@@ -7,6 +7,7 @@ from src.entities.settings import Settings
 from src.entities.track import Track
 from src.entities.track_modifications import TrackModifications
 from src.enums import QuestionType
+from src.query_params.question_answer import QuestionAnswer
 
 
 @dataclass
@@ -69,6 +70,11 @@ class Question:
         self.track_modifications = TrackModifications.from_settings(settings.question_settings.track_modifications)
         self.correct = None
         self.answer_time = None
+        self.timestamp = datetime.now()
+
+    def set_answer(self, answer: QuestionAnswer) -> None:
+        self.correct = answer.correct
+        self.answer_time = answer.answer_time
         self.timestamp = datetime.now()
 
     def get_random_seek(self, track: Track, start_from_chorus: bool) -> float:
