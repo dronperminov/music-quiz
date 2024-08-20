@@ -77,6 +77,11 @@ class Question:
         self.answer_time = answer.answer_time
         self.timestamp = datetime.now()
 
+    def remove_answer(self) -> None:
+        self.correct = None
+        self.answer_time = None
+        self.timestamp = datetime.now()
+
     def get_random_seek(self, track: Track, start_from_chorus: bool) -> float:
         if track.lyrics and track.lyrics.lrc:
             if start_from_chorus and track.lyrics.chorus:

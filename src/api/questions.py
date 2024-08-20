@@ -21,7 +21,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
         return RedirectResponse(url=f'/login?back_url={urllib.parse.quote("/question", safe="")}')
 
     settings = database.get_settings(username=user.username)
-    question = questions_database.generate_question(settings)
+    question = questions_database.get_question(settings)
     track = music_database.get_track(track_id=question.track_id)
     artist_id2artist = music_database.get_track_artists(track=track)
 
