@@ -27,6 +27,7 @@ class QuestionsDatabase:
     def answer_question(self, username: str, answer: QuestionAnswer) -> None:
         question = self.__get_user_question(username=username)
         question.correct = answer.correct
+        question.answer_time = answer.answer_time
         self.database.questions.update_one({"username": username, "correct": None}, {"$set": question.to_dict()})
 
     def generate_question(self, settings: Settings) -> Question:

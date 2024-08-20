@@ -13,7 +13,7 @@
 <div class="content">
         <div class="question-title">{{question.title}}</div>
 
-        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" preload="metadata"></audio>
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" preload="metadata" onplay="InitQuestion()"></audio>
 
         <div class="track" id="track-{{track.track_id}}">
             <div class="track-main">
@@ -52,10 +52,11 @@
             <div class="player" id="player-{{track.track_id}}"></div>
         </div>
 
-        <button class="gradient-button gradient-button-full-width" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
+        <button class="gradient-button gradient-button-full-width hidden" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
 
         <div class="answer-block hidden" id="answer">
             <div class="answer"><b>Ответ:</b> {{question.answer}}</div>
+            <div class="description hidden"><b>Время ответа:</b> <span id="answer-time"></span></div>
 
             <div class="answer-buttons">
                 <div>
@@ -102,6 +103,7 @@
     <script src="/js/entities/track.js?v={{version}}"></script>
     <script src="/js/user/question.js?v={{version}}"></script>
     <script>
+        let answerTime = null
         let players = new PlayerCollection({withIcons: false})
         let infos = new InfoPanels()
 

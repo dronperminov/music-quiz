@@ -22,6 +22,7 @@ class Question:
     answer_seek: Optional[float]
     track_modifications: TrackModifications
     correct: Optional[bool]
+    answer_time: Optional[float]
     timestamp: datetime
 
     def to_dict(self) -> dict:
@@ -37,6 +38,7 @@ class Question:
             "answer_seek": self.answer_seek,
             "track_modifications": self.track_modifications.to_dict(),
             "correct": self.correct,
+            "answer_time": self.answer_time,
             "timestamp": self.timestamp
         }
 
@@ -54,6 +56,7 @@ class Question:
             answer_seek=data["answer_seek"],
             track_modifications=TrackModifications.from_dict(data["track_modifications"]),
             correct=data["correct"],
+            answer_time=data["answer_time"],
             timestamp=data["timestamp"]
         )
 
@@ -65,6 +68,7 @@ class Question:
 
         self.track_modifications = TrackModifications.from_settings(settings.question_settings.track_modifications)
         self.correct = None
+        self.answer_time = None
         self.timestamp = datetime.now()
 
     def get_random_seek(self, track: Track) -> float:

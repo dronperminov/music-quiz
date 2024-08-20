@@ -1,3 +1,10 @@
+function InitQuestion() {
+    let showAnswerButton = document.getElementById("show-answer")
+    showAnswerButton.classList.remove("hidden")
+
+    answerTime = performance.now()
+}
+
 function ReplaceTrackData() {
     let image = document.getElementById("track-image")
     image.setAttribute("src", track.imageUrl)
@@ -18,6 +25,13 @@ function ReplaceTrackData() {
 }
 
 function ShowAnswer() {
+    if (answerTime !== null) {
+        answerTime = (performance.now() - answerTime) / 1000
+        let answerTimeSpan = document.getElementById("answer-time")
+        answerTimeSpan.innerText = FormatTime(answerTime)
+        answerTimeSpan.parentNode.classList.remove("hidden")
+    }
+
     let menu = document.getElementById("track-menu")
     menu.removeAttribute("disabled")
 
@@ -39,7 +53,12 @@ function ShowAnswer() {
 }
 
 function SendAnswer(correct) {
-    SendRequest("/answer-question", {correct: correct}).then(response => {
+    let answer = {correct: correct}
+
+    if (answerTime !== null)
+        answer.answer_time = answerTime
+
+    SendRequest("/answer-question", answer).then(response => {
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(response.message, "error-notification")
             return

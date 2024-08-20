@@ -24,7 +24,7 @@ function MakeElement(className, parent = null, attributes = null, tagName = "div
     return element
 }
 
-function GetWordForm(count, forms) {
+function GetWordForm(count, forms, onlyForm = false) {
     let index = 0
 
     if ([0, 5, 6, 7, 8, 9].indexOf(Math.abs(count) % 10) > -1 || [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].indexOf(Math.abs(count) % 100) > -1)
@@ -32,9 +32,21 @@ function GetWordForm(count, forms) {
     else if ([2, 3, 4].indexOf(Math.abs(count) % 10) > -1) 
         index = 1
 
-    return `${count} ${forms[index]}`
+    return onlyForm ? forms[index] : `${count} ${forms[index]}`
 }
 
 function Round(value, scale = 100) {
     return Math.round(value * scale) / scale
+}
+
+function FormatTime(time) {
+    if (time < 10)
+        return `${Round(time, 10)} ${GetWordForm(Math.floor(time * 10) % 10, ['секунда', 'секунды', 'секунд'], true)}`
+
+    if (time < 60)
+        return GetWordForm(Math.round(time), ['секунда', 'секунды', 'секунд'])
+
+    let seconds = `${Math.floor(time) % 60}`.padStart(2, '0')
+    let minutes = `${Math.floor(time / 60)}`.padStart(2, '0')
+    return `${minutes}:${seconds}`
 }

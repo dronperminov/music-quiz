@@ -91,8 +91,8 @@ class TestSerialization(TestCase):
 
         question_settings = QuestionSettings(
             answer_time=35,
-            genres={Genre.ROCK: 0.6, Genre.POP: 0.1, Genre.ELECTRO: 0.2, Genre.JAZZ_SOUL: 0.1},
-            years={(2020, 2024): 0.9, (1900, 1979): 0.1},
+            genres={Genre.ROCK: 0.5, Genre.POP: 0.25, Genre.ELECTRO: 0.125, Genre.JAZZ_SOUL: 0.125},
+            years={(2020, 2024): 0.25, (1900, 1979): 0.75},
             languages={Language.RUSSIAN: 0.5, Language.FOREIGN: 0.5},
             artists_count={ArtistsCount.SOLO: 1, ArtistsCount.FEAT: 0},
             listen_count=(20000, 100000),
@@ -132,6 +132,7 @@ class TestSerialization(TestCase):
             answer_seek=None,
             track_modifications=track_modifications,
             correct=None,
+            answer_time=56.5,
             timestamp=datetime(2024, 5, 2, 23, 59)
         )
 
