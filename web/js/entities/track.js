@@ -12,7 +12,7 @@ function Track(data) {
     this.metadata = data.metadata
 }
 
-Track.prototype.BuildInfo = function() {
+Track.prototype.BuildInfo = function(artists = null) {
     let info = MakeElement("info")
     info.setAttribute("id", `info-track-${this.trackId}`)
 
@@ -33,6 +33,9 @@ Track.prototype.BuildInfo = function() {
 
     if (this.year > 0)
         MakeElement("info-line", info, {innerHTML: `<b>Год выхода:</b> ${this.year}`})
+
+    if (artists !== null)
+        MakeElement("info-line", info, {innerHTML: this.GetArtistPositions(artists)})
 
     if (this.duration > 0)
         MakeElement("info-line", info, {innerHTML: `<b>Длительность:</b> ${this.FormatDuration()}`})
@@ -117,4 +120,15 @@ Track.prototype.GetChorusIndices = function() {
             indices[`${index}`] = i
 
     return indices
+}
+
+Track.prototype.GetArtistPositions = function(artists) {
+    if (artists === null)
+        return ""
+
+    if (artists.length == 1)
+        return `<b>Позиция у исполнителя:</b> ${artists[0].tracks[this.trackId]}`
+
+    let positions = artists.map(artist => `<li>${artist.name}: ${artist.tracks[this.trackId]}</li>`).join("")
+    return `<b>Позиции у исполнителей:</b> <ul>${positions}</ul>`
 }

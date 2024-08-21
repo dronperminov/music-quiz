@@ -124,7 +124,7 @@
             infoBlock.appendChild(artist.BuildInfo())
         }
 
-        infoBlock.appendChild(track.BuildInfo())
+        infoBlock.appendChild(track.BuildInfo(artists))
 
         infos.Update()
         {% if settings.autoplay %}PlayTrack(track.trackId){% endif %}
