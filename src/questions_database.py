@@ -1,5 +1,6 @@
 import logging
 import random
+from collections import defaultdict
 from typing import Dict, List, Optional
 
 from src import MusicDatabase
@@ -56,7 +57,7 @@ class QuestionsDatabase:
         return question
 
     def generate_question(self, tracks: List[dict], last_questions: List[Question], settings: Settings) -> Question:
-        track = self.get_question_track(tracks=tracks, last_questions=last_questions)
+        track = self.get_question_track(tracks=tracks, last_questions=last_questions, settings=settings.question_settings)
 
         implemented_question_types = {QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK, QuestionType.ARTIST_BY_INTRO}
         question_types = list(set(settings.question_settings.question_types).intersection(track.get_question_types()).intersection(implemented_question_types))
@@ -65,10 +66,23 @@ class QuestionsDatabase:
 
         return self.__generate_question_by_type(question_type, track, settings)
 
-    def get_question_track(self, tracks: List[dict], last_questions: List[Question]) -> Track:
-        last_track_id2weight = {question.track_id: 1 - self.alpha ** (i + 1) for i, question in enumerate(last_questions)}
+    def get_question_track(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings) -> Track:
+        track_id2weight = {question.track_id: 1 - self.alpha ** (i + 1) for i, question in enumerate(last_questions)}
 
-        track_weights = [last_track_id2weight.get(track["track_id"], 1) for track in tracks]
+        feature2balance = {
+            "language": {language.value: value for language, value in settings.languages.items()},
+            "artists_count": {artists_count.value: value for artists_count, value in settings.artists_count.items()},
+            "year_key": {f"{start_year}-{end_year}": value for (start_year, end_year), value in settings.years.items()}
+        }
+
+        year2key = settings.get_year2key()
+        features2count = defaultdict(int)
+
+        for track in tracks:
+            track["year_key"] = year2key[track["year"]]
+            features2count[tuple(track[feature] for feature in feature2balance)] += 1
+
+        track_weights = [self.__get_track_weight(track, feature2balance, features2count, track_id2weight) for track in tracks]
         track = random.choices(tracks, weights=track_weights, k=1)[0]
         return self.music_database.get_track(track_id=track["track_id"])
 
@@ -113,6 +127,14 @@ class QuestionsDatabase:
                 artist_id2scale[artist.artist_id] = {"correct": correct, "incorrect": incorrect, "scale": correct / total}
 
         return artist_id2scale
+
+    def __get_track_weight(self, track: dict, feature2balance: Dict[str, Dict[str, float]], features2count: Dict[tuple, float], track_id2weight: Dict[int, float]) -> float:
+        track_weight = 1 / features2count[tuple(track[feature] for feature in feature2balance)]
+
+        for feature, feature2value in feature2balance.items():
+            track_weight *= feature2value[track[feature]]
+
+        return track_weight * track_id2weight.get(track["track_id"], 1)
 
     def __generate_question_by_type(self, question_type: QuestionType, track: Track, settings: Settings) -> Question:
         artist_id2artist = self.music_database.get_track_artists(track=track)

@@ -139,6 +139,17 @@ class QuestionSettings:
 
         return start_year, end_year
 
+    def get_year2key(self) -> dict:
+        year2key = {}
+        for start_year, end_year in self.years:
+            key = f"{start_year}-{end_year}"
+            start_year, end_year = self.replace_years(start_year, end_year)
+
+            for year in range(start_year, end_year + 1):
+                year2key[year] = key
+
+        return year2key
+
     def __get_years_list(self, year_intervals: List[Tuple[int, int]]) -> List[int]:
         years = []
 
