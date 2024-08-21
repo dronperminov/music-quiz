@@ -164,8 +164,9 @@ function ScrollArtists() {
         LoadArtists()
 }
 
-function SearchShortArtists(order, orderType) {
+function SearchShortArtists(order, orderType, target = "all") {
     let queryInput = document.getElementById("query")
+    let targetInput = document.getElementById("target")
     let orderInput = document.getElementById("order")
     let orderTypeInput = document.getElementById("order-type")
 
@@ -173,6 +174,7 @@ function SearchShortArtists(order, orderType) {
     status = ""
 
     queryInput.value = ""
+    targetInput.value = target
     orderInput.value = order
     orderTypeInput.value = orderType
     listenCountInput.Clear()

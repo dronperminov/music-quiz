@@ -167,6 +167,18 @@
             </div>
         </div>
 
+        {% if user %}
+        <div class="short-artists-block">
+            <h2 class="short-artist-header">
+                <span>Загаданные в вопросах</span>
+                <span class="arrow-link" onclick="SearchShortArtists('name_lowercase', '1', 'questions')"></span>
+            </h2>
+            <div class="short-artists">
+                {% for artist in guessed_artists %}{% include "components/short_artist.html" %}{% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="short-artists-block">
             <h2 class="short-artist-header">
                 <span>Недавно добавленные</span>
