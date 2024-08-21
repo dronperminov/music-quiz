@@ -5,7 +5,7 @@ function Track(data) {
     this.artists = data.artists
     this.year = data.year
     this.lyrics = data.lyrics
-    this.genres = data.genres
+    this.genres = data.genres.map(genre => new Genre(genre))
     this.language = data.language
     this.duration = data.duration
     this.imageUrl = data.image_url !== null ? data.image_url : '/images/tracks/default.png'
@@ -41,7 +41,7 @@ Track.prototype.BuildInfo = function(artists = null) {
         MakeElement("info-line", info, {innerHTML: `<b>Длительность:</b> ${this.FormatDuration()}`})
 
     if (this.genres.length > 0)
-        MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => this.GenreToRus(genre)).join(", ")}`})
+        MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => genre.ToRus()).join(", ")}`})
 
     if (this.language != "unknown")
         MakeElement("info-line", info, {innerHTML: `<b>Язык:</b> ${this.LanguageToRus(this.language)}`})
@@ -51,7 +51,7 @@ Track.prototype.BuildInfo = function(artists = null) {
     if (this.metadata.created_at != this.metadata.updated_at)
         MakeElement("info-line", info, {innerHTML: `<b>Обновлён:</b> ${this.FormatMetadataDate(this.metadata.updated_at)} пользователем @${this.metadata.updated_by}`})
 
-    let history = MakeElement("info-line", info)
+    let history = MakeElement("info-line admin-block", info)
     let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
     history.addEventListener("click", () => ShowHistory(`/track-history/${this.trackId}`))
 

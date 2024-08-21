@@ -30,10 +30,11 @@ function BuildHistory(parent, history) {
 
 function ShowHistory(url) {
     let info = document.getElementById("info-history")
-    let body = document.getElementsByTagName("body")[0]
 
     if (info === null) {
+        let body = document.getElementsByTagName("body")[0]
         info = MakeElement("info", body, {id: "info-history"})
+
         MakeElement("close-icon", info, {title: "Закрыть"})
         MakeElement("info-header-line", info, {innerText: "История изменений"})
         MakeElement("info-content", info)

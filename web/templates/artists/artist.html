@@ -28,7 +28,7 @@
                 <div class="artist-about"><b>Добавлен:</b> {{artist.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{artist.metadata.created_by }}</div>
                 {% if not artist.metadata.is_initial() %}<div class="artist-about"><b>Обновлён:</b> {{artist.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{artist.metadata.updated_by }}</div>{% endif %}
 
-                <div class="artist-about"><a class="link" href="#" onclick="ShowHistory('/artist-history/{{artist.artist_id}}')">История изменений</a></div>
+                <div class="artist-about admin-block"><a class="link" href="#" onclick="ShowHistory('/artist-history/{{artist.artist_id}}')">История изменений</a></div>
             </div>
         </div>
 
@@ -103,6 +103,7 @@
     <script src="/js/utils/player.js?v={{version}}"></script>
     <script src="/js/utils/player_collection.js?v={{version}}"></script>
     <script src="/js/utils/history.js?v={{version}}"></script>
+    <script src="/js/entities/genre.js?v={{version}}"></script>
     <script src="/js/entities/track.js?v={{version}}"></script>
     <script src="/js/tracks/track.js?v={{version}}"></script>
     <script src="/js/artists/artist.js?v={{version}}"></script>

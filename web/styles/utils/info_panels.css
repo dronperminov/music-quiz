@@ -43,7 +43,7 @@
 
 .info .close-icon {
     position: sticky;
-    left: 100%;
+    left: calc(100% - 1em);
     top: 0;
 }
 
