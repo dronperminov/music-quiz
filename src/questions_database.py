@@ -42,7 +42,7 @@ class QuestionsDatabase:
 
             self.database.questions.delete_one({"username": settings.username, "correct": None})
 
-        last_questions = self.__get_last_questions(username=settings.username)
+        last_questions = self.__get_last_questions(username=settings.username, track_ids=[track["track_id"] for track in tracks])
         last_incorrect_questions = [question for question in last_questions if not question.correct]
 
         if last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
@@ -132,7 +132,8 @@ class QuestionsDatabase:
         question = self.database.questions.find_one({"username": username, "correct": None})
         return Question.from_dict(question) if question else None
 
-    def __get_last_questions(self, username: str) -> List[Question]:
-        last_questions = self.database.questions.find({"username": username, "correct": {"$ne": None}}).sort("timestamp", -1).limit(self.last_questions_count)
+    def __get_last_questions(self, username: str, track_ids: List[int]) -> List[Question]:
+        query = {"username": username, "correct": {"$ne": None}, "track_id": {"$in": track_ids}}
+        last_questions = self.database.questions.find(query).sort("timestamp", -1).limit(self.last_questions_count)
         # TODO: check performance, maybe without deserealization
         return [Question.from_dict(question) for question in last_questions]
