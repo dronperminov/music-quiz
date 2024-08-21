@@ -10,7 +10,8 @@
 }
 
 .header ul {
-    list-style: none
+    list-style: none;
+    margin-left: 0;
 }
 
 .header .logo {
