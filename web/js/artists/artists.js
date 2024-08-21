@@ -14,6 +14,7 @@ function GetSearchParams() {
 
     return {
         query: document.getElementById("query").value.trim(),
+        target: document.getElementById("target").value,
         order: document.getElementById("order").value,
         order_type: +document.getElementById("order-type").value,
         listen_count: listenCount,
@@ -40,7 +41,7 @@ function PushUrlParams(params) {
         if (params.query !== "")
             url.searchParams.set("query", params.query)
 
-        for (let key of ["order", "order_type"])
+        for (let key of ["target", "order", "order_type"])
             url.searchParams.set(key, params[key])
 
         for (let key of ["listen_count", "tracks_count", "added_tracks"])

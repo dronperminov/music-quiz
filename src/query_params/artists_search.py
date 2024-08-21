@@ -10,6 +10,7 @@ from src.utils.queries import interval_query
 @dataclass
 class ArtistsSearch:
     query: str = ""
+    target: str = "all"
     order: str = "listen_count"
     order_type: int = -1
     listen_count: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])

@@ -1,7 +1,7 @@
 import logging
 import os
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 import wget
 from pydub import AudioSegment
@@ -34,48 +34,7 @@ class MusicDatabase:
         artist = self.database.artists.find_one({"artist_id": artist_id})
         return Artist.from_dict(artist) if artist else None
 
-    def search_artists(self, params: ArtistsSearch) -> Tuple[int, List[Artist]]:
-        query = params.to_query()
-
-        artist_ids_query = {"$in": [], "$nin": []}
-
-        if artists_count_query := query.pop("artists_count", {}):
-            artists_count2artist_ids = {enum.value: set() for enum in ArtistsCount}
-
-            for track in self.database.tracks.find({}, {"artists": 1}):
-                enum = ArtistsCount.SOLO if len(track["artists"]) == 1 else ArtistsCount.FEAT
-                for artist_id in track["artists"]:
-                    artists_count2artist_ids[enum.value].add(artist_id)
-
-            in_set, nin_set = params.replace_enum_query(artists_count_query, artists_count2artist_ids)
-            artist_ids_query["$in"].append(in_set)
-            artist_ids_query["$nin"].append(nin_set)
-
-        if language_query := query.pop("language", {}):
-            language2artist_ids = {enum.value: set() for enum in Language}
-
-            for track in self.database.tracks.find({}, {"artists": 1, "language": 1}):
-                enum = Language(track["language"])
-                for artist_id in track["artists"]:
-                    language2artist_ids[enum.value].add(artist_id)
-
-            in_set, nin_set = params.replace_enum_query(language_query, language2artist_ids)
-            artist_ids_query["$in"].append(in_set)
-            artist_ids_query["$nin"].append(nin_set)
-
-        if artist_ids_query["$in"]:
-            artist_ids_query["$in"] = set.intersection(*artist_ids_query["$in"])
-
-        if artist_ids_query["$nin"]:
-            artist_ids_query["$nin"] = set.union(*artist_ids_query["$nin"])
-
-        if artist_ids_query["$in"] and artist_ids_query["$nin"]:
-            query["artist_id"] = {"$in": list(artist_ids_query["$in"].difference(artist_ids_query["$nin"]))}
-        elif artist_ids_query["$in"]:
-            query["artist_id"] = {"$in": list(artist_ids_query["$in"])}
-        elif artist_ids_query["$nin"]:
-            query["artist_id"] = {"$nin": list(artist_ids_query["$nin"])}
-
+    def search_artists(self, params: ArtistsSearch, username: Optional[str] = None) -> Tuple[int, List[Artist]]:
         results = self.database.artists.aggregate([
             {
                 "$addFields": {
@@ -83,7 +42,7 @@ class MusicDatabase:
                     "added_tracks": {"$size": "$tracks"}
                 }
             },
-            {"$match": query},
+            {"$match": self.__get_artists_search_query(params, username)},
             {"$sort": {params.order: params.order_type, "_id": 1}},
             {
                 "$facet": {
@@ -312,3 +271,66 @@ class MusicDatabase:
                 assert artist is not None, f"artist {artist_id} is None"
                 assert len(artist.tracks) > 0, f'artist "{artist.name}" ({artist.artist_id}) have no tracks'
                 assert track.track_id in artist.tracks, f'track "{track.title}" ({track.track_id}) not in artist ({artist.artist_id}) tracks'
+
+    def __get_guessed_artist_ids(self, username: str) -> Set[int]:
+        questions = self.database.questions.find({"username": username, "correct": {"$ne": None}}, {"track_id": 1})
+        track_ids = {question["track_id"] for question in questions}
+        tracks = self.database.tracks.find({"track_id": {"$in": list(track_ids)}}, {"artists": 1})
+        return {artist_id for track in tracks for artist_id in track["artists"]}
+
+    def __get_artists_count_artist_ids(self, query: dict, params: ArtistsSearch) -> Tuple[Set[int], Set[int]]:
+        artists_count2artist_ids = {enum.value: set() for enum in ArtistsCount}
+
+        for track in self.database.tracks.find({}, {"artists": 1}):
+            enum = ArtistsCount.SOLO if len(track["artists"]) == 1 else ArtistsCount.FEAT
+            for artist_id in track["artists"]:
+                artists_count2artist_ids[enum.value].add(artist_id)
+
+        return params.replace_enum_query(query, artists_count2artist_ids)
+
+    def __get_language_artist_ids(self, query: dict, params: ArtistsSearch) -> Tuple[Set[int], Set[int]]:
+        language2artist_ids = {enum.value: set() for enum in Language}
+
+        for track in self.database.tracks.find({}, {"artists": 1, "language": 1}):
+            enum = Language(track["language"])
+            for artist_id in track["artists"]:
+                language2artist_ids[enum.value].add(artist_id)
+
+        return params.replace_enum_query(query, language2artist_ids)
+
+    def __artist_ids_to_query(self, artist_ids_query: Dict[str, Iterable[Set[int]]]) -> dict:
+        include_ids = set.intersection(*artist_ids_query["$in"]) if artist_ids_query["$in"] else {}
+        exclude_ids = set.union(*artist_ids_query["$nin"]) if artist_ids_query["$nin"] else {}
+
+        if include_ids and exclude_ids:
+            return {"$in": list(include_ids.difference(exclude_ids))}
+
+        if include_ids:
+            return {"$in": list(include_ids)}
+
+        if exclude_ids:
+            return {"$nin": list(exclude_ids)}
+
+        return {}
+
+    def __get_artists_search_query(self, params: ArtistsSearch, username: Optional[str]) -> dict:
+        query = params.to_query()
+        artist_ids = {"$in": [], "$nin": []}
+
+        if params.target == "questions":
+            artist_ids["$in"].append(self.__get_guessed_artist_ids(username))
+
+        if artists_count_query := query.pop("artists_count", {}):
+            in_set, nin_set = self.__get_artists_count_artist_ids(artists_count_query, params)
+            artist_ids["$in"].append(in_set)
+            artist_ids["$nin"].append(nin_set)
+
+        if language_query := query.pop("language", {}):
+            in_set, nin_set = self.__get_language_artist_ids(language_query, params)
+            artist_ids["$in"].append(in_set)
+            artist_ids["$nin"].append(nin_set)
+
+        if artist_ids_query := self.__artist_ids_to_query(artist_ids):
+            query["artist_id"] = artist_ids_query
+
+        return query

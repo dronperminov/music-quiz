@@ -32,6 +32,19 @@
                 <h3>Фильтры</h3>
 
                 <div class="search-filter">
+                    <label>Искать среди
+                        <select class="basic-select" id="target">
+                            <option value="all">всех исполнителей</option>
+                            {% if user %}
+                            <option value="questions">загаданных в вопросах</option>
+                            {% endif %}
+                        </select>
+                    </label>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter">
                     <label>Сортировка:
                         <select class="basic-select" id="order">
                             <option value="listen_count">прослушивания</option>
@@ -213,6 +226,7 @@
 
         {% if search_params %}
         document.getElementById("query").value = {{search_params.query|tojson}}
+        document.getElementById("target").value = {{search_params.target|tojson}}
         document.getElementById("order").value = {{search_params.order|tojson}}
         document.getElementById("order-type").value = {{search_params.order_type|tojson}}
         SearchArtists()

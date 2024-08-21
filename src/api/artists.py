@@ -18,7 +18,7 @@ router = APIRouter()
 
 @router.get("/artists")
 def get_artists(user: Optional[User] = Depends(get_user), params: ArtistsSearchQuery = Depends()) -> HTMLResponse:
-    search_params = params.to_search_params()
+    search_params = params.to_search_params(user is not None)
     last_added_artists = music_database.get_last_artists(order_field="metadata.created_at", order_type=-1, count=10)
     last_updated_artists = music_database.get_last_artists(order_field="metadata.updated_at", order_type=-1, count=10)
     top_listened_artists = music_database.get_last_artists(order_field="listen_count", order_type=-1, count=10)
@@ -45,7 +45,7 @@ def get_artists(user: Optional[User] = Depends(get_user), params: ArtistsSearchQ
 
 @router.post("/artists")
 def search_artists(params: ArtistsSearch, user: Optional[User] = Depends(get_user)) -> JSONResponse:
-    total, artists = music_database.search_artists(params=params)
+    total, artists = music_database.search_artists(params=params, username=user.username if user else None)
 
     if user:
         settings = database.get_settings(username=user.username)
