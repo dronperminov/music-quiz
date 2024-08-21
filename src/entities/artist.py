@@ -58,9 +58,12 @@ class Artist:
         artist_data = self.to_dict()
         diff = {}
 
-        for field in ["name", "description", "artist_type", "image_urls", "listen_count", "tracks_count", "genres"]:
+        for field in ["name", "description", "image_urls", "listen_count", "tracks_count", "genres"]:
             if field in data and artist_data[field] != data[field]:
                 diff[field] = {"prev": artist_data[field], "new": data[field]}
+
+        if "artist_type" in data and artist_data["artist_type"] != data["artist_type"] and data["artist_type"] != ArtistType.UNKNOWN.value:
+            diff["artist_type"] = {"prev": artist_data["artist_type"], "new": data["artist_type"]}
 
         if "tracks" in data:
             artist_tracks = sorted(artist_data["tracks"], key=lambda track: track["track_id"])
