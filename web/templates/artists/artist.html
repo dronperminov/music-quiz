@@ -67,7 +67,7 @@
                         </svg>
                     </div>
                     <div class="track-menu">
-                        <div class="vertical-ham" onclick="infos.Show({{track.track_id}})">
+                        <div class="vertical-ham" onclick="infos.Show('track-{{track.track_id}}')">
                             <div></div>
                             <div></div>
                             <div></div>
@@ -93,39 +93,7 @@
     </div>
 
     <div class="info-popup" id="info-popup"></div>
-
-    {% for track in tracks %}
-    <div class="info" id="info-{{track.track_id}}">
-        <div class="close-icon" title="Закрыть"></div>
-
-        <div class="info-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy"></div>
-
-        <div class="info-header-line">{% if track.source.name == "yandex" %}<a href="https://music.yandex.ru/track/{{track.source.yandex_id}}" target="_blank"><img src="/images/ya_music.svg"></a>{% endif %}{{track.title}}</div>
-        {% if track.year > 0 %}<div class="info-line"><b>Год выхода:</b> {{track.year}}</div>{% endif %}
-        <div class="info-line"><b>Позиция у исполнителя:</b> {{artist.tracks[track.track_id]}}</div>
-        {% if track.duration > 0 %}<div class="info-line"><b>Длительность:</b> {{track.format_duration()}}</div>{% endif %}
-
-        {% if track.genres %}<div class="info-line"><b>Жанры:</b> {% for genre in track.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}
-        {% if track.language.to_rus() %}<div class="info-line"><b>Язык:</b> {{track.language.to_rus()}}</div>{% endif %}
-        <div class="info-line"><b>Добавлен:</b> {{track.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.created_by }}</div>
-        {% if not track.metadata.is_initial() %}<div class="info-line"><b>Обновлён:</b> {{track.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{track.metadata.updated_by }}</div>{% endif %}
-
-        {% if track.lyrics %}
-        <div class="details details-open">
-            <div class="details-header" onclick="this.parentNode.classList.toggle('details-open')"><span class="details-icon"></span> Текст</div>
-            <div class="details-content">
-                <div class="track-lyrics">
-                    {% set indices = track.lyrics.get_chorus_indices() %}
-                    {% for line in track.lyrics.lines %}
-                    <div class="track-lyrics-line{% if loop.index0 in indices %} track-lyrics-line-chorus{% endif %}">{{line.text}}</div>
-                    {% if indices.get(loop.index0, -1) != indices.get(loop.index, -1) %}<br>{% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-    {% endfor %}
+    <div id="info-block"></div>
 
     <script src="/js/utils/fetch.js?v={{version}}"></script>
     <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
@@ -134,11 +102,23 @@
     <script src="/js/utils/utils.js?v={{version}}"></script>
     <script src="/js/utils/player.js?v={{version}}"></script>
     <script src="/js/utils/player_collection.js?v={{version}}"></script>
+    <script src="/js/entities/track.js?v={{version}}"></script>
     <script src="/js/tracks/track.js?v={{version}}"></script>
     <script src="/js/artists/artist.js?v={{version}}"></script>
     <script>
         let infos = new InfoPanels()
         let players = new PlayerCollection()
+
+        const artist = {{jsonable_encoder(artist)|tojson}}
+        const tracks = {{jsonable_encoder(tracks)|tojson}}
+        let infoBlock = document.getElementById("info-block")
+
+        for (let track of tracks) {
+            track = new Track(track)
+            infoBlock.appendChild(track.BuildInfo([artist]))
+        }
+
+        infos.Update()
     </script>
     {% include "components/footer.html" %}
 </body>

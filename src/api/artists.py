@@ -77,6 +77,7 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
         tracks=tracks,
         artist2name=artist2name,
         track_id2scale=track_id2scale,
-        get_word_form=get_word_form
+        get_word_form=get_word_form,
+        jsonable_encoder=jsonable_encoder
     )
     return HTMLResponse(content=content)
