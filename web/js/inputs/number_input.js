@@ -3,8 +3,10 @@ function NumberInput(inputId, min, max, pattern, value, onChange = null) {
     this.error = document.getElementById(`${inputId}-error`)
     this.input.addEventListener("input", () => this.Input())
 
-    if (onChange !== null)
+    if (onChange !== null) {
         this.input.addEventListener("change", () => onChange())
+        this.input.addEventListener("input", () => onChange())
+    }
 
     this.min = min
     this.max = max
