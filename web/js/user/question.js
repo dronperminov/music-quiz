@@ -66,9 +66,21 @@ function SendAnswer(correct) {
     if (answerTime !== null)
         answer.answer_time = answerTime
 
+    let buttons = [
+        document.getElementById("answer-button-correct"),
+        document.getElementById("answer-button-incorrect")
+    ]
+
+    for (let button of buttons)
+        button.setAttribute("disabled", "")
+
     SendRequest("/answer-question", answer).then(response => {
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(response.message, "error-notification")
+
+            for (let button of buttons)
+                button.removeAttribute("disabled")
+
             return
         }
 

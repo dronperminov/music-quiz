@@ -188,6 +188,14 @@ iniut[type="search"]::-webkit-search-decoration {
     border-color: var(--error-color);
 }
 
+.basic-button[disabled] {
+    background: var(--disabled-color);
+    border-color: var(--border-color);
+    color: var(--subtext-color);
+    pointer-events: none;
+    user-select: none;
+}
+
 .interval-input {
     padding-top: 0.4em;
     display: grid;
