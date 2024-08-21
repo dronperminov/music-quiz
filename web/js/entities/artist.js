@@ -12,7 +12,7 @@ function Artist(data) {
     this.metadata = data.metadata
 }
 
-Artist.prototype.Build = function() {
+Artist.prototype.Build = function(artistId2scale = null) {
     let artist = MakeElement("artist")
     let artistImage = MakeElement("artist-image", artist)
     let artistImageLink = MakeElement("", artistImage, {href: `/artists/${this.artistId}`}, "a")
@@ -21,6 +21,15 @@ Artist.prototype.Build = function() {
     let artistInfo = MakeElement("artist-data", artist)
 
     let artistName = MakeElement("artist-name", artistInfo)
+
+    if (artistId2scale !== null && this.artistId in artistId2scale) {
+        let scale = artistId2scale[this.artistId]
+        let circle = MakeElement("circle", artistName, {style: `background-color: hsl(${scale.scale * 120}, 70%, 50%)`})
+        let correct = GetWordForm(scale.correct, ['корректный', 'корректных', 'корректных'])
+        let incorrect = GetWordForm(scale.incorrect, ['некорректный', 'некорректных', 'некорректных'])
+        circle.addEventListener("click", () => ShowNotification(`<b>${this.name}</b>: ${correct} и ${incorrect}`, 'info-notification', 3000))
+    }
+
     let artistNameLink = MakeElement("", artistName, {href: `/artists/${this.artistId}`, innerText: this.name}, "a")
 
     let artistStats = MakeElement("artist-stats", artistInfo, {innerHTML: this.GetStats()})

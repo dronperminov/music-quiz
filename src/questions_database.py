@@ -1,9 +1,10 @@
 import logging
 import random
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from src import MusicDatabase
 from src.database import Database
+from src.entities.artist import Artist
 from src.entities.question import Question
 from src.entities.question_settings import QuestionSettings
 from src.entities.questions.artist_by_intro_question import ArtistByIntroQuestion
@@ -82,6 +83,36 @@ class QuestionsDatabase:
             {"$match": {**settings.to_tracks_query(), "track_id": {"$in": list(possible_track_ids)}}},
             {"$project": {"track_id": 1, "genres": 1, "language": 1, "year": 1, "artists_count": 1, "lyrics.lrc": 1, "lyrics.chorus": 1}}
         ]))
+
+    def get_tracks_scales(self, username: str, tracks: List[Track]) -> Dict[int, dict]:
+        track_ids = list({track.track_id for track in tracks})
+        questions = list(self.database.questions.find({"username": username, "correct": {"$ne": None}, "track_id": {"$in": track_ids}}))
+        track_id2scale = {question["track_id"]: {"incorrect": 0, "correct": 0, "scale": 0} for question in questions}
+
+        for question in questions:
+            track_id2scale[question["track_id"]]["correct" if question["correct"] else "incorrect"] += 1
+
+        for track_id, scales in track_id2scale.items():
+            track_id2scale[track_id]["scale"] = scales["correct"] / (scales["correct"] + scales["incorrect"])
+
+        return track_id2scale
+
+    def get_artists_scales(self, username: str, artists: List[Artist]) -> Dict[int, dict]:
+        track_ids = list({track_id for artist in artists for track_id in artist.tracks})
+        track_id2scale = {track_id: {False: 0, True: 0} for track_id in track_ids}
+
+        for question in self.database.questions.find({"username": username, "correct": {"$ne": None}, "track_id": {"$in": track_ids}}):
+            track_id2scale[question["track_id"]][question["correct"]] += 1
+
+        artist_id2scale = {}
+        for artist in artists:
+            correct = sum(track_id2scale[track_id][True] for track_id in artist.tracks)
+            incorrect = sum(track_id2scale[track_id][False] for track_id in artist.tracks)
+
+            if total := correct + incorrect:
+                artist_id2scale[artist.artist_id] = {"correct": correct, "incorrect": incorrect, "scale": correct / total}
+
+        return artist_id2scale
 
     def __generate_question_by_type(self, question_type: QuestionType, track: Track, settings: Settings) -> Question:
         artist_id2artist = self.music_database.get_track_artists(track=track)

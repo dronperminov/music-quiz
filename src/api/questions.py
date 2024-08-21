@@ -24,6 +24,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
     question = questions_database.get_question(settings)
     track = music_database.get_track(track_id=question.track_id)
     artist_id2artist = music_database.get_track_artists(track=track)
+    artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=list(artist_id2artist.values()))
 
     template = templates.get_template("user/question.html")
     content = template.render(
@@ -34,6 +35,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
         question=question,
         track=track,
         artist_id2artist=artist_id2artist,
+        artist_id2scale=artist_id2scale,
         jsonable_encoder=jsonable_encoder
     )
     return HTMLResponse(content=content)

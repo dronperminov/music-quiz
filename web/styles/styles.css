@@ -24,6 +24,10 @@
     --error-background: #f4d3d0;
     --success-color: #4caf50;
     --success-background: #d4e7d5;
+    --warning-color: #967132;
+    --warning-background: #f8f3d6;
+    --info-color: #4480ae;
+    --info-background: #cde8f5;
 
     /* menu  */
     --menu-height: 55px;
@@ -350,6 +354,27 @@ h1 + .description {
     background-color: var(--success-background) !important;
     border-color: var(--success-color) !important;
     color: var(--success-color) !important;
+}
+
+.warning-notification {
+    background-color: var(--warning-background) !important;
+    border-color: var(--warning-color) !important;
+    color: var(--warning-color) !important;
+}
+.info-notification {
+    background-color: var(--info-background) !important;
+    border-color: var(--info-color) !important;
+    color: var(--info-color) !important;
+}
+
+.circle {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 100%;
+    cursor: pointer;
+    margin-right: 0.2em;
+    margin-bottom: 0.05em;
 }
 
 @media (max-width: 767px) {

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from src import music_database
+from src import music_database, questions_database
 from src.api import templates
 from src.entities.user import User
 from src.enums import ArtistType, ArtistsCount, Genre, Language
@@ -44,9 +44,10 @@ def get_artists(user: Optional[User] = Depends(get_user), params: ArtistsSearchQ
 
 
 @router.post("/artists")
-def search_artists(params: ArtistsSearch) -> JSONResponse:
+def search_artists(params: ArtistsSearch, user: Optional[User] = Depends(get_user)) -> JSONResponse:
     total, artists = music_database.search_artists(params=params)
-    return JSONResponse({"status": "success", "total": total, "artists": jsonable_encoder(artists)})
+    artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=artists) if user else {}
+    return JSONResponse({"status": "success", "total": total, "artists": jsonable_encoder(artists), "artist_id2scale": artist_id2scale})
 
 
 @router.get("/artists/{artist_id}")
@@ -54,6 +55,7 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
     artist = music_database.get_artist(artist_id=artist_id)
     tracks = sorted(music_database.get_artist_tracks(artist_id), key=lambda track: artist.tracks[track.track_id])
     artist2name = music_database.get_artist_names(tracks)
+    track_id2scale = questions_database.get_tracks_scales(username=user.username, tracks=tracks) if user else {}
 
     template = templates.get_template("artists/artist.html")
     content = template.render(
@@ -63,6 +65,7 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
         artist=artist,
         tracks=tracks,
         artist2name=artist2name,
+        track_id2scale=track_id2scale,
         get_word_form=get_word_form
     )
     return HTMLResponse(content=content)

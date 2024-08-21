@@ -113,13 +113,14 @@
 
         const track = new Track({{jsonable_encoder(track)|tojson}})
         const artists = [{% for artist_id in track.artists %}{{jsonable_encoder(artist_id2artist[artist_id])|tojson}},{% endfor %}]
+        const artistId2scale = {{artist_id2scale|tojson}}
 
         let artistsBlock = document.getElementById("artists")
         let infoBlock = document.getElementById("info-block")
 
         for (let artist of artists) {
             artist = new Artist(artist)
-            artistsBlock.appendChild(artist.Build())
+            artistsBlock.appendChild(artist.Build(artistId2scale))
             infoBlock.appendChild(artist.BuildInfo())
         }
 
