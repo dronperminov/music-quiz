@@ -12,6 +12,7 @@ class Settings:
     question_settings: QuestionSettings
     autoplay: bool
     updated_at: datetime
+    show_knowledge_status: bool
 
     def to_dict(self) -> dict:
         return {
@@ -19,6 +20,7 @@ class Settings:
             "show_progress": self.show_progress,
             "question_settings": self.question_settings.to_dict(),
             "autoplay": self.autoplay,
+            "show_knowledge_status": self.show_knowledge_status,
             "updated_at": self.updated_at
         }
 
@@ -29,6 +31,7 @@ class Settings:
             show_progress=data["show_progress"],
             question_settings=QuestionSettings.from_dict(data["question_settings"]),
             autoplay=data["autoplay"],
+            show_knowledge_status=data["show_knowledge_status"],
             updated_at=data["updated_at"]
         )
 
@@ -39,12 +42,14 @@ class Settings:
             show_progress=True,
             question_settings=QuestionSettings.default(),
             autoplay=True,
+            show_knowledge_status=True,
             updated_at=datetime.now().replace(microsecond=0)
         )
 
     def update_main(self, main_settings: MainSettings) -> "Settings":
         self.autoplay = main_settings.autoplay
         self.show_progress = main_settings.show_progress
+        self.show_knowledge_status = main_settings.show_knowledge_status
         self.updated_at = datetime.now()
         return self
 

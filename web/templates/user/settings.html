@@ -43,6 +43,22 @@
                     </label>
                 </div>
             </div>
+            <div class="settings-item-description">По возможности воспроизводить аудио сразу после загрузки страницы.</div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-checkbox-item">
+                <div class="settings-name">
+                    <label for="show-knowledge-status">Показывать статус угадывания</label>
+                </div>
+                <div class="settings-checkbox">
+                    <label class="switch-checkbox">
+                        <input type="checkbox" id="show-knowledge-status"{% if settings.show_knowledge_status %}checked{% endif %} onchange="UpdateMainSettings()">
+                        <span class="switch-checkbox-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="settings-item-description">Статус угадывания – цветовой индикатор у исполнителей и треков, показывающий точность ответов на вопросы.</div>
         </div>
 
         <h3>Настройки вопросов</h3>

@@ -109,6 +109,7 @@ class TestSerialization(TestCase):
             show_progress=True,
             question_settings=question_settings,
             autoplay=True,
+            show_knowledge_status=True,
             updated_at=datetime(2024, 1, 1)
         )
 

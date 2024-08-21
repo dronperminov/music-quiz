@@ -102,6 +102,7 @@
 
         <div class="info-header-line">{% if track.source.name == "yandex" %}<a href="https://music.yandex.ru/track/{{track.source.yandex_id}}" target="_blank"><img src="/images/ya_music.svg"></a>{% endif %}{{track.title}}</div>
         {% if track.year > 0 %}<div class="info-line"><b>Год выхода:</b> {{track.year}}</div>{% endif %}
+        <div class="info-line"><b>Позиция у исполнителя:</b> {{artist.tracks[track.track_id]}}</div>
         {% if track.duration > 0 %}<div class="info-line"><b>Длительность:</b> {{track.format_duration()}}</div>{% endif %}
 
         {% if track.genres %}<div class="info-line"><b>Жанры:</b> {% for genre in track.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}

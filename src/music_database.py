@@ -192,7 +192,7 @@ class MusicDatabase:
             track_path = os.path.join(output_path, f'{track["track_id"]}.mp3')
             info.download(track_path)
             sound = AudioSegment.from_file(track_path)
-            sound.export(track_path, format="mp3", bitrate="128k")
+            sound.export(track_path, format="mp3", bitrate="128k").close()
             self.update_track(track_id=track["track_id"], diff={"downloaded": {"prev": False, "new": True}}, username=username)
 
     def download_tracks_image(self, output_path: str, username: str) -> None:

@@ -71,7 +71,8 @@ function GetQuestionSettings() {
 function UpdateMainSettings() {
     let settings = {
         show_progress: document.getElementById("show-progress").checked,
-        autoplay: document.getElementById("autoplay").checked
+        autoplay: document.getElementById("autoplay").checked,
+        show_knowledge_status: document.getElementById("show-knowledge-status").checked
     }
 
     SendRequest("/main_settings", settings).then(response => {
