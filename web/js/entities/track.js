@@ -51,6 +51,10 @@ Track.prototype.BuildInfo = function(artists = null) {
     if (this.metadata.created_at != this.metadata.updated_at)
         MakeElement("info-line", info, {innerHTML: `<b>Обновлён:</b> ${this.FormatMetadataDate(this.metadata.updated_at)} пользователем @${this.metadata.updated_by}`})
 
+    let history = MakeElement("info-line", info)
+    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
+    history.addEventListener("click", () => ShowHistory(`/track-history/${this.trackId}`))
+
     if (this.lyrics !== null) {
         let details = MakeElement("details details-open", info)
         let detailsHeader = MakeElement("details-header", details)
@@ -78,11 +82,9 @@ Track.prototype.BuildInfo = function(artists = null) {
     return info
 }
 
-Track.prototype.FormatMetadataDate = function(date) {
-    let match = (/^(?<year>\d\d\d\d)-(?<month>\d\d?)-(?<day>\d\d?)T(?<time>\d\d?:\d\d:\d\d?)$/g).exec(date)
-    let groups = match.groups
-
-    return `${groups.day}.${groups.month}.${groups.year} в ${groups.time}`
+Track.prototype.FormatMetadataDate = function(datetime) {
+    let {date, time} = ParseDateTime(datetime)
+    return `${date} в ${time}`
 }
 
 Track.prototype.FormatDuration = function() {

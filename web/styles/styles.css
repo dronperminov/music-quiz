@@ -141,7 +141,7 @@ h4 {
 }
 
 ul {
-    margin-left: 1em;
+    margin-left: 16px;
 }
 
 .hidden {
@@ -379,6 +379,14 @@ h1 + .description {
     cursor: pointer;
     margin-right: 0.2em;
     margin-bottom: 0.05em;
+}
+
+.error-color {
+    color: var(--error-color);
+}
+
+.success-color {
+    color: var(--success-color);
 }
 
 @media (max-width: 767px) {

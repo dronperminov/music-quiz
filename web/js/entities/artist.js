@@ -62,10 +62,6 @@ Artist.prototype.BuildInfo = function() {
         let link = MakeElement("", header, {href: `https://music.yandex.ru/artist/${this.source.yandex_id}`, target: "_blank"}, "a")
         let img = MakeElement("", link, {src: "/images/ya_music.svg"}, "img")
         let span = MakeElement("", header, {innerText: this.name}, "span")
-
-        let buttonBlock = MakeElement("info-line admin-block", info)
-        let button = MakeElement("gradient-button gradient-button-full-width", buttonBlock, {innerText: "Распарсить"}, "button")
-        button.addEventListener("click", () => ParseArtist(button, this.source.yandex_id))
     }
     else {
         MakeElement("info-header-line", info, {innerHTML: this.name})
@@ -83,6 +79,16 @@ Artist.prototype.BuildInfo = function() {
     if (this.metadata.created_at != this.metadata.updated_at)
         MakeElement("info-line", info, {innerHTML: `<b>Обновлён:</b> ${this.FormatMetadataDate(this.metadata.updated_at)} пользователем @${this.metadata.updated_by}`})
 
+    let history = MakeElement("info-line", info)
+    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
+    history.addEventListener("click", () => ShowHistory(`/artist-history/${this.artistId}`))
+
+    if (this.source.name == "yandex") {
+        let buttonBlock = MakeElement("info-line admin-block", info)
+        let button = MakeElement("gradient-button gradient-button-full-width", buttonBlock, {innerText: "Распарсить"}, "button")
+        button.addEventListener("click", () => ParseArtist(button, this.source.yandex_id))
+    }
+
     return info
 }
 
@@ -96,11 +102,9 @@ Artist.prototype.FormatListenCount = function() {
     return `${this.listenCount}`
 }
 
-Artist.prototype.FormatMetadataDate = function(date) {
-    let match = (/^(?<year>\d\d\d\d)-(?<month>\d\d?)-(?<day>\d\d?)T(?<time>\d\d?:\d\d:\d\d?)$/g).exec(date)
-    let groups = match.groups
-
-    return `${groups.day}.${groups.month}.${groups.year} в ${groups.time}`
+Artist.prototype.FormatMetadataDate = function(datetime) {
+    let {date, time} = ParseDateTime(datetime)
+    return `${date} в ${time}`
 }
 
 Artist.prototype.GetStats = function() {
