@@ -1,22 +1,24 @@
 function InfoPanels() {
-    this.popup = document.getElementById("info-popup")
+    this.popup = document.createElement("div")
+    this.popup.classList.add("info-popup")
     this.popup.addEventListener("click", () => this.Close())
 
-    this.Update()
+    this.blocks = document.createElement("div")
+
+    let body = document.getElementsByTagName("body")[0]
+    body.appendChild(this.popup)
+    body.appendChild(this.blocks)
 }
 
-InfoPanels.prototype.Update = function() {
-    for (let block of document.getElementsByClassName("info")) {
-        if (block.classList.contains("info-handled"))
-            continue
+InfoPanels.prototype.Add = function(block) {
+    this.blocks.appendChild(block)
 
-        let handler = new SwipeHandler(block, () => this.Close(), SWIPE_HANDLER_DOWN)
+    let handler = new SwipeHandler(block, () => this.Close(), SWIPE_HANDLER_DOWN)
 
-        for (let closeIcon of block.getElementsByClassName("close-icon"))
-            closeIcon.addEventListener("click", () => this.Close())
+    for (let closeIcon of block.getElementsByClassName("close-icon"))
+        closeIcon.addEventListener("click", () => this.Close())
 
-        block.classList.add("info-handled")
-    }
+    block.classList.add("info-handled")
 }
 
 InfoPanels.prototype.Show = function(infoId) {

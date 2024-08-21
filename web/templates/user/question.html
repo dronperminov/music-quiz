@@ -91,9 +91,6 @@
         </div>
     </div>
 
-    <div class="info-popup" id="info-popup"></div>
-    <div id="info-block"></div>
-
     <script src="/js/utils/utils.js?v={{version}}"></script>
     <script src="/js/utils/fetch.js?v={{version}}"></script>
     <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
@@ -116,17 +113,14 @@
         const artistId2scale = {{artist_id2scale|tojson}}
 
         let artistsBlock = document.getElementById("artists")
-        let infoBlock = document.getElementById("info-block")
 
         for (let artist of artists) {
             artist = new Artist(artist)
             artistsBlock.appendChild(artist.Build(artistId2scale))
-            infoBlock.appendChild(artist.BuildInfo())
+            infos.Add(artist.BuildInfo())
         }
 
-        infoBlock.appendChild(track.BuildInfo(artists))
-
-        infos.Update()
+        infos.Add(track.BuildInfo(artists))
         {% if settings.autoplay %}PlayTrack(track.trackId){% endif %}
     </script>
     {% include "components/footer.html" %}

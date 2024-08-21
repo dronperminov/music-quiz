@@ -117,10 +117,8 @@ function LoadArtists(pageSize = 10) {
         for (let artist of response.artists) {
             artist = new Artist(artist)
             artists.appendChild(artist.Build(response.artist_id2scale))
-            infoBlock.appendChild(artist.BuildInfo())
+            infos.Add(artist.BuildInfo())
         }
-
-        infos.Update()
     })
 }
 

@@ -92,9 +92,6 @@
         </div>
     </div>
 
-    <div class="info-popup" id="info-popup"></div>
-    <div id="info-block"></div>
-
     <script src="/js/utils/fetch.js?v={{version}}"></script>
     <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
     <script src="/js/utils/info_panels.js?v={{version}}"></script>
@@ -115,10 +112,8 @@
 
         for (let track of tracks) {
             track = new Track(track)
-            infoBlock.appendChild(track.BuildInfo([artist]))
+            infos.Add(track.BuildInfo([artist]))
         }
-
-        infos.Update()
     </script>
     {% include "components/footer.html" %}
 </body>
