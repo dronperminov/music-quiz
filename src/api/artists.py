@@ -83,3 +83,9 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
         jsonable_encoder=jsonable_encoder
     )
     return HTMLResponse(content=content)
+
+
+@router.get("/artist-history/{artist_id}")
+def get_history(artist_id: int) -> JSONResponse:
+    history = list(database.history.find({"artist_id": artist_id}, {"_id": 0}).sort("timestamp", -1))
+    return JSONResponse({"history": jsonable_encoder(history)})
