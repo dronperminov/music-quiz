@@ -22,7 +22,7 @@ def get_artists(user: Optional[User] = Depends(get_user), params: ArtistsSearchQ
     last_added_artists = music_database.get_last_artists(order_field="metadata.created_at", order_type=-1, count=10)
     last_updated_artists = music_database.get_last_artists(order_field="metadata.updated_at", order_type=-1, count=10)
     top_listened_artists = music_database.get_last_artists(order_field="listen_count", order_type=-1, count=10)
-    guessed_artists = music_database.get_last_artists(order_field="listen_count", order_type=-1, target="questions", username=user.username, count=10) if user else []
+    guessed_artists = music_database.get_last_artists(order_field="name_lowercase", order_type=1, target="questions", username=user.username, count=10) if user else []
 
     template = templates.get_template("artists/artists.html")
     content = template.render(
