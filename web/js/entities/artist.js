@@ -70,7 +70,8 @@ Artist.prototype.BuildInfo = function() {
     if (this.description.length > 0)
         MakeElement("info-description-line", info, {innerHTML: this.description})
 
-    MakeElement("info-line", info, {innerHTML: `<b>Форма записи:</b> ${this.artistType.ToRus(true)}`})
+    let artistTypeblock = MakeElement("info-line", info)
+    this.BuildArtistType(artistTypeblock)
 
     if (this.genres.length > 0)
         MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => genre.ToRus()).join(", ")}`})
@@ -92,6 +93,54 @@ Artist.prototype.BuildInfo = function() {
     }
 
     return info
+}
+
+Artist.prototype.BuildArtistType = function(block) {
+    let labelBlock = MakeElement("", block, {innerHTML: `<b>Форма записи:</b> `}, "span")
+
+    let editBlock = MakeElement("", block, {}, "span")
+    let select = MakeElement("text-select", editBlock, {}, "select")
+
+    for (let [value, name] of Object.entries(this.artistType.options)) {
+        if (!this.artistType.IsUnknown() && value == "unknown")
+            continue
+
+        let option = MakeElement("", select, {innerText: name, value: value}, "option")
+
+        if (this.artistType.value == value)
+            option.setAttribute("selected", "")
+    }
+
+    let html = document.getElementsByTagName("html")[0]
+    if (!html.hasAttribute("data-user-role") || html.getAttribute("data-user-role") != "admin") {
+        select.classList.add("text-select-disabled")
+        return
+    }
+
+    select.addEventListener("click", () => {
+        select.classList.remove("text-select")
+        select.classList.add("basic-select")
+    })
+
+    labelBlock.addEventListener("click", () => {
+        select.value = this.artistType.value
+        select.classList.remove("basic-select")
+        select.classList.add("text-select")
+    })
+
+    select.addEventListener("change", () => {
+        SendRequest("/update-artist", {artist_id: this.artistId, artist_type: select.value}).then(response => {
+            if (response.status != SUCCESS_STATUS) {
+                ShowNotification(`Не удалось обновить форму записии<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+                select.value = this.artistType.value
+                return
+            }
+
+            this.artistType.value = select.value
+            select.classList.add("text-select")
+            select.classList.remove("basic-select")
+        })
+    })
 }
 
 Artist.prototype.FormatListenCount = function() {

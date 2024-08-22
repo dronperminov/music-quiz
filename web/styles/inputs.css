@@ -40,6 +40,7 @@ iniut[type="search"]::-webkit-search-decoration {
     padding: 0.4em 0.7em;
     background: transparent;
     font-size: 1em;
+    font-family: Inter;
     transition: border-color 150ms ease-in;
 
     -webkit-appearance: none;
@@ -57,6 +58,23 @@ iniut[type="search"]::-webkit-search-decoration {
 .basic-select:disabled, .basic-select:disabled:hover, .basic-select:disabled:focus {
     color: var(--input-disabled-color);
     border: none;
+}
+
+.text-select {
+    border: none;
+    padding: 0;
+    background: transparent;
+    font-size: 1em;
+    font-family: Inter;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+}
+
+.text-select-disabled {
+    pointer-events: none;
 }
 
 .switch-checkbox {

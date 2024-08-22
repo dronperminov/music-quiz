@@ -41,7 +41,7 @@ def parse_artist(artist_id: int = Body(..., embed=True), user: Optional[User] = 
         return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
 
     if user.role == UserRole.USER:
-        return JSONResponse({"status": "error", "message": "Пользователь не является админитсратором"})
+        return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
 
     try:
         playlist = yandex_music_parser.parse_playlist(playlist_username="yamusic-bestsongs", playlist_id=artist_id, max_artists=4, max_tracks=20)

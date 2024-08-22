@@ -1,9 +1,6 @@
 function ArtistType(value) {
     this.value = value
-}
-
-ArtistType.prototype.ToRus = function(withUnknown = false) {
-    return {
+    this.options = {
         "singer_male": "певец",
         "singer_female": "певица",
         "performer_male": "исполнитель",
@@ -14,8 +11,12 @@ ArtistType.prototype.ToRus = function(withUnknown = false) {
         "trio": "трио",
         "dj": "диджей",
         "via": "ВИА",
-        "unknown": withUnknown ? "неизвестна" : ""
-    }[this.value]
+        "unknown": "неизвестна"
+    }
+}
+
+ArtistType.prototype.ToRus = function() {
+    return this.options[this.value]
 }
 
 ArtistType.prototype.IsUnknown = function() {
