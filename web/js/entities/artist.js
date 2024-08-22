@@ -3,7 +3,7 @@ function Artist(data) {
     this.source = data.source
     this.name = data.name
     this.description = data.description
-    this.artistType = data.artist_type
+    this.artistType = new ArtistType(data.artist_type)
     this.imageUrls = data.image_urls.length > 0 ? data.image_urls : ['/images/artists/default.png']
     this.listenCount = data.listen_count
     this.tracks = data.tracks
@@ -70,6 +70,8 @@ Artist.prototype.BuildInfo = function() {
     if (this.description.length > 0)
         MakeElement("info-description-line", info, {innerHTML: this.description})
 
+    MakeElement("info-line", info, {innerHTML: `<b>Форма записи:</b> ${this.artistType.ToRus(true)}`})
+
     if (this.genres.length > 0)
         MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => genre.ToRus()).join(", ")}`})
 
@@ -112,24 +114,8 @@ Artist.prototype.GetStats = function() {
     let tracksCount = `${GetWordForm(Object.keys(this.tracks).length, ['трек', 'трека', 'треков'])} из ${this.tracksCount}`
     let stats = [listenCount, tracksCount]
 
-    if (this.artistType != "unknown")
-        stats.push(this.ArtistTypeToRus())
+    if (!this.artistType.IsUnknown())
+        stats.push(this.artistType.ToRus())
 
     return stats.join(" | ")
-}
-
-Artist.prototype.ArtistTypeToRus = function() {
-    return {
-        "singer_male": "певец",
-        "singer_female": "певица",
-        "performer_male": "исполнитель",
-        "performer_female": "исполнительница",
-        "band": "группа",
-        "project": "проект",
-        "duet": "дуэт",
-        "trio": "трио",
-        "dj": "ди-джей",
-        "via": "ВИА",
-        "unknown": ""
-    }[this.artistType]
 }
