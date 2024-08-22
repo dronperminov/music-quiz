@@ -184,3 +184,41 @@ function SearchShortArtists(order, orderType, target = "all") {
 
     SearchArtists()
 }
+
+function BuildAdminInfo() {
+    let info = MakeElement("info", null, {id: "info-admin"})
+
+    MakeElement("close-icon", info, {title: "Закрыть"})
+    MakeElement("info-header-line", info, {innerText: "Управление"})
+
+    let chartBlock = MakeElement("info-line", info, {innerHTML: "<b>Чарт</b>"})
+    MakeElement("description", chartBlock, {innerText: "Актуальный чарт Яндекс.Музыки, содержащий 100 популярных треков"})
+    let chartButton = MakeElement("basic-button gradient-button", info, {innerText: "Обновить"}, "button")
+
+    MakeElement("info-divider-line", info)
+
+    let artistBlock = MakeElement("info-line", info, {innerHTML: "<b>Исполнители</b>"})
+    MakeElement("description", artistBlock, {innerText: "Добавление новых и обновление имеющихся исполнителей"})
+
+    let urlBlock = MakeElement("info-input-line", info)
+    let urlLabel = MakeElement("", urlBlock, {innerText: "Ссылка:", "for": "artist-url"}, "label")
+    let urlInput = MakeElement("basic-input", urlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/artist/...", id: "artist-url"}, "input")
+    MakeElement("error", info, {id: "artist-url-error"})
+
+    let maxTracksBlock = MakeElement("info-input-line", info)
+    let maxTracksLabel = MakeElement("", maxTracksBlock, {innerText: "Треков не более:", "for": "artist-max-tracks"}, "label")
+    let maxTracksInput = MakeElement("basic-input", maxTracksBlock, {type: "text", value: "20", id: "artist-max-tracks"}, "input")
+    MakeElement("error", info, {id: "artist-max-tracks-error"})
+
+    let maxArtistsBlock = MakeElement("info-input-line", info)
+    let maxArtistsLabel = MakeElement("", maxArtistsBlock, {innerText: "Исполнителей трека не более:", "for": "artist-max-artists"}, "label")
+    let maxArtistsInput = MakeElement("basic-input", maxArtistsBlock, {type: "text", value: "4", id: "artist-max-artists"}, "input")
+    MakeElement("error", info, {id: "artist-max-artists-error"})
+
+    let artistButton = MakeElement("basic-button gradient-button", info, {innerText: "Добавить"}, "button")
+
+    chartButton.addEventListener("click", () => ParseChart([chartButton, artistButton]))
+    artistButton.addEventListener("click", () => AddArtist([chartButton, artistButton]))
+
+    return info
+}

@@ -58,6 +58,8 @@ Track.prototype.BuildInfo = function(artists = null) {
     if (this.lyrics !== null) {
         let details = MakeElement("details details-open", info)
         let detailsHeader = MakeElement("details-header", details)
+        detailsHeader.addEventListener("click", () => details.classList.toggle('details-open'))
+
         MakeElement("details-icon", detailsHeader, {}, "span")
         MakeElement("", detailsHeader, {innerText: " Текст"}, "span")
 

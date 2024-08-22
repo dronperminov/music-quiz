@@ -57,7 +57,7 @@
         <div class="track-modifications" id="track-modifications">Внимание, <b>скорость трека изменена</b>: {{question.track_modifications.playback_rate|round(2)}}x</div>
         {% endif %}
 
-        <button class="gradient-button gradient-button-full-width hidden" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
+        <button class="basic-button gradient-button hidden" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
 
         <div class="answer-block hidden" id="answer">
             <div class="answer"><b>Ответ:</b> {{question.answer}}</div>

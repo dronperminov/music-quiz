@@ -10,6 +10,13 @@
 
     <div class="content">
         <h1>Исполнители</h1>
+
+        <div class="vertical-ham admin-block" onclick="infos.Show('admin')">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
         <div class="description">Всего в базе находится {{get_word_form(artists_count, ['исполнитель', 'исполнителя', 'исполнителей'])}} и {{get_word_form(tracks_count, ['трек', 'трека', 'треков'])}}</div>
 
         <div class="search search-query-empty" id="search">
@@ -153,7 +160,7 @@
                 <div class="search-filter-line"></div>
 
                 <div class="search-filter-button">
-                    <button class="gradient-button" onclick="search.Search()">Искать</button>
+                    <button class="basic-button gradient-button" onclick="search.Search()">Искать</button>
                 </div>
             </div>
         </div>
@@ -220,6 +227,8 @@
 
     <script src="/js/inputs/multi_select.js?v={{version}}"></script>
     <script src="/js/inputs/interval_input.js?v={{version}}"></script>
+    <script src="/js/inputs/number_input.js?v={{version}}"></script>
+    <script src="/js/inputs/text_input.js?v={{version}}"></script>
 
     <script src="/js/entities/genre.js?v={{version}}"></script>
     <script src="/js/entities/artist_type.js?v={{version}}"></script>
@@ -251,6 +260,8 @@
         document.getElementById("order-type").value = {{search_params.order_type|tojson}}
         SearchArtists()
         {% endif %}
+
+        infos.Add(BuildAdminInfo())
     </script>
     {% include "components/footer.html" %}
 </body>

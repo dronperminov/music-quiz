@@ -18,6 +18,16 @@
     align-items: center;
 }
 
+.content {
+    position: relative;
+}
+
+.content > .vertical-ham {
+    position: absolute;
+    right: 10px;
+    top: 1em;
+}
+
 .artist {
     display: grid;
     grid-template-columns: 6.5em 1fr 1.5em;

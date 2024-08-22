@@ -37,7 +37,7 @@
 }
 
 .info-open {
-    bottom: -11px;
+    bottom: 0;
     transition: bottom .2s ease-out;
 }
 
@@ -85,8 +85,30 @@
     margin-bottom: 0.5em;
 }
 
+.close-icon + .info-header-line, .close-icon + .info-image {
+    margin-top: -1em;
+}
+
 .info-header-line img {
     vertical-align: bottom;
+}
+
+.info-divider-line {
+    height: 2px;
+    background-color: var(--border-color);
+    margin: 1em 0;
+}
+
+.info-input-line {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    grid-gap: 0.6em;
+    align-items: baseline;
+    margin-bottom: 0.5em;
+}
+
+.info-input-line label {
+    font-weight: bold;
 }
 
 .info-description-line {

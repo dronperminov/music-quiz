@@ -35,7 +35,7 @@ Artist.prototype.Build = function(artistId2scale = null) {
     let artistStats = MakeElement("artist-stats", artistInfo, {innerHTML: this.GetStats()})
     let artistControls = MakeElement("artist-controls", artistInfo)
     let div = MakeElement("", artistControls)
-    let link = MakeElement("gradient-button", div, {href: `/artists/${this.artistId}`, innerText: "Смотреть"}, "a")
+    let link = MakeElement("gradient-link", div, {href: `/artists/${this.artistId}`, innerText: "Смотреть"}, "a")
 
     let artistMenu = MakeElement("artist-menu", artist)
     let verticalHam = MakeElement("vertical-ham", artistMenu, {innerHTML: "<div></div><div></div><div></div>"})
@@ -88,8 +88,8 @@ Artist.prototype.BuildInfo = function() {
 
     if (this.source.name == "yandex") {
         let buttonBlock = MakeElement("info-line admin-block", info)
-        let button = MakeElement("gradient-button gradient-button-full-width", buttonBlock, {innerText: "Распарсить"}, "button")
-        button.addEventListener("click", () => ParseArtist(button, this.source.yandex_id))
+        let button = MakeElement("basic-button gradient-button", buttonBlock, {innerText: "Распарсить"}, "button")
+        button.addEventListener("click", () => ParseArtist([button], this.source.yandex_id))
     }
 
     return info

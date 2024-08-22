@@ -157,7 +157,7 @@ iniut[type="search"]::-webkit-search-decoration {
     color: var(--multi-select-unchecked-color);
 }
 
-.gradient-button {
+.gradient-link {
     background: var(--gradient-button-background);
     color: var(--gradient-button-color);
     text-decoration: none;
@@ -167,18 +167,6 @@ iniut[type="search"]::-webkit-search-decoration {
     font-size: 0.9em;
     cursor: pointer;
     outline: none;
-}
-
-.gradient-button[disabled] {
-    background: var(--disabled-color);
-    border-color: var(--border-color);
-    color: var(--subtext-color);
-}
-
-.gradient-button-full-width {
-    width: 100%;
-    padding: 0.6em 0;
-    font-size: 1em !important;
 }
 
 .basic-button {
@@ -204,6 +192,12 @@ iniut[type="search"]::-webkit-search-decoration {
     background-color: var(--error-background);
     color: var(--error-color);
     border-color: var(--error-color);
+}
+
+.gradient-button {
+    background: var(--gradient-button-background);
+    border-color: var(--gradient-button-border);
+    color: var(--gradient-button-color);
 }
 
 .basic-button[disabled] {

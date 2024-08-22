@@ -1,4 +1,4 @@
-function NumberInput(inputId, min, max, pattern, value = null, onChange = null) {
+function TextInput(inputId, pattern, errorMessage, value = null, onChange = null) {
     this.input = document.getElementById(inputId)
     this.error = document.getElementById(`${inputId}-error`)
     this.input.addEventListener("input", () => this.Input())
@@ -8,40 +8,33 @@ function NumberInput(inputId, min, max, pattern, value = null, onChange = null) 
         this.input.addEventListener("input", () => onChange())
     }
 
-    this.min = min
-    this.max = max
     this.pattern = pattern
+    this.errorMessage = errorMessage
 
     this.SetValue(value)
 }
 
-NumberInput.prototype.SetValue = function(value) {
+TextInput.prototype.SetValue = function(value) {
     if (value !== null)
         this.input.value = value
 }
 
-NumberInput.prototype.GetValue = function() {
-    let value = this.input.value
+TextInput.prototype.GetValue = function() {
+    let value = this.input.value.trim()
+    this.input.value = value
 
     if (value.match(this.pattern) === null) {
         this.input.classList.add("error-input")
         this.input.focus()
-        this.error.innerText = "Введено некорректное число"
+        this.error.innerText = this.errorMessage
         this.input.scrollIntoView({behavior: 'smooth'})
         return null
     }
 
-    if (+value < this.min)
-        value = this.min
-
-    if (+value > this.max)
-        value = this.max
-
-    this.input.value = value
-    return +value
+    return value
 }
 
-NumberInput.prototype.Input = function() {
+TextInput.prototype.Input = function() {
     this.input.classList.remove("error-input")
     this.error.innerText = ""
 }
