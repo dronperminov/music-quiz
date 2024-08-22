@@ -1,8 +1,53 @@
+function GetActionDiffKeyValue(key, value) {
+    if (key == "artist_type")
+        return new ArtistType(value).ToRus()
+
+    if (key == "genres")
+        return value.map(genre => new Genre(genre).ToRus()).join(", ")
+
+    if (key == "language")
+        return new Language(value).ToRus()
+
+    if (key == "tracks") {
+        let tracks = value.map(track => `${track.track_id}: ${track.position}`).join(", ")
+        return `{${tracks}}`
+    }
+
+    return JSON.stringify(value)
+}
+
+function GetActionDiff(key, diff) {
+    let key2name = {
+        "genres": "жанры",
+
+        "name": "имя",
+        "description": "описание",
+        "tracks_count": "количество треков",
+        "image_urls": "изображения",
+        "artist_type": "форма записи",
+        "listen_count": "количество прослушиваний",
+        "tracks": "треки",
+
+        "title": "название",
+        "artists": "исполнители",
+        "year": "год выхода",
+        "lyrics": "текст песни",
+        "duration": "длительность",
+        "downloaded": "трек скачан",
+        "image_url": "обложка",
+        "language": "язык"
+    }
+
+    let prevValue = `<span class="error-color"><s>${GetActionDiffKeyValue(key, diff.prev)}</s></span>`
+    let newValue = `<span class="success-color">${GetActionDiffKeyValue(key, diff.new)}</span>`
+    return `<b>${key2name[key]}</b>: ${prevValue} &rarr; ${newValue}`
+}
+
 function BuildArtistEditAction(action, parent) {
     let diffBlock = MakeElement("action-diff", parent, {}, "ul")
 
     for (let [key, diff] of Object.entries(action.diff)) {
-        MakeElement("action-diff-row", diffBlock, {innerHTML: `<b>${key}</b>: <span class="error-color"><s>${JSON.stringify(diff.prev)}</s></span> &rarr; <span class="success-color">${JSON.stringify(diff.new)}</span>`}, "li")
+        MakeElement("action-diff-row", diffBlock, {innerHTML: GetActionDiff(key, diff)}, "li")
     }
 }
 
