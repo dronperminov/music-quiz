@@ -1,30 +1,22 @@
-function ArtistType(value) {
+function Language(value) {
     this.value = value
     this.options = {
-        "singer_male": "певец",
-        "singer_female": "певица",
-        "performer_male": "исполнитель",
-        "performer_female": "исполнительница",
-        "band": "группа",
-        "project": "проект",
-        "duet": "дуэт",
-        "trio": "трио",
-        "dj": "диджей",
-        "via": "ВИА",
-        "unknown": "неизвестна"
+        "unknown": "неизвестен",
+        "russian": "русский",
+        "foreign": "зарубежный"
     }
 }
 
-ArtistType.prototype.ToRus = function() {
+Language.prototype.ToRus = function() {
     return this.options[this.value]
 }
 
-ArtistType.prototype.IsUnknown = function() {
+Language.prototype.IsUnknown = function() {
     return this.value == "unknown"
 }
 
-ArtistType.prototype.Build = function(parent) {
-    let label = MakeElement("", parent, {innerHTML: `<b>Форма записи:</b> `}, "span")
+Language.prototype.Build = function(parent) {
+    let label = MakeElement("", parent, {innerHTML: `<b>Язык:</b> `}, "span")
     let select = MakeElement("text-select", parent, {}, "select")
 
     for (let [value, name] of Object.entries(this.options)) {

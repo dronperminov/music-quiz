@@ -92,12 +92,6 @@ def get_artist_history(artist_id: int) -> JSONResponse:
     return JSONResponse({"status": "success", "history": jsonable_encoder(history)})
 
 
-@router.get("/track-history/{track_id}")
-def get_track_history(track_id: int) -> JSONResponse:
-    history = list(database.history.find({"track_id": track_id}, {"_id": 0}).sort("timestamp", -1))
-    return JSONResponse({"status": "success", "history": jsonable_encoder(history)})
-
-
 @router.post("/update-artist")
 def update_artist(params: ArtistUpdate, user: Optional[User] = Depends(get_user)) -> JSONResponse:
     if not user:

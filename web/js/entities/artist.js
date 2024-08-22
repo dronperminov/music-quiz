@@ -96,37 +96,11 @@ Artist.prototype.BuildInfo = function() {
 }
 
 Artist.prototype.BuildArtistType = function(block) {
-    let labelBlock = MakeElement("", block, {innerHTML: `<b>Форма записи:</b> `}, "span")
-
-    let editBlock = MakeElement("", block, {}, "span")
-    let select = MakeElement("text-select", editBlock, {}, "select")
-
-    for (let [value, name] of Object.entries(this.artistType.options)) {
-        if (!this.artistType.IsUnknown() && value == "unknown")
-            continue
-
-        let option = MakeElement("", select, {innerText: name, value: value}, "option")
-
-        if (this.artistType.value == value)
-            option.setAttribute("selected", "")
-    }
+    let select = this.artistType.Build(block)
 
     let html = document.getElementsByTagName("html")[0]
-    if (!html.hasAttribute("data-user-role") || html.getAttribute("data-user-role") != "admin") {
-        select.classList.add("text-select-disabled")
+    if (!html.hasAttribute("data-user-role") || html.getAttribute("data-user-role") != "admin")
         return
-    }
-
-    select.addEventListener("click", () => {
-        select.classList.remove("text-select")
-        select.classList.add("basic-select")
-    })
-
-    labelBlock.addEventListener("click", () => {
-        select.value = this.artistType.value
-        select.classList.remove("basic-select")
-        select.classList.add("text-select")
-    })
 
     select.addEventListener("change", () => {
         SendRequest("/update-artist", {artist_id: this.artistId, artist_type: select.value}).then(response => {

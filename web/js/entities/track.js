@@ -6,7 +6,7 @@ function Track(data) {
     this.year = data.year
     this.lyrics = data.lyrics
     this.genres = data.genres.map(genre => new Genre(genre))
-    this.language = data.language
+    this.language = new Language(data.language)
     this.duration = data.duration
     this.imageUrl = data.image_url !== null ? data.image_url : '/images/tracks/default.png'
     this.metadata = data.metadata
@@ -43,8 +43,8 @@ Track.prototype.BuildInfo = function(artists = null) {
     if (this.genres.length > 0)
         MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => genre.ToRus()).join(", ")}`})
 
-    if (this.language != "unknown")
-        MakeElement("info-line", info, {innerHTML: `<b>Язык:</b> ${this.LanguageToRus(this.language)}`})
+    let languageblock = MakeElement("info-line", info)
+    this.BuildLanguage(languageblock)
 
     MakeElement("info-line", info, {innerHTML: `<b>Добавлен:</b> ${this.FormatMetadataDate(this.metadata.created_at)} пользователем @${this.metadata.created_by}`})
 
@@ -82,6 +82,28 @@ Track.prototype.BuildInfo = function(artists = null) {
     return info
 }
 
+Track.prototype.BuildLanguage = function(block) {
+    let select = this.language.Build(block)
+
+    let html = document.getElementsByTagName("html")[0]
+    if (!html.hasAttribute("data-user-role") || html.getAttribute("data-user-role") != "admin")
+        return
+
+    select.addEventListener("change", () => {
+        SendRequest("/update-track", {track_id: this.trackId, language: select.value}).then(response => {
+            if (response.status != SUCCESS_STATUS) {
+                ShowNotification(`Не удалось обновить язык<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+                select.value = this.language.value
+                return
+            }
+
+            this.language.value = select.value
+            select.classList.add("text-select")
+            select.classList.remove("basic-select")
+        })
+    })
+}
+
 Track.prototype.FormatMetadataDate = function(datetime) {
     let {date, time} = ParseDateTime(datetime)
     return `${date} в ${time}`
@@ -93,25 +115,6 @@ Track.prototype.FormatDuration = function() {
     let seconds = `${duration % 60}`.padStart(2, '0')
 
     return `${minutes}:${seconds}`
-}
-
-Track.prototype.GenreToRus = function(genre) {
-    return {
-        "rock": "рок",
-        "hip-hop": "хип-хоп",
-        "pop": "поп",
-        "electro": "электронная",
-        "disco": "диско",
-        "jazz-soul": "джаз / соул"
-    }[genre]
-}
-
-Track.prototype.LanguageToRus = function(language) {
-    return {
-        "unknown": "",
-        "russian": "русский",
-        "foreign": "зарубежный"
-    }[language]
 }
 
 Track.prototype.GetChorusIndices = function() {
