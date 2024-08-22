@@ -217,6 +217,11 @@ function BuildAdminInfo() {
 
     let artistButton = MakeElement("basic-button gradient-button", info, {innerText: "Добавить"}, "button")
 
+    urlLabel.addEventListener("click", () => {
+        urlInput.value = ""
+        urlInput.focus()
+    })
+
     chartButton.addEventListener("click", () => ParseChart([chartButton, artistButton]))
     artistButton.addEventListener("click", () => AddArtist([chartButton, artistButton]))
 
