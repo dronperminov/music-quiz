@@ -2,18 +2,13 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import JSONResponse
 
-from src import database, music_database, questions_database
-from src.api import templates
+from src import database, music_database
 from src.entities.user import User
-from src.enums import ArtistType, ArtistsCount, Genre, Language, UserRole
-from src.query_params.artist_update import ArtistUpdate
-from src.query_params.artists_search import ArtistsSearch
-from src.query_params.artists_search_query import ArtistsSearchQuery
+from src.enums import UserRole
 from src.query_params.track_update import TrackUpdate
 from src.utils.auth import get_user
-from src.utils.common import get_static_hash, get_word_form
 
 router = APIRouter()
 

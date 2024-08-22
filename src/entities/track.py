@@ -64,9 +64,12 @@ class Track:
         track_data = self.to_dict()
         diff = {}
 
-        for field in ["title", "artists", "year", "lyrics", "genres", "language", "duration", "downloaded", "image_url"]:
+        for field in ["title", "artists", "year", "lyrics", "genres", "duration", "downloaded", "image_url"]:
             if field in data and track_data[field] != data[field]:
                 diff[field] = {"prev": track_data[field], "new": data[field]}
+
+        if "language" in data and track_data["language"] != data["language"] and data["language"] != Language.UNKNOWN.value:
+            diff["language"] = {"prev": track_data["language"], "new": data["language"]}
 
         return diff
 
