@@ -27,7 +27,7 @@
     left: -1px;
     right: -1px;
     bottom: calc(-100dvh - 11px);
-    max-height: 60dvh;
+    max-height: 100dvh;
     transition: bottom .2s ease-in;
     overflow: auto;
     max-width: var(--max-width);
