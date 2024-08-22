@@ -4,11 +4,12 @@ from src.entities.artist import Artist
 from src.entities.question import Question
 from src.entities.settings import Settings
 from src.entities.track import Track
+from src.enums import QuestionType
 
 
 class ArtistByIntroQuestion(Question):
     def __init__(self, track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int] = None) -> None:
-        self.init_base(settings=settings, track_id=track.track_id, group_id=group_id)
+        self.init_base(question_type=QuestionType.ARTIST_BY_INTRO, settings=settings, track_id=track.track_id, group_id=group_id)
 
         self.title = self.__get_title(track, artist_id2artist)
         self.answer = ", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists)

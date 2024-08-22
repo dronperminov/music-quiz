@@ -3,11 +3,12 @@ from typing import Optional
 from src.entities.question import Question
 from src.entities.settings import Settings
 from src.entities.track import Track
+from src.enums import QuestionType
 
 
 class NameByTrackQuestion(Question):
     def __init__(self, track: Track, settings: Settings, group_id: Optional[int] = None) -> None:
-        self.init_base(settings=settings, track_id=track.track_id, group_id=group_id)
+        self.init_base(question_type=QuestionType.NAME_BY_TRACK, settings=settings, track_id=track.track_id, group_id=group_id)
 
         self.title = "Назовите название трека"
         self.answer = track.title

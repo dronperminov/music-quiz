@@ -61,8 +61,8 @@ class Question:
             timestamp=data["timestamp"]
         )
 
-    def init_base(self, settings: Settings, track_id: int, group_id: Optional[int]) -> None:
-        self.question_type = QuestionType.ARTIST_BY_TRACK
+    def init_base(self, question_type: QuestionType, settings: Settings, track_id: int, group_id: Optional[int]) -> None:
+        self.question_type = question_type
         self.username = settings.username
         self.group_id = group_id
         self.track_id = track_id
