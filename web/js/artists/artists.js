@@ -148,6 +148,7 @@ function ClearSearchArtists() {
     results.innerText = ""
     loader.classList.add("hidden")
     status = ""
+    page = 0
 
     PushUrlParams(null)
 }
