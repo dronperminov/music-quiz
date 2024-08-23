@@ -3,7 +3,7 @@ from datetime import date
 from typing import Dict, List, Tuple, Union
 
 from src.entities.track_modification_settings import TrackModificationSettings
-from src.enums import ArtistsCount, Genre, Hits, Language, QuestionType
+from src.enums import ArtistsCount, Genre, Language, QuestionType
 from src.utils.queries import interval_query
 
 QUESTION_YEARS = ["", 1980, 1990, 2000, 2010, 2015, 2020, ""]
@@ -18,7 +18,7 @@ class QuestionSettings:
     artists_count: Dict[ArtistsCount, float]
     listen_count: Tuple[Union[int, str], Union[int, str]]
     question_types: Dict[QuestionType, float]
-    hits: Hits
+    track_position: Tuple[Union[int, str], Union[int, str]]
     start_from_chorus: bool
     black_list: List[int]
     track_modifications: TrackModificationSettings
@@ -40,7 +40,7 @@ class QuestionSettings:
             "artists_count": {artists_count.value: value for artists_count, value in self.artists_count.items()},
             "listen_count": self.listen_count,
             "question_types": {question_type.value: value for question_type, value in self.question_types.items()},
-            "hits": self.hits.value,
+            "track_position": self.track_position,
             "start_from_chorus": self.start_from_chorus,
             "black_list": self.black_list,
             "track_modifications": self.track_modifications.to_dict(),
@@ -57,7 +57,7 @@ class QuestionSettings:
             artists_count={ArtistsCount(artists_count): value for artists_count, value in data["artists_count"].items()},
             listen_count=data["listen_count"],
             question_types={QuestionType(question_type): value for question_type, value in data["question_types"].items()},
-            hits=Hits(data["hits"]),
+            track_position=data["track_position"],
             start_from_chorus=data["start_from_chorus"],
             black_list=data["black_list"],
             track_modifications=TrackModificationSettings.from_dict(data["track_modifications"]),
@@ -76,7 +76,7 @@ class QuestionSettings:
             artists_count={artists_count: 1 / len(ArtistsCount) for artists_count in ArtistsCount},
             listen_count=("", ""),
             question_types={question_type: 1 / len(QuestionType) for question_type in QuestionType},
-            hits=Hits.ALL,
+            track_position=("", ""),
             start_from_chorus=False,
             black_list=[],
             track_modifications=TrackModificationSettings(change_playback_rate=False, probability=0),
@@ -91,6 +91,9 @@ class QuestionSettings:
             years.append((year, QUESTION_YEARS[i + 1] - 1 if QUESTION_YEARS[i + 1] != "" else ""))
 
         return years
+
+    def filter_tracks(self, track_positions: List[dict]) -> List[int]:
+        return [track_position["track_id"] for track_position in track_positions if self.__check_track_position(track_position["position"])]
 
     def to_artist_query(self) -> dict:
         query = interval_query("listen_count", self.listen_count)
@@ -120,6 +123,17 @@ class QuestionSettings:
             query["$or"] = question_type_queries
 
         return query
+
+    def __check_track_position(self, position: int) -> bool:
+        min_position, max_position = self.track_position
+
+        if min_position is int and position < min_position:
+            return False
+
+        if max_position is int and position > max_position:
+            return False
+
+        return True
 
     def __fix_years_key(self, years: Union[Tuple[Union[int, str], Union[int, str]], str]) -> Tuple[Union[int, str], Union[int, str]]:
         if isinstance(years, str):

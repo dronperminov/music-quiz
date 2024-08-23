@@ -16,7 +16,7 @@ from src.entities.track_landmark import TrackLandmark
 from src.entities.track_modification_settings import TrackModificationSettings
 from src.entities.track_modifications import TrackModifications
 from src.entities.user import User
-from src.enums import ArtistType, ArtistsCount, Genre, Hits, Language, QuestionType, UserRole
+from src.enums import ArtistType, ArtistsCount, Genre, Language, QuestionType, UserRole
 
 
 class TestSerialization(TestCase):
@@ -97,7 +97,7 @@ class TestSerialization(TestCase):
             artists_count={ArtistsCount.SOLO: 1, ArtistsCount.FEAT: 0},
             listen_count=(20000, 100000),
             question_types={QuestionType.ARTIST_BY_TRACK: 0.75, QuestionType.NAME_BY_TRACK: 0.25},
-            hits=Hits.ALL,
+            track_position=(5, ""),
             start_from_chorus=True,
             black_list=[1, 4, 8],
             track_modifications=track_modifications,

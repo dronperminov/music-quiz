@@ -40,7 +40,10 @@ function GetQuestionSettings() {
     if (questionTypes === null)
         return null
 
-    let hits = document.getElementById("hits").value
+    let trackPosition = trackPositionInput.GetValue()
+    if (trackPosition === null)
+        return null
+
     let startFromChorus = document.getElementById("start-from-chorus").checked
     let blackList = []
 
@@ -60,7 +63,7 @@ function GetQuestionSettings() {
         artists_count: artistsCount,
         listen_count: listenCount,
         question_types: questionTypes,
-        hits: hits,
+        track_position: trackPosition,
         start_from_chorus: startFromChorus,
         black_list: blackList,
         track_modifications: trackModificationSettings,

@@ -9,7 +9,7 @@ from src import database
 from src.api import templates
 from src.entities.question_settings import QuestionSettings
 from src.entities.user import User
-from src.enums import ArtistsCount, Genre, Hits, Language, QuestionType
+from src.enums import ArtistsCount, Genre, Language, QuestionType
 from src.query_params.main_settings import MainSettings
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash
@@ -32,7 +32,6 @@ def get_settings(user: Optional[User] = Depends(get_user)) -> Response:
         Genre=Genre,
         Language=Language,
         ArtistsCount=ArtistsCount,
-        Hits=Hits,
         QuestionType=QuestionType,
         today=datetime.today()
     )

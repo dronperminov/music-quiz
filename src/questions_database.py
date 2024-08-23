@@ -37,6 +37,7 @@ class QuestionsDatabase:
     def get_question(self, settings: Settings) -> Question:
         tracks = self.get_question_tracks(settings.question_settings)
 
+        # TODO: if not tracks ...
         if question := self.__get_user_question(username=settings.username):
             if question.track_id in {track["track_id"] for track in tracks}:
                 return question
@@ -90,7 +91,7 @@ class QuestionsDatabase:
         possible_track_ids = set()
 
         for artist in self.database.artists.find(settings.to_artist_query(), {"tracks": 1}):
-            possible_track_ids.update(settings.hits.filter_tracks(artist["tracks"]))
+            possible_track_ids.update(settings.filter_tracks(artist["tracks"]))
 
         return list(self.database.tracks.aggregate([
             {"$addFields": {"artists_count": {"$cond": [{"$gt": [{"$size": "$artists"}, 1]}, "feat", "solo"]}}},
