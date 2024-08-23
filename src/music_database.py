@@ -257,6 +257,7 @@ class MusicDatabase:
                 assert isinstance(artist["source"]["yandex_id"], str)
 
             artist = Artist.from_dict(artist)
+            assert len(artist.tracks) > 0, f"artist {artist.name} ({artist.artist_id} have no tracks"
 
             for track_id in artist.tracks:
                 track = self.get_track(track_id)
@@ -270,6 +271,7 @@ class MusicDatabase:
                 assert isinstance(track["source"]["yandex_id"], str)
 
             track = Track.from_dict(track)
+            assert len(track.artists) > 0, f"track {track.title} ({track.track_id} have no artists"
 
             for artist_id in track.artists:
                 artist = self.get_artist(artist_id)
