@@ -8,7 +8,7 @@ from pydub import AudioSegment
 
 from src.database import Database
 from src.entities.artist import Artist
-from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction
+from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction, RemoveArtistAction, RemoveTrackAction
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
@@ -99,6 +99,21 @@ class MusicDatabase:
 
         self.logger.info(f'Updated artist "{artist["name"]}" ({artist_id}) by @{username} (keys: {[key for key in diff]})')
 
+    def remove_artist(self, artist_id: int, username: str) -> None:
+        artist = self.database.artists.find_one({"artist_id": artist_id}, {"name": 1, "tracks": 1})
+        assert artist is not None
+
+        action = RemoveArtistAction(username=username, timestamp=datetime.now(), artist_id=artist_id)
+
+        for track_position in artist["tracks"]:
+            self.remove_track(track_id=track_position["track_id"], username=username, from_artist_id=artist_id)
+
+        # TODO: remove from similar artist group
+        self.database.artists.delete_one({"artist_id": artist_id})
+        self.database.history.insert_one(action.to_dict())
+
+        self.logger.info(f'Removed artist "{artist["name"]}" ({artist_id}) by @{username}')
+
     def get_track_id(self) -> int:
         identifier = self.database.identifiers.find_one_and_update({"_id": "tracks"}, {"$inc": {"value": 1}}, return_document=True)
         return identifier["value"]
@@ -140,6 +155,31 @@ class MusicDatabase:
         self.database.history.insert_one(action.to_dict())
 
         self.logger.info(f'Updated track "{track["title"]}" ({track_id}) by @{username} (keys: {[key for key in diff]})')
+
+    def remove_track(self, track_id: int, username: str, from_artist_id: Optional[int] = None) -> None:
+        track = self.database.tracks.find_one({"track_id": track_id}, {"title": 1, "artists": 1})
+        assert track is not None
+
+        action = RemoveTrackAction(username=username, timestamp=datetime.now(), track_id=track_id)
+
+        for artist_dict in self.database.artists.find({"artist_id": {"$in": track["artists"]}}):
+            artist = Artist.from_dict(artist_dict)
+            tracks = [track_position for track_position in artist_dict["tracks"] if track_position["track_id"] != track_id]
+
+            if artist.artist_id == from_artist_id:
+                continue
+
+            self.update_artist(artist.artist_id, diff=artist.get_diff({"tracks": tracks}), username=username)
+
+            if not tracks:
+                self.remove_artist(artist.artist_id, username=username)
+
+        # TODO: remove from notes
+        self.database.questions.delete_many({"track_id": track_id})
+        self.database.tracks.delete_one({"track_id": track_id})
+        self.database.history.insert_one(action.to_dict())
+
+        self.logger.info(f'Removed track "{track["title"]}" ({track_id}) by @{username}')
 
     def download_tracks(self, output_path: str, username: str) -> None:
         tracks = list(self.database.tracks.find({"downloaded": False, "source.name": "yandex"}, {"track_id": 1, "title": 1, "source": 1}))
@@ -257,7 +297,6 @@ class MusicDatabase:
                 assert isinstance(artist["source"]["yandex_id"], str)
 
             artist = Artist.from_dict(artist)
-            assert len(artist.tracks) > 0, f"artist {artist.name} ({artist.artist_id} have no tracks"
 
             for track_id in artist.tracks:
                 track = self.get_track(track_id)

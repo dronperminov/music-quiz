@@ -8,7 +8,7 @@ from tests.database_tests.abstract_music_database_test import AbstractTestMusicD
 
 
 class TestMusicDatabase(AbstractTestMusicDatabase):
-    def test_1_artist_insert(self) -> None:
+    def test_01_artist_insert(self) -> None:
         artist = Artist(
             artist_id=self.music_database.get_artist_id(),
             source=YandexSource(yandex_id="123"),
@@ -32,7 +32,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertIsNotNone(artist_from_db)
         self.assertEqual(artist, artist_from_db)
 
-    def test_2_track_insert(self) -> None:
+    def test_02_track_insert(self) -> None:
         artist = self.database.artists.find_one({"source.yandex_id": "123"}, {"artist_id": 1})
 
         track = Track(
@@ -62,7 +62,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertIsNotNone(track_from_db)
         self.assertEqual(track, track_from_db)
 
-    def test_3_yandex_insert_initial(self) -> None:
+    def test_03_yandex_insert_initial(self) -> None:
         self.add_from_yandex("yandex_insert_initial.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 3)
@@ -84,7 +84,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(track.year, 2011)
         self.assertEqual(track.duration, 183)
 
-    def test_4_yandex_update_artist(self) -> None:
+    def test_04_yandex_update_artist(self) -> None:
         self.add_from_yandex("yandex_update_artist.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 3)
@@ -97,7 +97,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(artist.tracks[2], 5)
         self.assertEqual(artist.tracks[3], 23)
 
-    def test_5_yandex_insert_update(self) -> None:
+    def test_05_yandex_insert_update(self) -> None:
         self.add_from_yandex("yandex_insert_update.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 4)
@@ -121,19 +121,19 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(track.year, 2015)
         self.assertEqual(track.duration, 225)
 
-    def test_6_yandex_insert_new_artists(self) -> None:
+    def test_06_yandex_insert_new_artists(self) -> None:
         self.add_from_yandex("yandex_insert_new_artists.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 7)
         self.assertEqual(self.music_database.get_tracks_count(), 5)
 
-    def test_7_yandex_insert_new_tracks(self) -> None:
+    def test_07_yandex_insert_new_tracks(self) -> None:
         self.add_from_yandex("yandex_insert_new_tracks.json")
 
         self.assertEqual(self.music_database.get_artists_count(), 7)
         self.assertEqual(self.music_database.get_tracks_count(), 9)
 
-    def test_8_search_artists(self) -> None:
+    def test_08_search_artists(self) -> None:
         total, artists = self.music_database.search_artists(ArtistsSearch(query="as", order_type=-1, order="listen_count"))
         self.assertEqual(total, 2)
         self.assertEqual(len(artists), 2)
@@ -151,3 +151,43 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         self.assertEqual(len(artists), 3)
         self.assertEqual(artists[1].name, "Noize MC")
         self.assertEqual(artists[2].name, "Каста")
+
+    def test_09_remove_track(self) -> None:
+        self.music_database.remove_track(track_id=2, username="user")
+        self.music_database.validate()
+        self.assertEqual(self.music_database.get_tracks_count(), 8)
+        self.assertEqual(self.music_database.get_artists_count(), 7)
+        self.assertIsNone(self.music_database.get_track(track_id=2))
+
+        artist = self.music_database.get_artist(artist_id=2)
+        self.assertEqual(len(artist.tracks), 2)
+        self.assertNotIn(2, artist.tracks)
+
+        self.music_database.remove_track(track_id=1, username="user")
+        self.assertEqual(self.music_database.get_tracks_count(), 7)
+        self.assertEqual(self.music_database.get_artists_count(), 6)
+        self.assertIsNone(self.music_database.get_track(track_id=1))
+        self.assertIsNone(self.music_database.get_artist(artist_id=1))
+
+    def test_10_remove_artist(self) -> None:
+        self.music_database.remove_artist(artist_id=3, username="user")
+        self.music_database.validate()
+        self.assertEqual(self.music_database.get_tracks_count(), 6)
+        self.assertEqual(self.music_database.get_artists_count(), 5)
+        self.assertIsNone(self.music_database.get_artist(artist_id=3))
+
+        self.music_database.remove_artist(artist_id=4, username="user")
+        self.music_database.validate()
+        self.assertEqual(self.music_database.get_tracks_count(), 4)
+        self.assertEqual(self.music_database.get_artists_count(), 3)
+        self.assertIsNone(self.music_database.get_artist(artist_id=4))
+        self.assertIsNone(self.music_database.get_track(track_id=4))
+        self.assertIsNone(self.music_database.get_track(track_id=5))
+
+        self.music_database.remove_artist(artist_id=5, username="user")
+        self.music_database.remove_artist(artist_id=7, username="user")
+        self.assertEqual(self.music_database.get_tracks_count(), 4)
+        self.assertEqual(self.music_database.get_artists_count(), 1)
+        self.assertIsNone(self.music_database.get_artist(artist_id=5))
+        self.assertIsNone(self.music_database.get_artist(artist_id=7))
+        self.assertIsNotNone(self.music_database.get_artist(artist_id=6))

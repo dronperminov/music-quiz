@@ -80,3 +80,31 @@ class TestMusicDatabaseReal(AbstractTestMusicDatabase):
     def test_5_insert_chart(self) -> None:
         self.add_from_yandex("real/chart.json")
         self.assertEqual(self.music_database.get_tracks_count(), 117)
+
+    def test_6_remove_track(self) -> None:
+        self.music_database.remove_track(track_id=1, username="user")
+        self.music_database.validate()
+        self.assertEqual(self.music_database.get_tracks_count(), 116)
+
+        artist = self.music_database.get_artist(artist_id=1)
+        self.assertIsNotNone(artist)
+        self.assertEqual(len(artist.tracks), 9)
+        self.assertNotIn(1, artist.tracks)
+        self.assertIn(10, artist.tracks)
+
+        self.music_database.remove_track(track_id=10, username="user")
+        self.music_database.validate()
+        self.assertEqual(self.music_database.get_tracks_count(), 115)
+        self.assertIsNone(self.music_database.get_artist(artist_id=4))
+
+        artist = self.music_database.get_artist(artist_id=1)
+        self.assertIsNotNone(artist)
+        self.assertEqual(len(artist.tracks), 8)
+        self.assertNotIn(10, artist.tracks)
+
+    def test_7_remove_artist(self) -> None:
+        self.music_database.remove_artist(artist_id=1, username="user")
+        self.music_database.validate()
+        self.assertEqual(self.music_database.get_tracks_count(), 107)
+        self.assertIsNone(self.music_database.get_artist(artist_id=1))
+        self.assertIsNone(self.music_database.get_artist(artist_id=2))
