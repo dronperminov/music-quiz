@@ -55,31 +55,7 @@ Track.prototype.BuildInfo = function(artists = null) {
     let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
     history.addEventListener("click", () => ShowHistory(`/track-history/${this.trackId}`))
 
-    if (this.lyrics !== null) {
-        let details = MakeElement("details details-open", info)
-        let detailsHeader = MakeElement("details-header", details)
-        detailsHeader.addEventListener("click", () => details.classList.toggle('details-open'))
-
-        MakeElement("details-icon", detailsHeader, {}, "span")
-        MakeElement("", detailsHeader, {innerText: " Текст"}, "span")
-
-        let detailsContent = MakeElement("details-content", details)
-        let lyrics = MakeElement("track-lyrics", detailsContent)
-        let indices = this.GetChorusIndices()
-
-        for (let i = 0; i < this.lyrics.lines.length; i++) {
-            let line = MakeElement("track-lyrics-line", lyrics, {innerText: this.lyrics.lines[i].text})
-
-            if (i in indices)
-                line.classList.add("track-lyrics-line-chorus")
-
-            let index1 = `${i}` in indices ? indices[`${i}`] : -1
-            let index2 = `${i + 1}` in indices ? indices[`${i + 1}`] : -1
-
-            if (index1 != index2)
-                MakeElement("", lyrics, {}, "br")
-        }
-    }
+    this.BuildLyrics(info)
 
     return info
 }
@@ -108,6 +84,35 @@ Track.prototype.BuildLanguage = function(block) {
 
 Track.prototype.BuildGenres = function(block) {
     MakeElement("", block, {innerHTML: `<b>Жанры:</b> ${this.genres.ToRus()}`}, "span")
+}
+
+Track.prototype.BuildLyrics = function(block) {
+    if (this.lyrics === null)
+        return
+
+    let details = MakeElement("details details-open", block)
+    let detailsHeader = MakeElement("details-header", details)
+    detailsHeader.addEventListener("click", () => details.classList.toggle('details-open'))
+
+    MakeElement("details-icon", detailsHeader, {}, "span")
+    MakeElement("", detailsHeader, {innerText: " Текст"}, "span")
+
+    let detailsContent = MakeElement("details-content", details)
+    let lyrics = MakeElement("track-lyrics", detailsContent)
+    let indices = this.GetChorusIndices()
+
+    for (let i = 0; i < this.lyrics.lines.length; i++) {
+        let line = MakeElement("track-lyrics-line", lyrics, {innerText: this.lyrics.lines[i].text})
+
+        if (i in indices)
+            line.classList.add("track-lyrics-line-chorus")
+
+        let index1 = `${i}` in indices ? indices[`${i}`] : -1
+        let index2 = `${i + 1}` in indices ? indices[`${i + 1}`] : -1
+
+        if (index1 != index2)
+            MakeElement("", lyrics, {}, "br")
+    }
 }
 
 Track.prototype.FormatMetadataDate = function(datetime) {
