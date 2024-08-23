@@ -10,10 +10,8 @@ function IntervalInput(blockId, value = null, onChange = null) {
     for (let input of inputs) {
         input.addEventListener("input", () => this.ClearErrorInput(input))
 
-        if (onChange !== null) {
+        if (onChange !== null)
             input.addEventListener("change", () => onChange())
-            input.addEventListener("input", () => onChange())
-        }
     }
 
     this.SetValue(value)

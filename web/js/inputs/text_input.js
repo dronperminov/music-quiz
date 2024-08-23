@@ -3,10 +3,8 @@ function TextInput(inputId, pattern, errorMessage, value = null, onChange = null
     this.error = document.getElementById(`${inputId}-error`)
     this.input.addEventListener("input", () => this.Input())
 
-    if (onChange !== null) {
+    if (onChange !== null)
         this.input.addEventListener("change", () => onChange())
-        this.input.addEventListener("input", () => onChange())
-    }
 
     this.pattern = pattern
     this.errorMessage = errorMessage

@@ -24,7 +24,6 @@ function BalanceInput(blockId, errorMessage, value, onChange = null) {
 
         if (onChange !== null) {
             input.addEventListener("change", () => onChange())
-            input.addEventListener("input", () => onChange())
             checkbox.addEventListener("change", () => onChange())
         }
     }

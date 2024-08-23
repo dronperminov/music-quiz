@@ -103,8 +103,3 @@ function UpdateQuestionSettings() {
         saveButton.classList.add("hidden")
     })
 }
-
-function ChangeSetting() {
-    let saveButton = document.getElementById("save-button")
-    saveButton.classList.remove("hidden")
-}
