@@ -144,7 +144,7 @@ class QuestionsDatabase:
         return track_weight * track_id2weight.get(track["track_id"], 1)
 
     def __generate_question_by_type(self, question_type: QuestionType, track: Track, settings: Settings) -> Question:
-        artist_id2artist = self.music_database.get_track_artists(track=track)
+        artist_id2artist = self.music_database.get_artists_by_ids(artist_ids=track.artists)
 
         if question_type == QuestionType.ARTIST_BY_TRACK:
             return ArtistByTrackQuestion(track, artist_id2artist, settings, None)

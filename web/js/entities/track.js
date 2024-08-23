@@ -9,7 +9,7 @@ function Track(data) {
     this.language = new Language(data.language)
     this.duration = data.duration
     this.imageUrl = data.image_url !== null ? data.image_url : '/images/tracks/default.png'
-    this.metadata = data.metadata
+    this.metadata = new Metadata(data.metadata, "Добавлен", "Обновлён")
 }
 
 Track.prototype.BuildInfo = function(artists = null) {
@@ -46,10 +46,7 @@ Track.prototype.BuildInfo = function(artists = null) {
     let languageblock = MakeElement("info-line", info)
     this.BuildLanguage(languageblock)
 
-    MakeElement("info-line", info, {innerHTML: `<b>Добавлен:</b> ${this.FormatMetadataDate(this.metadata.created_at)} пользователем @${this.metadata.created_by}`})
-
-    if (this.metadata.created_at != this.metadata.updated_at)
-        MakeElement("info-line", info, {innerHTML: `<b>Обновлён:</b> ${this.FormatMetadataDate(this.metadata.updated_at)} пользователем @${this.metadata.updated_by}`})
+    this.metadata.BuildInfo(info)
 
     this.BuildLyrics(info)
 
@@ -117,11 +114,6 @@ Track.prototype.BuildLyrics = function(block) {
         if (index1 != index2)
             MakeElement("", lyrics, {}, "br")
     }
-}
-
-Track.prototype.FormatMetadataDate = function(datetime) {
-    let {date, time} = ParseDateTime(datetime)
-    return `${date} в ${time}`
 }
 
 Track.prototype.FormatDuration = function() {

@@ -27,7 +27,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
         return send_error(user=user, title="Не удалось сгенерировать вопрос", text='Нет треков, удовлетворяющих выбранным <a class="link" href="/settings">настройкам</a>.')
 
     track = music_database.get_track(track_id=question.track_id)
-    artist_id2artist = music_database.get_track_artists(track=track)
+    artist_id2artist = music_database.get_artists_by_ids(artist_ids=track.artists)
     artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}
 
     template = templates.get_template("user/question.html")

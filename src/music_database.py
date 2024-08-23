@@ -8,11 +8,13 @@ from pydub import AudioSegment
 
 from src.database import Database
 from src.entities.artist import Artist
+from src.entities.artists_group import ArtistsGroup
 from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction, RemoveArtistAction, RemoveTrackAction
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
 from src.enums import ArtistsCount, Language
+from src.query_params.artists_groups_search import ArtistsGroupsSearch
 from src.query_params.artists_search import ArtistsSearch
 from src.utils.yandex_music_parser import YandexMusicParser
 
@@ -24,8 +26,7 @@ class MusicDatabase:
         self.logger = logger
 
     def get_artist_id(self) -> int:
-        identifier = self.database.identifiers.find_one_and_update({"_id": "artists"}, {"$inc": {"value": 1}}, return_document=True)
-        return identifier["value"]
+        return self.database.get_identifier("artists")
 
     def get_artists_count(self) -> int:
         return self.database.artists.count_documents({})
@@ -64,12 +65,7 @@ class MusicDatabase:
         tracks = self.database.tracks.find({"artists": artist_id})
         return [Track.from_dict(track) for track in tracks]
 
-    def get_artist_names(self, tracks: List[Track]) -> Dict[int, str]:
-        artist_ids = set()
-
-        for track in tracks:
-            artist_ids.update(track.artists)
-
+    def get_artist_names_by_ids(self, artist_ids: List[int]) -> Dict[int, str]:
         artists = self.database.artists.find({"artist_id": {"$in": list(artist_ids)}}, {"artist_id": 1, "name": 1})
         return {artist["artist_id"]: artist["name"] for artist in artists}
 
@@ -115,8 +111,7 @@ class MusicDatabase:
         self.logger.info(f'Removed artist "{artist["name"]}" ({artist_id}) by @{username}')
 
     def get_track_id(self) -> int:
-        identifier = self.database.identifiers.find_one_and_update({"_id": "tracks"}, {"$inc": {"value": 1}}, return_document=True)
-        return identifier["value"]
+        return self.database.get_identifier("tracks")
 
     def get_tracks_count(self) -> int:
         return self.database.tracks.count_documents({})
@@ -125,8 +120,8 @@ class MusicDatabase:
         track = self.database.tracks.find_one({"track_id": track_id})
         return Track.from_dict(track) if track else None
 
-    def get_track_artists(self, track: Track) -> Dict[int, Artist]:
-        return {artist["artist_id"]: Artist.from_dict(artist) for artist in self.database.artists.find({"artist_id": {"$in": track.artists}})}
+    def get_artists_by_ids(self, artist_ids: List[int]) -> Dict[int, Artist]:
+        return {artist["artist_id"]: Artist.from_dict(artist) for artist in self.database.artists.find({"artist_id": {"$in": artist_ids}})}
 
     def add_track(self, track: Track, username: str) -> None:
         assert self.database.artists.count_documents({"artist_id": {"$in": track.artists}}) == len(track.artists)
@@ -213,6 +208,15 @@ class MusicDatabase:
 
             diff = {"image_urls": {"prev": artist["image_urls"], "new": image_urls}}
             self.update_artist(artist_id=artist["artist_id"], diff=diff, username=username)
+
+    def get_artists_group_id(self) -> int:
+        return self.database.get_identifier("artists_groups")
+
+    def search_artists_groups(self, params: ArtistsGroupsSearch) -> Tuple[int, List[ArtistsGroup]]:
+        query = {}
+        total = self.database.artists_groups.count_documents(query)
+        groups = self.database.artists_groups.find(query).skip(params.page * params.page_size).limit(params.page_size)
+        return total, [ArtistsGroup.from_dict(group) for group in groups]
 
     def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> Tuple[int, int]:
         yandex2artist_id = {}

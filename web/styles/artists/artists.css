@@ -81,11 +81,6 @@
     vertical-align: middle;
 }
 
-.artist-stats svg {
-    vertical-align: middle;
-    fill: var(--text-color);
-}
-
 .artist-controls {
     align-content: end;
 }

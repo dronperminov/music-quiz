@@ -1,0 +1,74 @@
+{% set title = "Группы похожих исполнителей | Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/artists_groups/artists_groups.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Группы похожих исполнителей</h1>
+
+        <div class="artists-groups" id="artists-groups">
+            {% for group in artists_groups %}
+            <div class="artists-group">
+                <div class="artists-group-image">
+                    <a href="/artists-groups/{{group.group_id}}"><img src="{{group.image_url}}"></a>
+                </div>
+                <div class="artists-group-data">
+                    <div class="artists-group-name"><a href="/artists-groups/{{group.group_id}}">{{group.name}}</a></div>
+                    <div class="artists-group-description">{{group.description}}</div>
+                    <div class="artists-group-artists">
+                        <p>Исполнители, входящие в группу:</p>
+                        <ul>
+                            {% for artist_id in group.artist_ids %}
+                            <li><a class="link" href="/artists/{{artist_id}}">{{artist_id2artist[artist_id].name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="artists-group-menu">
+                    <div class="vertical-ham">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
+    <script src="/js/utils/info_panels.js?v={{version}}"></script>
+    
+    <script src="/js/entities/metadata.js?v={{version}}"></script>
+    <script src="/js/entities/artists_group.js?v={{version}}"></script>
+
+    <script src="/js/artists_groups/artists_groups.js?v={{version}}"></script>
+
+    <script>
+        let infos = new InfoPanels()
+
+        let groups = document.getElementById("artists-groups")
+        groups.innerHTML = ""
+
+        SendRequest("/artists-groups", {}).then(response => {
+            if (response.status != SUCCESS_STATUS) {
+                ShowNotification(`Не удалось получить список групп<br><b>Причина</b>: ${response.message}`)
+                return
+            }
+
+            for (let group of response.artists_groups) {
+                group = new ArtistsGroup(group)
+                groups.appendChild(group.Build())
+                infos.Add(group.BuildInfo(response.artist_id2name))
+            }
+        })
+    </script>
+
+    {% include "components/footer.html" %}
+</body>
+</html>

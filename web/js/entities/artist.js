@@ -9,7 +9,7 @@ function Artist(data) {
     this.tracks = data.tracks
     this.tracksCount = data.tracks_count
     this.genres = new GenreList(data.genres)
-    this.metadata = data.metadata
+    this.metadata = new Metadata(data.metadata, "Добавлен", "Обновлён")
 }
 
 Artist.prototype.Build = function(artistId2scale = null) {
@@ -77,10 +77,8 @@ Artist.prototype.BuildInfo = function() {
     this.BuildGenres(genresBlock)
 
     MakeElement("info-line", info, {innerHTML: `<b>Треков:</b> ${Object.keys(this.tracks).length} из ${this.tracksCount}`})
-    MakeElement("info-line", info, {innerHTML: `<b>Добавлен:</b> ${this.FormatMetadataDate(this.metadata.created_at)} пользователем @${this.metadata.created_by}`})
 
-    if (this.metadata.created_at != this.metadata.updated_at)
-        MakeElement("info-line", info, {innerHTML: `<b>Обновлён:</b> ${this.FormatMetadataDate(this.metadata.updated_at)} пользователем @${this.metadata.updated_by}`})
+    this.metadata.BuildInfo(info)
 
     let history = MakeElement("info-line admin-block", info)
     let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
@@ -139,11 +137,6 @@ Artist.prototype.FormatListenCount = function() {
         return `${Round(this.listenCount / 1000)}K`
 
     return `${this.listenCount}`
-}
-
-Artist.prototype.FormatMetadataDate = function(datetime) {
-    let {date, time} = ParseDateTime(datetime)
-    return `${date} в ${time}`
 }
 
 Artist.prototype.GetStats = function() {

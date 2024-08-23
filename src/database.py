@@ -13,7 +13,7 @@ class Database:
     questions = None
     notes = None
     history = None
-    similar_artist_groups = None
+    artists_groups = None
 
     def __init__(self, mongo_url: str, database_name: str) -> None:
         self.mongo_url = mongo_url
@@ -25,7 +25,7 @@ class Database:
 
         self.identifiers = database["identifiers"]
 
-        for name in ["artists", "tracks", "similar_artist_groups"]:
+        for name in ["artists", "tracks", "artists_groups"]:
             if self.identifiers.find_one({"_id": name}) is None:
                 self.identifiers.insert_one({"_id": name, "value": 0})
 
@@ -58,9 +58,9 @@ class Database:
         self.history.create_index([("username", ASCENDING)])
         self.history.create_index([("timestamp", ASCENDING)])
 
-        self.similar_artist_groups = database["similar_artist_groups"]
-        self.similar_artist_groups.create_index([("group_id", ASCENDING)], unique=True)
-        self.similar_artist_groups.create_index([("creator", ASCENDING)])
+        self.artists_groups = database["artists_groups"]
+        self.artists_groups.create_index([("group_id", ASCENDING)], unique=True)
+        self.artists_groups.create_index([("creator", ASCENDING)])
 
     def get_settings(self, username: str) -> Settings:
         settings = self.settings.find_one_and_update({"username": username}, {"$setOnInsert": Settings.default(username).to_dict()}, upsert=True, return_document=True)
@@ -68,6 +68,10 @@ class Database:
 
     def update_settings(self, settings: Settings) -> None:
         self.settings.update_one({"username": settings.username}, {"$set": settings.to_dict()})
+
+    def get_identifier(self, collection_name: str) -> int:
+        identifier = self.identifiers.find_one_and_update({"_id": collection_name}, {"$inc": {"value": 1}}, return_document=True)
+        return identifier["value"]
 
     def drop(self) -> None:
         self.client.drop_database(self.database_name)

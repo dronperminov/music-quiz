@@ -2,6 +2,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from src.entities.artist import Artist
+from src.entities.artists_group import ArtistsGroup
 from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction, HistoryAction, RemoveArtistAction, RemoveTrackAction
 from src.entities.lyrics import Lyrics
 from src.entities.lyrics_line import LyricsLine
@@ -204,3 +205,17 @@ class TestSerialization(TestCase):
             history_action_dict = history_action.to_dict()
             history_action_from_dict = HistoryAction.from_dict(history_action_dict)
             self.assertEqual(history_action, history_action_from_dict)
+
+    def test_artists_group_serializarion(self) -> None:
+        group = ArtistsGroup(
+            group_id=1,
+            name="Some group name",
+            description="some group description",
+            artist_ids=[1, 5, 123],
+            image_url="url",
+            metadata=Metadata.initial("user")
+        )
+
+        group_dict = group.to_dict()
+        group_from_dict = ArtistsGroup.from_dict(group_dict)
+        self.assertEqual(group, group_from_dict)
