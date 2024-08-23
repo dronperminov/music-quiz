@@ -37,7 +37,7 @@ TextInput.prototype.GetValue = function() {
         return this.ValidateValue(value)
     }
 
-    let lines = this.input.value.split("\n").map(line => line.trim())
+    let lines = this.input.value.split("\n").map(line => line.trim()).filter(line => line.length > 0)
 
     for (let line of lines) {
         let value = this.ValidateValue(line)

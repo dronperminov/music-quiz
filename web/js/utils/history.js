@@ -91,7 +91,9 @@ function BuildHistory(parent, history) {
         let {date, time} = ParseDateTime(action.timestamp)
         let objectId = ""
 
-        if (action.name == "edit_artist")
+        if (action.name == "add_artist")
+            objectId = ` <a class="link" href="/artists/${action.artist.artist_id}">${action.artist.artist_id}</a>`
+        else if (action.name == "edit_artist")
             objectId = ` <a class="link" href="/artists/${action.artist_id}">${action.artist_id}</a>`
         else if (action.name == "remove_artist")
             objectId = ` ${action.artist_id}`

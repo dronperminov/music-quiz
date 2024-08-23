@@ -8,6 +8,9 @@ function GetParseInfo(response) {
 }
 
 function ParseArtists(buttons, artistIds, maxTracks = 20, maxArtists = 4) {
+    if (artistIds.length == 0)
+        return
+
     for (let button of buttons)
         button.setAttribute("disabled", "")
 
@@ -56,6 +59,6 @@ function AddArtist(buttons) {
     if (maxArtists === null)
         return
 
-    let artistIds = Array.from(new Set(urls.map(url => /^artist\/(?<artistId>\d+)/g.exec(url).groups.artistId)))
+    let artistIds = Array.from(new Set(urls.map(url => /artist\/(?<artistId>\d+)/g.exec(url).groups.artistId)))
     ParseArtists(buttons, artistIds, maxTracks, maxArtists)
 }
