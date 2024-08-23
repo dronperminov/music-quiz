@@ -34,10 +34,12 @@ class QuestionsDatabase:
         question.set_answer(answer)
         self.database.questions.update_one({"username": username, "correct": None}, {"$set": question.to_dict()})
 
-    def get_question(self, settings: Settings) -> Question:
+    def get_question(self, settings: Settings) -> Optional[Question]:
         tracks = self.get_question_tracks(settings.question_settings)
 
-        # TODO: if not tracks ...
+        if not tracks:
+            return None
+
         if question := self.__get_user_question(username=settings.username):
             if question.track_id in {track["track_id"] for track in tracks}:
                 return question

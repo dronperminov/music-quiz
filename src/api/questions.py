@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import database, music_database, questions_database
-from src.api import templates
+from src.api import send_error, templates
 from src.entities.user import User
 from src.query_params.question_answer import QuestionAnswer
 from src.utils.auth import get_user
@@ -22,6 +22,10 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
 
     settings = database.get_settings(username=user.username)
     question = questions_database.get_question(settings)
+
+    if question is None:
+        return send_error(user=user, title="Не удалось сгенерировать вопрос", text='Нет треков, удовлетворяющих выбранным <a class="link" href="/settings">настройкам</a>.')
+
     track = music_database.get_track(track_id=question.track_id)
     artist_id2artist = music_database.get_track_artists(track=track)
     artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}

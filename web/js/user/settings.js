@@ -81,6 +81,8 @@ function UpdateMainSettings() {
     SendRequest("/main_settings", settings).then(response => {
         if (response.status != SUCCESS_STATUS)
             ShowNotification(`<b>Ошибка</b>: не удалось обновить настройки<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+        else
+            ShowNotification(`Настройки успшено обновлены`, "success-notification", 1000)
     })
 }
 
@@ -89,17 +91,10 @@ function UpdateQuestionSettings() {
     if (settings === null)
         return
 
-    let saveButton = document.getElementById("save-button")
-    saveButton.setAttribute("disabled", "")
-
     SendRequest("/question_settings", settings).then(response => {
-        saveButton.removeAttribute("disabled")
-
-        if (response.status != SUCCESS_STATUS) {
+        if (response.status != SUCCESS_STATUS)
             ShowNotification(`<b>Ошибка</b>: не удалось обновить настройки вопросов<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
-            return
-        }
-
-        saveButton.classList.add("hidden")
+        else
+            ShowNotification(`Настройки вопросов успшено обновлены`, "success-notification", 1000)
     })
 }

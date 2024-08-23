@@ -127,10 +127,10 @@ class QuestionSettings:
     def __check_track_position(self, position: int) -> bool:
         min_position, max_position = self.track_position
 
-        if min_position is int and position < min_position:
+        if isinstance(min_position, int) and position < min_position:
             return False
 
-        if max_position is int and position > max_position:
+        if isinstance(max_position, int) and position > max_position:
             return False
 
         return True
