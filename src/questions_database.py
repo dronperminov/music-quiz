@@ -41,7 +41,7 @@ class QuestionsDatabase:
             return None
 
         if question := self.__get_user_question(username=settings.username):
-            if question.track_id in {track["track_id"] for track in tracks}:
+            if question.track_id in {track["track_id"] for track in tracks} and question.question_type in settings.question_settings.question_types:
                 return question
 
             self.database.questions.delete_one({"username": settings.username, "correct": None})
@@ -50,9 +50,7 @@ class QuestionsDatabase:
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
         if last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
-            question_weights = [1 - self.alpha ** (i + 1) for i in range(len(last_incorrect_questions))]
-            question = random.choices(last_incorrect_questions, weights=question_weights, k=1)[0]
-            question.remove_answer()
+            question = self.repeat_incorrect_question(last_incorrect_questions)
         else:
             question = self.generate_question(tracks, last_questions, settings)
 
@@ -68,6 +66,12 @@ class QuestionsDatabase:
         question_type = random.choices(question_types, weights=question_weights, k=1)[0]
 
         return self.__generate_question_by_type(question_type, track, settings)
+
+    def repeat_incorrect_question(self, last_incorrect_questions: List[Question]) -> Question:
+        question_weights = [1 - self.alpha ** (i + 1) for i in range(len(last_incorrect_questions))]
+        question = random.choices(last_incorrect_questions, weights=question_weights, k=1)[0]
+        question.remove_answer()
+        return question
 
     def get_question_track(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings) -> Track:
         track_id2weight = {question.track_id: 1 - self.alpha ** (i + 1) for i, question in enumerate(last_questions)}
@@ -160,5 +164,4 @@ class QuestionsDatabase:
     def __get_last_questions(self, username: str, track_ids: List[int]) -> List[Question]:
         query = {"username": username, "correct": {"$ne": None}, "track_id": {"$in": track_ids}}
         last_questions = self.database.questions.find(query).sort("timestamp", -1).limit(self.last_questions_count)
-        # TODO: check performance, maybe without deserealization
         return [Question.from_dict(question) for question in last_questions]
