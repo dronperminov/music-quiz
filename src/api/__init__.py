@@ -1,7 +1,7 @@
 from typing import Optional
 
-from jinja2 import Environment, FileSystemLoader
 from fastapi.responses import HTMLResponse
+from jinja2 import Environment, FileSystemLoader
 
 from src.entities.user import User
 from src.utils.common import get_static_hash

@@ -24,12 +24,17 @@ IntervalInput.prototype.ClearErrorInput = function(input) {
 
 IntervalInput.prototype.GetInputValue = function(input, message) {
     let value = input.value
+    let min = input.hasAttribute("data-min") ? +input.getAttribute("data-min") : -Infinity
+    let max = input.hasAttribute("data-max") ? +input.getAttribute("data-max") : Infinity
 
     if (value === "")
         return ""
 
-    if (value.match(/^\d+(\.\d*)?$/) !== null)
-        return +value
+    if (value.match(/^\d+(\.\d*)?$/) !== null) {
+        value = Math.max(min, Math.min(max, +value))
+        input.value = this.PrettifyInputValue(value.toString())
+        return value
+    }
 
     let match = (/^(?<number>\d+(\.\d*)?)(?<scale>[kKкКmMмМ])$/).exec(value)
     if (match !== null) {
@@ -41,8 +46,9 @@ IntervalInput.prototype.GetInputValue = function(input, message) {
             scale = scale == "K" ? "" : "K"
         }
 
-        input.value = `${number}${scale}`
-        return number * this.scale2number[scale]
+        value = Math.max(min, Math.min(max, number * this.scale2number[scale]))
+        input.value = this.PrettifyInputValue(value.toString())
+        return value
     }
 
     input.focus()
@@ -58,8 +64,14 @@ IntervalInput.prototype.PrettifyInputValue = function(value) {
     if (value.match(/^\d+000000$/g))
         return `${value.substr(0, value.length - 6)}M`
 
+    if (value.match(/^\d+\d00000$/g))
+        return `${value.substr(0, value.length - 6)}.${value.substr(value.length - 6, 1)}M`
+
     if (value.match(/^\d+000$/g))
         return `${value.substr(0, value.length - 3)}K`
+
+    if (value.match(/^\d+\d00$/g))
+        return `${value.substr(0, value.length - 3)}.${value.substr(value.length - 3, 1)}K`
 
     return value
 }

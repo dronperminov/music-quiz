@@ -241,13 +241,13 @@
             <div class="settings-line"></div>
 
             <div class="settings-item">
-                <div><b onclick="listenCountInput.Clear()">Количество прослушиваний</b></div>
+                <div><b onclick="listenCountInput.Clear(); UpdateQuestionSettings()">Количество прослушиваний</b></div>
                 <div class="interval-input" id="listen-count">
                     <div class="interval-input-cell">
-                        <span class="interval-input-label">от</span> <input class="basic-input" type="text" id="listen-count-min">
+                        <span class="interval-input-label">от</span> <input class="basic-input" data-min="0" type="text" id="listen-count-min">
                     </div>
                     <div class="interval-input-cell">
-                        <span class="interval-input-label">до</span> <input class="basic-input" type="text" id="listen-count-max">
+                        <span class="interval-input-label">до</span> <input class="basic-input" data-min="0" type="text" id="listen-count-max">
                     </div>
                 </div>
             </div>
@@ -299,13 +299,13 @@
             <div class="settings-line"></div>
 
             <div class="settings-item">
-                <div><b onclick="trackPositionInput.Clear()">Позиция трека у исполнителя</b></div>
+                <div><b onclick="trackPositionInput.Clear(); UpdateQuestionSettings()">Позиция трека у исполнителя</b></div>
                 <div class="interval-input" id="track-position">
                     <div class="interval-input-cell">
-                        <span class="interval-input-label">от</span> <input class="basic-input" type="text" id="track-position-min">
+                        <span class="interval-input-label">от</span> <input class="basic-input" data-min="1" type="text" id="track-position-min">
                     </div>
                     <div class="interval-input-cell">
-                        <span class="interval-input-label">до</span> <input class="basic-input" type="text" id="track-position-max">
+                        <span class="interval-input-label">до</span> <input class="basic-input" data-min="1" type="text" id="track-position-max">
                     </div>
                 </div>
             </div>
