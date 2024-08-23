@@ -107,7 +107,11 @@
     margin-bottom: 0.5em;
 }
 
-.info-input-line label {
+.info-textarea-line {
+    margin-bottom: 0.5em;
+}
+
+.info label {
     font-weight: bold;
 }
 

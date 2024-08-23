@@ -200,9 +200,9 @@ function BuildAdminInfo() {
     let artistBlock = MakeElement("info-line", info, {innerHTML: "<b>Исполнители</b>"})
     MakeElement("description", artistBlock, {innerText: "Добавление новых и обновление имеющихся исполнителей"})
 
-    let urlBlock = MakeElement("info-input-line", info)
-    let urlLabel = MakeElement("", urlBlock, {innerText: "Ссылка:", "for": "artist-url"}, "label")
-    let urlInput = MakeElement("basic-input", urlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/artist/...", id: "artist-url"}, "input")
+    let urlBlock = MakeElement("info-textarea-line", info)
+    let urlLabel = MakeElement("", urlBlock, {innerText: "Ссылки:", "for": "artist-url"}, "label")
+    let urlInput = MakeElement("basic-textarea", urlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/artist/...", id: "artist-url"}, "textarea")
     MakeElement("error", info, {id: "artist-url-error"})
 
     let maxTracksBlock = MakeElement("info-input-line", info)

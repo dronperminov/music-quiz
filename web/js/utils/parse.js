@@ -41,9 +41,9 @@ function ParseChart(buttons) {
 
 function AddArtist(buttons) {
     let urlRegex = /^https:\/\/music\.yandex\.ru\/artist\/(?<artistId>\d+)/g
-    let urlInput = new TextInput("artist-url", urlRegex, "Введена некорректная ссылка")
-    let url = urlInput.GetValue()
-    if (url === null)
+    let urlInput = new TextInput("artist-url", urlRegex, "Введена некорректная ссылка", true)
+    let urls = urlInput.GetValue()
+    if (urls === null)
         return
 
     let maxTracksInput = new NumberInput("artist-max-tracks", 1, 20, /^\d+$/g)
@@ -56,6 +56,6 @@ function AddArtist(buttons) {
     if (maxArtists === null)
         return
 
-    let artistId = urlRegex.exec(url).groups.artistId
-    ParseArtists(buttons, [artistId], maxTracks, maxArtists)
+    let artistIds = Array.from(new Set(urls.map(url => /^artist\/(?<artistId>\d+)/g.exec(url).groups.artistId)))
+    ParseArtists(buttons, artistIds, maxTracks, maxArtists)
 }

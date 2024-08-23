@@ -1,4 +1,4 @@
-function TextInput(inputId, pattern, errorMessage, value = null, onChange = null) {
+function TextInput(inputId, pattern, errorMessage, multiline = false, value = null, onChange = null) {
     this.input = document.getElementById(inputId)
     this.error = document.getElementById(`${inputId}-error`)
     this.input.addEventListener("input", () => this.Input())
@@ -8,6 +8,7 @@ function TextInput(inputId, pattern, errorMessage, value = null, onChange = null
 
     this.pattern = pattern
     this.errorMessage = errorMessage
+    this.multiline = multiline
 
     this.SetValue(value)
 }
@@ -17,10 +18,7 @@ TextInput.prototype.SetValue = function(value) {
         this.input.value = value
 }
 
-TextInput.prototype.GetValue = function() {
-    let value = this.input.value.trim()
-    this.input.value = value
-
+TextInput.prototype.ValidateValue = function(value) {
     if (value.match(this.pattern) === null) {
         this.input.classList.add("error-input")
         this.input.focus()
@@ -30,6 +28,25 @@ TextInput.prototype.GetValue = function() {
     }
 
     return value
+}
+
+TextInput.prototype.GetValue = function() {
+    if (!this.multiline) {
+        let value = this.input.value.trim()
+        this.input.value = value
+        return this.ValidateValue(value)
+    }
+
+    let lines = this.input.value.split("\n").map(line => line.trim())
+
+    for (let line of lines) {
+        let value = this.ValidateValue(line)
+
+        if (value === null)
+            return
+    }
+
+    return lines
 }
 
 TextInput.prototype.Input = function() {
