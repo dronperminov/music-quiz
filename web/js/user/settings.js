@@ -16,6 +16,9 @@ function GetQuestionSettings() {
     if (answerTime === null)
         return null
 
+    let startFromChorus = document.getElementById("start-from-chorus").checked
+    let showSimpleArtistType = document.getElementById("show-simple-artist-type").checked
+
     let genres = genresInput.GetValue()
     if (genres === null)
         return null
@@ -44,7 +47,6 @@ function GetQuestionSettings() {
     if (trackPosition === null)
         return null
 
-    let startFromChorus = document.getElementById("start-from-chorus").checked
     let blackList = []
 
     let trackModificationSettings = GetTrackModificationSettings()
@@ -57,6 +59,8 @@ function GetQuestionSettings() {
 
     return {
         answer_time: answerTime,
+        start_from_chorus: startFromChorus,
+        show_simple_artist_type: showSimpleArtistType,
         genres: genres,
         years: years,
         languages: languages,
@@ -64,10 +68,9 @@ function GetQuestionSettings() {
         listen_count: listenCount,
         question_types: questionTypes,
         track_position: trackPosition,
-        start_from_chorus: startFromChorus,
         black_list: blackList,
-        track_modifications: trackModificationSettings,
-        repeat_incorrect_probability: repeatIncorrectProbability / 100
+        repeat_incorrect_probability: repeatIncorrectProbability / 100,
+        track_modifications: trackModificationSettings
     }
 }
 

@@ -1,8 +1,9 @@
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
+from src.entities.artist import Artist
 from src.entities.settings import Settings
 from src.entities.track import Track
 from src.entities.track_modifications import TrackModifications
@@ -79,6 +80,14 @@ class Question:
         self.correct = None
         self.answer_time = None
         self.timestamp = datetime.now()
+
+    def get_artist_types(self, track: Track, artist_id2artist: Dict[int, Artist], simple: bool) -> str:
+        artist_types = [artist_id2artist[artist_id].artist_type.to_title(simple=simple) for artist_id in track.artists]
+
+        if len(artist_types) == 1:
+            return artist_types[0]
+
+        return f'{", ".join(artist_types[:-1])} и {artist_types[-1]}'
 
     def get_random_seek(self, track: Track, start_from_chorus: bool) -> float:
         if track.lyrics and track.lyrics.lrc:

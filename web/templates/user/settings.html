@@ -92,6 +92,21 @@
 
             <div class="settings-line"></div>
 
+            <div class="settings-item settings-checkbox-item">
+                <div class="settings-name">
+                    <label for="show-simple-artist-type"><b>Упрощённая форма записи исполнителя</b></label>
+                </div>
+                <div class="settings-checkbox">
+                    <label class="switch-checkbox">
+                        <input type="checkbox" id="show-simple-artist-type"{% if question_settings.show_simple_artist_type %}checked{% endif %} onchange="UpdateQuestionSettings()">
+                        <span class="switch-checkbox-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="settings-item-description">Отображать формы записи исполнителей кратко: певец, исполнитель &rarr; <b>исполнитель</b>, группа, дуэт, трио, проект &rarr; <b>группа</b>.</div>
+
+            <div class="settings-line"></div>
+
             <div class="settings-item">
                 <div><b>Жанры</b></div>
 

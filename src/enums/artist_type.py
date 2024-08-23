@@ -60,16 +60,16 @@ class ArtistType(Enum):
 
         return artist_type2rus[self]
 
-    def to_title(self) -> str:
+    def to_title(self, simple: bool = False) -> str:
         artist_type2title = {
-            ArtistType.SINGER_MALE: "певца",
-            ArtistType.SINGER_FEMALE: "певицу",
+            ArtistType.SINGER_MALE: "исполнителя" if simple else "певца",
+            ArtistType.SINGER_FEMALE: "исполнительницу" if simple else "певицу",
             ArtistType.PERFORMER_MALE: "исполнителя",
             ArtistType.PERFORMER_FEMALE: "исполнительницу",
             ArtistType.BAND: "группу",
-            ArtistType.PROJECT: "проект",
-            ArtistType.DUET: "дуэт",
-            ArtistType.TRIO: "трио",
+            ArtistType.PROJECT: "группу" if simple else "проект",
+            ArtistType.DUET: "группу" if simple else "дуэт",
+            ArtistType.TRIO: "группу" if simple else "трио",
             ArtistType.DJ: "диджея",
             ArtistType.VIA: "ВИА",
             ArtistType.UNKNOWN: "автора"

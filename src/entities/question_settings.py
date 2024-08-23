@@ -12,6 +12,8 @@ QUESTION_YEARS = ["", 1980, 1990, 2000, 2010, 2015, 2020, ""]
 @dataclass
 class QuestionSettings:
     answer_time: float
+    show_simple_artist_type: bool
+    start_from_chorus: bool
     genres: Dict[Genre, float]
     years: Dict[Union[Tuple[Union[int, str], Union[int, str]], str], float]
     languages: Dict[Language, float]
@@ -19,10 +21,9 @@ class QuestionSettings:
     listen_count: Tuple[Union[int, str], Union[int, str]]
     question_types: Dict[QuestionType, float]
     track_position: Tuple[Union[int, str], Union[int, str]]
-    start_from_chorus: bool
     black_list: List[int]
-    track_modifications: TrackModificationSettings
     repeat_incorrect_probability: float
+    track_modifications: TrackModificationSettings
 
     def __post_init__(self) -> None:
         self.genres = self.__normalize_balance(self.genres)
@@ -34,6 +35,8 @@ class QuestionSettings:
     def to_dict(self) -> dict:
         return {
             "answer_time": self.answer_time,
+            "start_from_chorus": self.start_from_chorus,
+            "show_simple_artist_type": self.show_simple_artist_type,
             "genres": {genre.value: value for genre, value in self.genres.items()},
             "years": [{"start_year": start_year, "end_year": end_year, "scale": scale} for (start_year, end_year), scale in self.years.items()],
             "languages": {language.value: value for language, value in self.languages.items()},
@@ -41,16 +44,17 @@ class QuestionSettings:
             "listen_count": self.listen_count,
             "question_types": {question_type.value: value for question_type, value in self.question_types.items()},
             "track_position": self.track_position,
-            "start_from_chorus": self.start_from_chorus,
             "black_list": self.black_list,
-            "track_modifications": self.track_modifications.to_dict(),
-            "repeat_incorrect_probability": self.repeat_incorrect_probability
+            "repeat_incorrect_probability": self.repeat_incorrect_probability,
+            "track_modifications": self.track_modifications.to_dict()
         }
 
     @classmethod
     def from_dict(cls: "QuestionSettings", data: dict) -> "QuestionSettings":
         return cls(
             answer_time=data["answer_time"],
+            start_from_chorus=data["start_from_chorus"],
+            show_simple_artist_type=data["show_simple_artist_type"],
             genres={Genre(genre): value for genre, value in data["genres"].items()},
             years={(value["start_year"], value["end_year"]): value["scale"] for value in data["years"]},
             languages={Language(language): value for language, value in data["languages"].items()},
@@ -58,10 +62,9 @@ class QuestionSettings:
             listen_count=data["listen_count"],
             question_types={QuestionType(question_type): value for question_type, value in data["question_types"].items()},
             track_position=data["track_position"],
-            start_from_chorus=data["start_from_chorus"],
             black_list=data["black_list"],
-            track_modifications=TrackModificationSettings.from_dict(data["track_modifications"]),
-            repeat_incorrect_probability=data["repeat_incorrect_probability"]
+            repeat_incorrect_probability=data["repeat_incorrect_probability"],
+            track_modifications=TrackModificationSettings.from_dict(data["track_modifications"])
         )
 
     @classmethod
@@ -70,6 +73,8 @@ class QuestionSettings:
 
         return cls(
             answer_time=0,
+            start_from_chorus=False,
+            show_simple_artist_type=False,
             genres={genre: 1 / len(Genre) for genre in Genre},
             years={(start_year, end_year): 1 / len(years) for start_year, end_year in years},
             languages={language: 1 / (len(Language) - 1) for language in Language},  # exclude unknown
@@ -77,10 +82,9 @@ class QuestionSettings:
             listen_count=("", ""),
             question_types={question_type: 1 / len(QuestionType) for question_type in QuestionType},
             track_position=("", ""),
-            start_from_chorus=False,
             black_list=[],
-            track_modifications=TrackModificationSettings(change_playback_rate=False, probability=0),
-            repeat_incorrect_probability=0.04
+            repeat_incorrect_probability=0.04,
+            track_modifications=TrackModificationSettings(change_playback_rate=False, probability=0)
         )
 
     @staticmethod
