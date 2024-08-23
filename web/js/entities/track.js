@@ -51,11 +51,15 @@ Track.prototype.BuildInfo = function(artists = null) {
     if (this.metadata.created_at != this.metadata.updated_at)
         MakeElement("info-line", info, {innerHTML: `<b>Обновлён:</b> ${this.FormatMetadataDate(this.metadata.updated_at)} пользователем @${this.metadata.updated_by}`})
 
+    this.BuildLyrics(info)
+
     let history = MakeElement("info-line admin-block", info)
     let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
     history.addEventListener("click", () => ShowHistory(`/track-history/${this.trackId}`))
 
-    this.BuildLyrics(info)
+    let removeBlock = MakeElement("info-line admin-block", info)
+    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить трек"}, "button")
+    removeButton.addEventListener("click", () => this.Remove([removeButton]))
 
     return info
 }
@@ -90,7 +94,7 @@ Track.prototype.BuildLyrics = function(block) {
     if (this.lyrics === null)
         return
 
-    let details = MakeElement("details details-open", block)
+    let details = MakeElement("details", block)
     let detailsHeader = MakeElement("details-header", details)
     detailsHeader.addEventListener("click", () => details.classList.toggle('details-open'))
 
@@ -147,4 +151,24 @@ Track.prototype.GetArtistPositions = function(artists) {
 
     let positions = artists.map(artist => `<li>${artist.name}: ${artist.tracks[this.trackId]}</li>`).join("")
     return `<b>Позиции у исполнителей:</b> <ul>${positions}</ul>`
+}
+
+Track.prototype.Remove = function(buttons) {
+    if (!confirm(`Вы уверены, что хотите удалить трек "${this.title}"?`))
+        return
+
+    for (let button of buttons)
+        button.setAttribute("disabled", "")
+
+    SendRequest("/remove-track", {track_id: this.trackId}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            for (let button of buttons)
+                button.removeAttribute("disabled")
+
+            ShowNotification(`Не удалось удалить трек "${this.title}".<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+            return
+        }
+
+        location.reload()
+    })
 }

@@ -86,11 +86,21 @@ Artist.prototype.BuildInfo = function() {
     let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
     history.addEventListener("click", () => ShowHistory(`/artist-history/${this.artistId}`))
 
+    let buttons = []
+
     if (this.source.name == "yandex") {
         let buttonBlock = MakeElement("info-line admin-block", info)
         let button = MakeElement("basic-button gradient-button", buttonBlock, {innerText: "Распарсить"}, "button")
+        buttons.push(button)
+
         button.addEventListener("click", () => ParseArtists([button], [this.source.yandex_id]))
     }
+
+    let removeBlock = MakeElement("info-line admin-block", info)
+    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить исполнителя"}, "button")
+    buttons.push(removeButton)
+
+    removeButton.addEventListener("click", () => this.Remove(buttons))
 
     return info
 }
@@ -145,4 +155,24 @@ Artist.prototype.GetStats = function() {
         stats.push(this.artistType.ToRus())
 
     return stats.join(" | ")
+}
+
+Artist.prototype.Remove = function(buttons) {
+    if (!confirm(`Вы уверены, что хотите удалить исполнителя "${this.name}" и все его треки?`))
+        return
+
+    for (let button of buttons)
+        button.setAttribute("disabled", "")
+
+    SendRequest("/remove-artist", {artist_id: this.artistId}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            for (let button of buttons)
+                button.removeAttribute("disabled")
+
+            ShowNotification(`Не удалось удалить исполнителя "${this.name}".<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+            return
+        }
+
+        location.reload()
+    })
 }

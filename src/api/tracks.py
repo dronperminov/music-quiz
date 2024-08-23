@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
@@ -32,4 +32,20 @@ def update_track(params: TrackUpdate, user: Optional[User] = Depends(get_user)) 
         return JSONResponse({"status": "error", "message": f"Не удалось найти трек с track_id = {params.track_id} в базе"})
 
     music_database.update_track(track_id=params.track_id, diff=track.get_diff(params.to_data()), username=user.username)
+    return JSONResponse({"status": "success"})
+
+
+@router.post("/remove-track")
+def remove_track(track_id: int = Body(..., embed=True), user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    if user.role != UserRole.OWNER:
+        return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
+
+    track = music_database.get_track(track_id=track_id)
+    if track is None:
+        return JSONResponse({"status": "error", "message": f"Не удалось найти трек с track_id = {track_id} в базе"})
+
+    music_database.remove_track(track_id=track_id, username=user.username)
     return JSONResponse({"status": "success"})

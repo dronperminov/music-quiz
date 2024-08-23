@@ -1,11 +1,11 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from src import database, music_database, questions_database
-from src.api import templates
+from src.api import send_error, templates
 from src.entities.user import User
 from src.enums import ArtistType, ArtistsCount, Genre, Language, UserRole
 from src.query_params.artist_update import ArtistUpdate
@@ -62,6 +62,10 @@ def search_artists(params: ArtistsSearch, user: Optional[User] = Depends(get_use
 @router.get("/artists/{artist_id}")
 def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTMLResponse:
     artist = music_database.get_artist(artist_id=artist_id)
+
+    if artist is None:
+        return send_error(title="Исполнитель не найден", text="Не удалось найти запрашиваемого исполнителя. Возможно, он был удалён", user=user)
+
     tracks = sorted(music_database.get_artist_tracks(artist_id), key=lambda track: artist.tracks[track.track_id])
     artist2name = music_database.get_artist_names(tracks)
 
@@ -105,4 +109,20 @@ def update_artist(params: ArtistUpdate, user: Optional[User] = Depends(get_user)
         return JSONResponse({"status": "error", "message": f"Не удалось найти исполнителя с artist_id = {params.artist_id} в базе"})
 
     music_database.update_artist(artist_id=params.artist_id, diff=artist.get_diff(params.to_data()), username=user.username)
+    return JSONResponse({"status": "success"})
+
+
+@router.post("/remove-artist")
+def remove_artist(artist_id: int = Body(..., embed=True), user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    if user.role != UserRole.OWNER:
+        return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
+
+    artist = music_database.get_artist(artist_id=artist_id)
+    if artist is None:
+        return JSONResponse({"status": "error", "message": f"Не удалось найти исполнителя с artist_id = {artist_id} в базе"})
+
+    music_database.remove_artist(artist_id=artist_id, username=user.username)
     return JSONResponse({"status": "success"})
