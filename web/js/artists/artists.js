@@ -217,6 +217,31 @@ function BuildAdminInfo() {
 
     let artistButton = MakeElement("basic-button gradient-button", info, {innerText: "Добавить"}, "button")
 
+    MakeElement("info-divider-line", info)
+
+    let historyBlock = MakeElement("info-line", info, {innerHTML: "<b>История</b>"})
+    MakeElement("description", historyBlock, {innerText: "История изменения базы данных"})
+
+    let artistActionsBlock = MakeElement("info-checkbox-line", info)
+    let artistActionsInput = MakeCheckbox(artistActionsBlock, "artist-actions", true)
+    let artistActionsLabel = MakeElement("", artistActionsBlock, {innerText: "Действия с исполнителями", "for": "artist-actions"}, "label")
+
+    let trackActionsBlock = MakeElement("info-checkbox-line", info)
+    let trackActionsInput = MakeCheckbox(trackActionsBlock, "track-actions", true)
+    let trackActionsLabel = MakeElement("", trackActionsBlock, {innerText: "Действия с треками", "for": "track-actions"}, "label")
+
+    let limitBlock = MakeElement("info-input-line", info)
+    let limitLabel = MakeElement("", limitBlock, {innerText: "Количество записей:", "for": "history-limit"}, "label")
+    let limitInput = MakeElement("basic-input", limitBlock, {type: "text", value: "100", id: "history-limit"}, "input")
+    MakeElement("error", info, {id: "history-limit-error"})
+
+    let skipBlock = MakeElement("info-input-line", info)
+    let skipLabel = MakeElement("", skipBlock, {innerText: "Смещение:", "for": "history-skip"}, "label")
+    let skipInput = MakeElement("basic-input", skipBlock, {type: "text", value: "0", id: "history-skip"}, "input")
+    MakeElement("error", info, {id: "history-skip-error"})
+
+    let historyButton = MakeElement("basic-button gradient-button", info, {innerText: "Получить"}, "button")
+
     urlLabel.addEventListener("click", () => {
         urlInput.value = ""
         urlInput.focus()
@@ -224,6 +249,23 @@ function BuildAdminInfo() {
 
     chartButton.addEventListener("click", () => ParseChart([chartButton, artistButton]))
     artistButton.addEventListener("click", () => AddArtist([chartButton, artistButton]))
+    historyButton.addEventListener("click", () => {
+        let artistActions = artistActionsInput.checked ? ["add_artist", "edit_artist", "remove_artist"] : []
+        let trackActions = trackActionsInput.checked ? ["add_track", "edit_track", "remove_track"] : []
+        let limitInput = new NumberInput("history-limit", 1, Infinity, /^\d+$/g)
+        let limit = limitInput.GetValue()
+
+        if (limit === null)
+            return
+
+        let skipInput = new NumberInput("history-skip", 0, Infinity, /^\d+$/g)
+        let skip = skipInput.GetValue()
+
+        if (skip === null)
+            return
+
+        ShowHistory("/history", {artist_actions: artistActions, track_actions: trackActions, limit: limit, skip: skip})
+    })
 
     return info
 }

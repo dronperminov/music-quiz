@@ -20,7 +20,7 @@ function GetActionDiffTracks(diff) {
         html.push(`<span class="success-color">${key}: ${value}</span>`)
     }
 
-    return html.join(", ")
+    return `<b>треки</b>: ${html.join(", ")}`
 }
 
 function GetActionDiffKeyValue(key, value) {
@@ -33,10 +33,6 @@ function GetActionDiffKeyValue(key, value) {
     if (key == "language")
         return new Language(value).ToRus()
 
-    if (key == "tracks") {
-        let tracks = value.map(track => `${track.track_id}: ${track.position}`).join(", ")
-        return `{${tracks}}`
-    }
 
     return JSON.stringify(value)
 }
@@ -71,37 +67,46 @@ function GetActionDiff(key, diff) {
     return `<b>${key2name[key]}</b>: ${prevValue} &rarr; ${newValue}`
 }
 
-function BuildArtistEditAction(action, parent) {
+function BuildEditAction(action, parent) {
     let diffBlock = MakeElement("action-diff", parent, {}, "ul")
 
-    for (let [key, diff] of Object.entries(action.diff)) {
+    for (let [key, diff] of Object.entries(action.diff))
         MakeElement("action-diff-row", diffBlock, {innerHTML: GetActionDiff(key, diff)}, "li")
-    }
 }
 
 function BuildHistory(parent, history) {
     let historyBlock = MakeElement("history", parent)
 
     let action2title = {
-        "edit_artist": "Обновлён",
-        "add_artist": "Добавлен",
-        "edit_track": "Обновлён",
-        "add_track": "Добавлен",
+        "edit_artist": "<b>Обновлён</b> исполнитель",
+        "add_artist": "<b>Добавлен</b> исполнитель",
+        "remove_artist": "<b>Удалён</b> исполнитель",
+        "edit_track": "<b>Обновлён</b> трек",
+        "add_track": "<b>Добавлен</b> трек",
+        "remove_track": "<b>Удалён</b> трек"
     }
 
     for (let action of history) {
         let actionBlock = MakeElement("action", historyBlock)
         let {date, time} = ParseDateTime(action.timestamp)
+        let objectId = ""
 
-        MakeElement("action-header", actionBlock, {innerText: `${action2title[action.name]} @${action.username} ${date} в ${time}`})
+        if (action.name == "edit_artist")
+            objectId = ` <a class="link" href="/artists/${action.artist_id}">${action.artist_id}</a>`
+        else if (action.name == "remove_artist")
+            objectId = ` ${action.artist_id}`
+        else if (action.name == "edit_track" || action.name == "remove_track")
+            objectId = ` ${action.track_id}`
+
+        MakeElement("action-header", actionBlock, {innerHTML: `${action2title[action.name]}${objectId} @${action.username} ${date} в ${time}`})
 
         if (action.name == "edit_artist" || action.name == "edit_track") {
-            BuildArtistEditAction(action, actionBlock)
+            BuildEditAction(action, actionBlock)
         }
     }
 }
 
-function ShowHistory(url) {
+function ShowHistory(url, params = null) {
     let info = document.getElementById("info-history")
 
     if (info === null) {
@@ -114,7 +119,7 @@ function ShowHistory(url) {
         infos.Add(info)
     }
 
-    SendRequest(url).then(response => {
+    SendRequest(url, params).then(response => {
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(`Не удалось получить историю изменений<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
             return

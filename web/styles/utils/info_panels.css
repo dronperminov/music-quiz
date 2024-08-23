@@ -102,7 +102,7 @@
 .info-input-line {
     display: grid;
     grid-template-columns: max-content 1fr;
-    grid-gap: 0.6em;
+    grid-gap: 0.3em;
     align-items: baseline;
     margin-bottom: 0.5em;
 }
@@ -118,6 +118,14 @@
 .info-description-line {
     font-size: 1em;
     color: var(--text-color);
+    margin-bottom: 0.5em;
+}
+
+.info-checkbox-line {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    grid-gap: 0.3em;
+    align-items: center;
     margin-bottom: 0.5em;
 }
 

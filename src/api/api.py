@@ -1,13 +1,15 @@
 from typing import Optional
 
 from fastapi import APIRouter, Body, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from src import music_database, yandex_music_parser
+from src import database, music_database, yandex_music_parser
 from src.api import templates
 from src.entities.user import User
 from src.enums import UserRole
 from src.query_params.artists_parse import ArtistsParse
+from src.query_params.history_query import HistoryQuery
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash
 
@@ -66,3 +68,10 @@ def parse_chart(user: Optional[User] = Depends(get_user)) -> JSONResponse:
         return JSONResponse({"status": "success", "tracks": len(tracks), "artists": len(artists), "new_tracks": new_tracks, "new_artists": new_artists})
     except Exception as error:
         return JSONResponse({"status": "error", "message": str(error)})
+
+
+@router.post("/history")
+def get_history(params: HistoryQuery) -> JSONResponse:
+    query = {"name": {"$in": params.track_actions + params.artist_actions}}
+    history = list(database.history.find(query, {"_id": 0}).sort("timestamp", -1).skip(params.skip).limit(params.limit))
+    return JSONResponse({"status": "success", "history": jsonable_encoder(history)})

@@ -24,6 +24,13 @@ function MakeElement(className, parent = null, attributes = null, tagName = "div
     return element
 }
 
+function MakeCheckbox(parent, id, checked = false) {
+    let label = MakeElement("switch-checkbox", parent, {for: id}, "label")
+    let input = MakeElement("", label, {type: "checkbox", id: id, checked: checked}, "input")
+    let span = MakeElement("switch-checkbox-slider", label, {}, "span")
+    return input
+}
+
 function GetWordForm(count, forms, onlyForm = false) {
     let index = 0
 
