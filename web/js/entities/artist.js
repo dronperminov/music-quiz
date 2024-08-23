@@ -89,7 +89,7 @@ Artist.prototype.BuildInfo = function() {
     if (this.source.name == "yandex") {
         let buttonBlock = MakeElement("info-line admin-block", info)
         let button = MakeElement("basic-button gradient-button", buttonBlock, {innerText: "Распарсить"}, "button")
-        button.addEventListener("click", () => ParseArtist([button], this.source.yandex_id))
+        button.addEventListener("click", () => ParseArtists([button], [this.source.yandex_id]))
     }
 
     return info

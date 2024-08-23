@@ -23,6 +23,22 @@ class YandexMusicParser:
         tracks = self.__request(func=lambda: self.client.artists_tracks(artist_id, page_size=max_tracks))
         return self.__parse_tracks(tracks, max_tracks=max_tracks, max_artists=max_artists)
 
+    def parse_artists(self, artist_ids: List[str], max_tracks: int, max_artists: int = 10, from_playlist: bool = True) -> Tuple[List[dict], List[dict]]:
+        tracks = []
+
+        for artist_id in artist_ids:
+            if not from_playlist:
+                tracks.extend(self.__request(func=lambda: self.client.artists_tracks(artist_id, page_size=max_tracks)))  # noqa
+                continue
+
+            try:
+                playlist = self.__request(func=lambda: self.client.users_playlists(artist_id, "yamusic-bestsongs"))  # noqa
+                tracks.extend([track.track for track in playlist.tracks[:max_tracks]])
+            except NotFoundError:
+                tracks.extend(self.__request(func=lambda: self.client.artists_tracks(artist_id, page_size=max_tracks)))  # noqa
+
+        return self.__parse_tracks(tracks, max_tracks=len(tracks), max_artists=max_artists)
+
     def parse_playlist(self, playlist_id: str, playlist_username: str, max_tracks: int, max_artists: int = 10) -> Optional[Tuple[List[dict], List[dict]]]:
         try:
             playlist = self.__request(func=lambda: self.client.users_playlists(playlist_id, playlist_username))

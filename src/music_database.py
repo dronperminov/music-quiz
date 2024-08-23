@@ -174,9 +174,12 @@ class MusicDatabase:
             diff = {"image_urls": {"prev": artist["image_urls"], "new": image_urls}}
             self.update_artist(artist_id=artist["artist_id"], diff=diff, username=username)
 
-    def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> None:
+    def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> Tuple[int, int]:
         yandex2artist_id = {}
         artist_id2yandex_tracks = {}
+
+        artists_count = self.get_artists_count()
+        tracks_count = self.get_tracks_count()
 
         for yandex_artist in artists:
             self.__add_yandex_artist(yandex_artist, yandex2artist_id, artist_id2yandex_tracks, username)
@@ -185,6 +188,7 @@ class MusicDatabase:
             self.__add_yandex_track(yandex_track, yandex2artist_id, username)
 
         self.__update_artist_yandex_tracks(artist_id2yandex_tracks, username)
+        return self.get_artists_count() - artists_count, self.get_tracks_count() - tracks_count
 
     def validate(self) -> None:
         self.__validate_artists()

@@ -1,15 +1,26 @@
-function ParseArtist(buttons, artistId, maxTracks = 20, maxArtists = 4) {
+function GetParseInfo(response) {
+    let parseInfo = [
+        `<li><b>исполнители</b>: ${response.artists} (новые: ${response.new_artists})</li>`,
+        `<li><b>треки</b>: ${response.tracks} (новые: ${response.new_tracks})</li>`
+    ].join("")
+
+    return `<ul>${parseInfo}</ul>`
+}
+
+function ParseArtists(buttons, artistIds, maxTracks = 20, maxArtists = 4) {
     for (let button of buttons)
         button.setAttribute("disabled", "")
 
-    SendRequest("/parse-artist", {artist_id: artistId, max_tracks: maxTracks, max_artists: maxArtists}).then(response => {
+    SendRequest("/parse-artists", {artist_ids: artistIds, max_tracks: maxTracks, max_artists: maxArtists}).then(response => {
         for (let button of buttons)
             button.removeAttribute("disabled")
 
-        if (response.status != SUCCESS_STATUS)
-            ShowNotification(`Не удалось распарсить исполнителя<br><b>Причина:</b> ${response.message}`, "error-notification")
-        else
-            ShowNotification(`Исполнитель успешно распаршен.<ul><li>треки: ${response.tracks}</li><li>исполнители: ${response.artists}</li></ul>`, "success-notification")
+        if (response.status != SUCCESS_STATUS) {
+            ShowNotification(`Не удалось распарсить исполнител${artistIds.length == 1 ? "я" : "ей"}<br><b>Причина:</b> ${response.message}`, "error-notification")
+            return
+        }
+
+        ShowNotification(`Исполнител${artistIds.length == 1 ? "ь успешно распаршен" : "и успешно распаршены"}.${GetParseInfo(response)}`, "success-notification")
     })
 }
 
@@ -24,7 +35,7 @@ function ParseChart(buttons) {
         if (response.status != SUCCESS_STATUS)
             ShowNotification(`Не удалось распарсить чарт<br><b>Причина:</b> ${response.message}`, "error-notification")
         else
-            ShowNotification(`Чарт успшено обновлён.<ul><li>треки: ${response.tracks}</li><li>исполнители: ${response.artists}</li></ul>`, "success-notification")
+            ShowNotification(`Чарт успешно обновлён.${GetParseInfo(response)}`, "success-notification")
     })
 }
 
@@ -46,5 +57,5 @@ function AddArtist(buttons) {
         return
 
     let artistId = urlRegex.exec(url).groups.artistId
-    ParseArtist(buttons, artistId, maxTracks, maxArtists)
+    ParseArtists(buttons, [artistId], maxTracks, maxArtists)
 }
