@@ -47,7 +47,7 @@ class QuestionsDatabase:
             self.database.questions.delete_one({"username": settings.username, "correct": None})
 
         last_questions = self.__get_last_questions(username=settings.username, track_ids=[track["track_id"] for track in tracks])
-        last_incorrect_questions = [question for question in last_questions if not question.correct]
+        last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
         if last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
             question_weights = [1 - self.alpha ** (i + 1) for i in range(len(last_incorrect_questions))]
