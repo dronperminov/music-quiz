@@ -1,3 +1,28 @@
+function GetActionDiffTracks(diff) {
+    let prevValue = Object.fromEntries(diff.prev.map(value => [value.track_id, value.position]))
+    let newValue = Object.fromEntries(diff.new.map(value => [value.track_id, value.position]))
+    let html = []
+
+    for (let [key, value] of Object.entries(prevValue)) {
+        if (key in newValue && newValue[key] == value)
+            continue
+
+        if (key in newValue)
+            html.push(`${key}: <s class="error-color">${value}</s> &rarr; <span class="success-color">${newValue[key]}</span>`)
+        else
+            html.push(`<s class="error-color">${key}: ${value}</s>`)
+    }
+
+    for (let [key, value] of Object.entries(newValue)) {
+        if (key in prevValue)
+            continue
+
+        html.push(`<span class="success-color">${key}: ${value}</span>`)
+    }
+
+    return html.join(", ")
+}
+
 function GetActionDiffKeyValue(key, value) {
     if (key == "artist_type")
         return new ArtistType(value).ToRus()
@@ -37,6 +62,9 @@ function GetActionDiff(key, diff) {
         "image_url": "обложка",
         "language": "язык"
     }
+
+    if (key == "tracks")
+        return GetActionDiffTracks(diff)
 
     let prevValue = `<span class="error-color"><s>${GetActionDiffKeyValue(key, diff.prev)}</s></span>`
     let newValue = `<span class="success-color">${GetActionDiffKeyValue(key, diff.new)}</span>`
