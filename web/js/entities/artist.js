@@ -8,7 +8,7 @@ function Artist(data) {
     this.listenCount = data.listen_count
     this.tracks = data.tracks
     this.tracksCount = data.tracks_count
-    this.genres = data.genres.map(genre => new Genre(genre))
+    this.genres = new GenreList(data.genres)
     this.metadata = data.metadata
 }
 
@@ -70,11 +70,11 @@ Artist.prototype.BuildInfo = function() {
     if (this.description.length > 0)
         MakeElement("info-description-line", info, {innerHTML: this.description})
 
-    let artistTypeblock = MakeElement("info-line", info)
-    this.BuildArtistType(artistTypeblock)
+    let artistTypeBlock = MakeElement("info-line", info)
+    this.BuildArtistType(artistTypeBlock)
 
-    if (this.genres.length > 0)
-        MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => genre.ToRus()).join(", ")}`})
+    let genresBlock = MakeElement("info-line", info)
+    this.BuildGenres(genresBlock)
 
     MakeElement("info-line", info, {innerHTML: `<b>Треков:</b> ${Object.keys(this.tracks).length} из ${this.tracksCount}`})
     MakeElement("info-line", info, {innerHTML: `<b>Добавлен:</b> ${this.FormatMetadataDate(this.metadata.created_at)} пользователем @${this.metadata.created_by}`})
@@ -115,6 +115,10 @@ Artist.prototype.BuildArtistType = function(block) {
             select.classList.remove("basic-select")
         })
     })
+}
+
+Artist.prototype.BuildGenres = function(block) {
+    MakeElement("", block, {innerHTML: `<b>Жанры:</b> ${this.genres.ToRus()}`}, "span")
 }
 
 Artist.prototype.FormatListenCount = function() {

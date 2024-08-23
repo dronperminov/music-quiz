@@ -5,7 +5,7 @@ function Track(data) {
     this.artists = data.artists
     this.year = data.year
     this.lyrics = data.lyrics
-    this.genres = data.genres.map(genre => new Genre(genre))
+    this.genres = new GenreList(data.genres)
     this.language = new Language(data.language)
     this.duration = data.duration
     this.imageUrl = data.image_url !== null ? data.image_url : '/images/tracks/default.png'
@@ -40,8 +40,8 @@ Track.prototype.BuildInfo = function(artists = null) {
     if (this.duration > 0)
         MakeElement("info-line", info, {innerHTML: `<b>Длительность:</b> ${this.FormatDuration()}`})
 
-    if (this.genres.length > 0)
-        MakeElement("info-line", info, {innerHTML: `<b>Жанры:</b> ${this.genres.map(genre => genre.ToRus()).join(", ")}`})
+    let genresBlock = MakeElement("info-line", info)
+    this.BuildGenres(genresBlock)
 
     let languageblock = MakeElement("info-line", info)
     this.BuildLanguage(languageblock)
@@ -104,6 +104,10 @@ Track.prototype.BuildLanguage = function(block) {
             select.classList.remove("basic-select")
         })
     })
+}
+
+Track.prototype.BuildGenres = function(block) {
+    MakeElement("", block, {innerHTML: `<b>Жанры:</b> ${this.genres.ToRus()}`}, "span")
 }
 
 Track.prototype.FormatMetadataDate = function(datetime) {
