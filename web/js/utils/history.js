@@ -56,7 +56,9 @@ function GetActionDiff(key, diff) {
         "duration": "длительность",
         "downloaded": "трек скачан",
         "image_url": "обложка",
-        "language": "язык"
+        "language": "язык",
+
+        "artist_ids": "исполнители"
     }
 
     if (key == "tracks")
@@ -81,9 +83,14 @@ function BuildHistory(parent, history) {
         "edit_artist": "<b>Обновлён</b> исполнитель",
         "add_artist": '<b class="success-color">Добавлен</b> исполнитель',
         "remove_artist": '<b class="error-color">Удалён</b> исполнитель',
+
         "edit_track": "<b>Обновлён</b> трек",
         "add_track": '<b class="success-color">Добавлен</b> трек',
-        "remove_track": '<b class="error-color">Удалён</b> трек'
+        "remove_track": '<b class="error-color">Удалён</b> трек',
+
+        "edit_artists_group": "<b>Обновлена</b> группа похожих исполнителей",
+        "add_artists_group": '<b class="success-color">Добавлена</b> группа похожих исполнителей',
+        "remove_artists_group": '<b class="error-color">Удалена</b> группа похожих исполнителей',
     }
 
     for (let action of history) {
@@ -101,10 +108,14 @@ function BuildHistory(parent, history) {
             objectId = ` ${action.track.track_id}`
         else if (action.name == "edit_track" || action.name == "remove_track")
             objectId = ` ${action.track_id}`
+        else if (action.name == "add_artists_group")
+            objectId = ` ${action.group.group_id}`
+        else if (action.name == "edit_artists_group" || action.name == "remove_artists_group")
+            objectId = ` ${action.group_id}`
 
         MakeElement("action-header", actionBlock, {innerHTML: `${action2title[action.name]}${objectId} @${action.username} ${date} в ${time}`})
 
-        if (action.name == "edit_artist" || action.name == "edit_track") {
+        if (action.name == "edit_artist" || action.name == "edit_track" || action.name == "edit_artists_group") {
             BuildEditAction(action, actionBlock)
         }
     }

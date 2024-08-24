@@ -1,12 +1,13 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from src import database, music_database, questions_database
 from src.api import templates
 from src.entities.user import User
+from src.enums import UserRole
 from src.query_params.artists_groups_search import ArtistsGroupsSearch
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash
@@ -43,3 +44,25 @@ def search_artist_groups(params: ArtistsGroupsSearch, user: Optional[User] = Dep
         "artist_id2name": jsonable_encoder(artist_id2name),
         "group_id2scale": jsonable_encoder(group_id2scale)
     })
+
+
+@router.post("/remove-artists-group")
+def remove_artists_group(group_id: int = Body(..., embed=True), user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    if user.role != UserRole.OWNER:
+        return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
+
+    group = music_database.get_artists_group(group_id=group_id)
+    if group is None:
+        return JSONResponse({"status": "error", "message": f"Не удалось найти группу с group_id = {group_id} в базе"})
+
+    music_database.remove_artists_group(group_id=group_id, username=user.username)
+    return JSONResponse({"status": "success"})
+
+
+@router.get("/artists-group-history/{group_id}")
+def get_artists_group_history(group_id: int) -> JSONResponse:
+    history = list(database.history.find({"$or": [{"group_id": group_id}, {"group.group_id": group_id}]}, {"_id": 0}).sort("timestamp", -1))
+    return JSONResponse({"status": "success", "history": jsonable_encoder(history)})

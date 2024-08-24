@@ -4,7 +4,6 @@ from typing import List
 
 @dataclass
 class HistoryQuery:
-    artist_actions: List[str]
-    track_actions: List[str]
+    actions: List[str]
     limit: int = 100
     skip: int = 0

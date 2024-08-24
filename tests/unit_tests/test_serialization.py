@@ -3,7 +3,10 @@ from unittest import TestCase
 
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
-from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction, HistoryAction, RemoveArtistAction, RemoveTrackAction
+from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditTrackAction, HistoryAction, \
+    RemoveArtistAction, \
+    RemoveArtistsGroupAction, \
+    RemoveTrackAction
 from src.entities.lyrics import Lyrics
 from src.entities.lyrics_line import LyricsLine
 from src.entities.metadata import Metadata
@@ -191,6 +194,15 @@ class TestSerialization(TestCase):
             metadata=Metadata.initial("system")
         )
 
+        group = ArtistsGroup(
+            group_id=1,
+            name="group name",
+            description="group description",
+            artist_ids=[1, 2],
+            image_url="",
+            metadata=Metadata.initial("system")
+        )
+
         history_actions = [
             AddArtistAction(username="system", timestamp=datetime(2024, 1, 1, 20, 23, 51), artist=artist),
             EditArtistAction(username="user", timestamp=datetime(2024, 1, 1, 20, 42, 12), artist_id=artist.artist_id, diff={"name": "aba"}),
@@ -198,7 +210,11 @@ class TestSerialization(TestCase):
 
             AddTrackAction(username="admin", timestamp=datetime(2024, 1, 1, 20, 24, 19), track=track),
             EditTrackAction(username="admin", timestamp=datetime(2024, 1, 1, 20, 54, 11), track_id=track.track_id, diff={"title": "aba"}),
-            RemoveTrackAction(username="admin", timestamp=datetime(2024, 5, 1, 0, 0, 0), track_id=track.track_id)
+            RemoveTrackAction(username="admin", timestamp=datetime(2024, 5, 1, 0, 0, 0), track_id=track.track_id),
+
+            AddArtistsGroupAction(username="system", timestamp=datetime(2024, 1, 1, 20, 23, 51), group=group),
+            EditArtistsGroupAction(username="user", timestamp=datetime(2024, 1, 1, 20, 42, 12), group_id=group.group_id, diff={"name": "aba"}),
+            RemoveArtistsGroupAction(username="system", timestamp=datetime(2024, 1, 2, 12, 00, 19), group_id=group.group_id)
         ]
 
         for history_action in history_actions:

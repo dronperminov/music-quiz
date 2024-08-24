@@ -9,7 +9,8 @@ from pydub import AudioSegment
 from src.database import Database
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
-from src.entities.history_action import AddArtistAction, AddTrackAction, EditArtistAction, EditTrackAction, RemoveArtistAction, RemoveTrackAction
+from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditTrackAction, RemoveArtistAction, \
+    RemoveArtistsGroupAction, RemoveTrackAction
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
@@ -104,7 +105,12 @@ class MusicDatabase:
         for track_position in artist["tracks"]:
             self.remove_track(track_id=track_position["track_id"], username=username, from_artist_id=artist_id)
 
-        # TODO: remove from similar artist group
+        for group_data in self.database.artists_groups.find({"artist_ids": artist_id}):
+            group = ArtistsGroup.from_dict(group_data)
+            group.remove_artist(artist_id)
+            diff = ArtistsGroup.from_dict(group_data).get_diff(group.to_dict())
+            self.update_artists_group(group_id=group.group_id, diff=diff, username=username)
+
         self.database.artists.delete_one({"artist_id": artist_id})
         self.database.history.insert_one(action.to_dict())
 
@@ -215,6 +221,44 @@ class MusicDatabase:
     def get_artists_group(self, group_id: int) -> Optional[ArtistsGroup]:
         group = self.database.artists_groups.find_one({"group_id": group_id})
         return ArtistsGroup.from_dict(group) if group else None
+
+    def add_artists_group(self, group: ArtistsGroup, username: str) -> None:
+        assert self.database.artists.count_documents({"artist_id": {"$in": group.artist_ids}}) == len(group.artist_ids)
+
+        action = AddArtistsGroupAction(username=username, timestamp=datetime.now(), group=group)
+        self.database.artists_groups.insert_one(group.to_dict())
+        self.database.history.insert_one(action.to_dict())
+
+        self.logger.info(f'Added artists group "{group.name}" ({group.group_id}) by @{username}')
+
+    def update_artists_group(self, group_id: int, diff: dict, username: str) -> None:
+        if not diff:
+            return
+
+        group = self.database.artists_groups.find_one({"group_id": group_id}, {"name": 1})
+        assert group is not None
+
+        action = EditArtistsGroupAction(username=username, timestamp=datetime.now(), group_id=group_id, diff=diff)
+
+        new_values = {key: key_diff["new"] for key, key_diff in diff.items()}
+        new_values["metadata.updated_at"] = action.timestamp
+        new_values["metadata.updated_by"] = action.username
+
+        self.database.artists_groups.update_one({"group_id": group_id}, {"$set": new_values})
+        self.database.history.insert_one(action.to_dict())
+
+        self.logger.info(f'Updated artists group "{group["name"]}" ({group_id}) by @{username} (keys: {[key for key in diff]})')
+
+    def remove_artists_group(self, group_id: int, username: str) -> None:
+        group = self.database.artists_groups.find_one({"group_id": group_id}, {"name": 1, "artist_ids": 1})
+        assert group is not None
+
+        action = RemoveArtistsGroupAction(username=username, timestamp=datetime.now(), group_id=group_id)
+        self.database.questions.delete_many({"group_id": group_id})
+        self.database.artists_groups.delete_one({"group_id": group_id})
+        self.database.history.insert_one(action.to_dict())
+
+        self.logger.info(f'Removed artists group "{group["name"]}" ({group_id}) by @{username}')
 
     def search_artists_groups(self, params: ArtistsGroupsSearch) -> Tuple[int, List[ArtistsGroup]]:
         query = {}

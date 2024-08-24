@@ -56,5 +56,37 @@ ArtistsGroup.prototype.BuildInfo = function(artistId2name) {
 
     this.metadata.BuildInfo(info)
 
+    this.BuildAdmin(info)
     return info
+}
+
+ArtistsGroup.prototype.BuildAdmin = function(block, className = "info-line") {
+    let history = MakeElement(`${className} admin-block`, block)
+    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
+    history.addEventListener("click", () => ShowHistory(`/artists-group-history/${this.groupId}`))
+
+    let removeBlock = MakeElement(`${className} admin-block`, block)
+    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить группу"}, "button")
+
+    removeButton.addEventListener("click", () => this.Remove([removeButton]))
+}
+
+ArtistsGroup.prototype.Remove = function(buttons) {
+    if (!confirm(`Вы уверены, что хотите удалить группу "${this.name}"?`))
+        return
+
+    for (let button of buttons)
+        button.setAttribute("disabled", "")
+
+    SendRequest("/remove-artists-group", {group_id: this.groupId}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            for (let button of buttons)
+                button.removeAttribute("disabled")
+
+            ShowNotification(`Не удалось удалить группу "${this.name}".<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+            return
+        }
+
+        location.reload()
+    })
 }

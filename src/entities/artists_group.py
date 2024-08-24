@@ -36,6 +36,16 @@ class ArtistsGroup:
             metadata=Metadata.from_dict(data["metadata"])
         )
 
+    def get_diff(self, data: dict) -> dict:
+        group_data = self.to_dict()
+        diff = {}
+
+        for field in ["name", "description", "artist_ids", "image_url"]:
+            if field in data and group_data[field] != data[field]:
+                diff[field] = {"prev": group_data[field], "new": data[field]}
+
+        return diff
+
     def get_variants(self, track: Track) -> List[int]:
         if len(self.artist_ids) <= 4:
             variants = [artist_id for artist_id in self.artist_ids]
@@ -47,3 +57,12 @@ class ArtistsGroup:
 
         random.shuffle(variants)
         return variants
+
+    def remove_artist(self, artist_id: int) -> None:
+        self.artist_ids = [group_artist_id for group_artist_id in self.artist_ids if group_artist_id != artist_id]
+
+    def add_artist(self, artist_id: int) -> None:
+        if artist_id in self.artist_ids:
+            return
+
+        self.artist_ids.append(artist_id)

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from src.entities.artist import Artist
+from src.entities.artists_group import ArtistsGroup
 from src.entities.track import Track
 
 
@@ -14,9 +15,11 @@ class HistoryAction:
     def __post_init__(self) -> None:
         self.timestamp = self.timestamp.replace(microsecond=0)
 
-    @abc.abstractmethod
     def to_dict(self) -> dict:
-        pass
+        return {
+            "username": self.username,
+            "timestamp": self.timestamp
+        }
 
     @classmethod
     def from_dict(cls: "HistoryAction", data: dict) -> "HistoryAction":
@@ -42,13 +45,16 @@ class HistoryAction:
         if name == RemoveTrackAction.name:
             return RemoveTrackAction(username=username, timestamp=timestamp, track_id=data["track_id"])
 
-        raise ValueError(f'Invalid HistoryAction name "{name}"')
+        if name == AddArtistsGroupAction.name:
+            return AddArtistsGroupAction(username=username, timestamp=timestamp, group=ArtistsGroup.from_dict(data["group"]))
 
-    def to_dict_base(self) -> dict:
-        return {
-            "username": self.username,
-            "timestamp": self.timestamp
-        }
+        if name == EditArtistsGroupAction.name:
+            return EditArtistsGroupAction(username=username, timestamp=timestamp, group_id=data["group_id"], diff=data["diff"])
+
+        if name == RemoveArtistsGroupAction.name:
+            return RemoveArtistsGroupAction(username=username, timestamp=timestamp, group_id=data["group_id"])
+
+        raise ValueError(f'Invalid HistoryAction name "{name}"')
 
 
 @dataclass
@@ -58,7 +64,7 @@ class AddArtistAction(HistoryAction):
 
     def to_dict(self) -> dict:
         return {
-            **self.to_dict_base(),
+            **super().to_dict(),
             "name": self.name,
             "artist": self.artist.to_dict()
         }
@@ -72,7 +78,7 @@ class EditArtistAction(HistoryAction):
 
     def to_dict(self) -> dict:
         return {
-            **self.to_dict_base(),
+            **super().to_dict(),
             "name": self.name,
             "artist_id": self.artist_id,
             "diff": self.diff
@@ -86,7 +92,7 @@ class RemoveArtistAction(HistoryAction):
 
     def to_dict(self) -> dict:
         return {
-            **self.to_dict_base(),
+            **super().to_dict(),
             "name": self.name,
             "artist_id": self.artist_id
         }
@@ -99,7 +105,7 @@ class AddTrackAction(HistoryAction):
 
     def to_dict(self) -> dict:
         return {
-            **self.to_dict_base(),
+            **super().to_dict(),
             "name": self.name,
             "track": self.track.to_dict()
         }
@@ -113,7 +119,7 @@ class EditTrackAction(HistoryAction):
 
     def to_dict(self) -> dict:
         return {
-            **self.to_dict_base(),
+            **super().to_dict(),
             "track_id": self.track_id,
             "name": self.name,
             "diff": self.diff
@@ -127,7 +133,48 @@ class RemoveTrackAction(HistoryAction):
 
     def to_dict(self) -> dict:
         return {
-            **self.to_dict_base(),
+            **super().to_dict(),
             "name": self.name,
             "track_id": self.track_id
+        }
+
+
+@dataclass
+class AddArtistsGroupAction(HistoryAction):
+    name = "add_artists_group"
+    group: ArtistsGroup
+
+    def to_dict(self) -> dict:
+        return {
+            **super().to_dict(),
+            "name": self.name,
+            "group": self.group.to_dict()
+        }
+
+
+@dataclass
+class EditArtistsGroupAction(HistoryAction):
+    name = "edit_artists_group"
+    group_id: int
+    diff: dict
+
+    def to_dict(self) -> dict:
+        return {
+            **super().to_dict(),
+            "name": self.name,
+            "group_id": self.group_id,
+            "diff": self.diff
+        }
+
+
+@dataclass
+class RemoveArtistsGroupAction(HistoryAction):
+    name = "remove_artists_group"
+    group_id: int
+
+    def to_dict(self) -> dict:
+        return {
+            **super().to_dict(),
+            "name": self.name,
+            "group_id": self.group_id
         }

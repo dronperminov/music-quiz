@@ -72,6 +72,6 @@ def parse_chart(user: Optional[User] = Depends(get_user)) -> JSONResponse:
 
 @router.post("/history")
 def get_history(params: HistoryQuery) -> JSONResponse:
-    query = {"name": {"$in": params.track_actions + params.artist_actions}}
+    query = {"name": {"$in": params.actions}}
     history = list(database.history.find(query, {"_id": 0}).sort("timestamp", -1).skip(params.skip).limit(params.limit))
     return JSONResponse({"status": "success", "history": jsonable_encoder(history)})

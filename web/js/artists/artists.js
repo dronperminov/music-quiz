@@ -234,6 +234,10 @@ function BuildAdminInfo() {
     let trackActionsInput = MakeCheckbox(trackActionsBlock, "track-actions", true)
     let trackActionsLabel = MakeElement("", trackActionsBlock, {innerText: "Действия с треками", "for": "track-actions"}, "label")
 
+    let artistsGroupActionsBlock = MakeElement("info-checkbox-line", info)
+    let artistsGroupActionsInput = MakeCheckbox(artistsGroupActionsBlock, "artists-groups-actions", true)
+    let artistsGroupActionsLabel = MakeElement("", artistsGroupActionsBlock, {innerText: "Действия с группами", "for": "artists-groups-actions"}, "label")
+
     let limitBlock = MakeElement("info-input-line", info)
     let limitLabel = MakeElement("", limitBlock, {innerText: "Количество записей:", "for": "history-limit"}, "label")
     let limitInput = MakeElement("basic-input", limitBlock, {type: "text", value: "100", id: "history-limit"}, "input")
@@ -256,6 +260,7 @@ function BuildAdminInfo() {
     historyButton.addEventListener("click", () => {
         let artistActions = artistActionsInput.checked ? ["add_artist", "edit_artist", "remove_artist"] : []
         let trackActions = trackActionsInput.checked ? ["add_track", "edit_track", "remove_track"] : []
+        let artistsGroupActions = artistsGroupActionsInput.checked ? ["add_artists_group", "edit_artists_group", "remove_artists_group"] : []
         let limitInput = new NumberInput("history-limit", 1, Infinity, /^\d+$/g)
         let limit = limitInput.GetValue()
 
@@ -268,7 +273,7 @@ function BuildAdminInfo() {
         if (skip === null)
             return
 
-        ShowHistory("/history", {artist_actions: artistActions, track_actions: trackActions, limit: limit, skip: skip})
+        ShowHistory("/history", {actions: [...artistActions, ...trackActions, ...artistsGroupActions], limit: limit, skip: skip})
     })
 
     return info
