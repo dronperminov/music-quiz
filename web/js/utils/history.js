@@ -79,11 +79,11 @@ function BuildHistory(parent, history) {
 
     let action2title = {
         "edit_artist": "<b>Обновлён</b> исполнитель",
-        "add_artist": "<b>Добавлен</b> исполнитель",
-        "remove_artist": "<b>Удалён</b> исполнитель",
+        "add_artist": '<b class="success-color">Добавлен</b> исполнитель',
+        "remove_artist": '<b class="error-color">Удалён</b> исполнитель',
         "edit_track": "<b>Обновлён</b> трек",
-        "add_track": "<b>Добавлен</b> трек",
-        "remove_track": "<b>Удалён</b> трек"
+        "add_track": '<b class="success-color">Добавлен</b> трек',
+        "remove_track": '<b class="error-color">Удалён</b> трек'
     }
 
     for (let action of history) {
