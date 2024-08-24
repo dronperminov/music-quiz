@@ -11,6 +11,12 @@
     {% include "components/menu.html" %}
 
     <div class="content">
+        <div class="vertical-ham" onclick="">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
         <div id="artist"></div>
 
         <div class="artist-line"></div>
@@ -23,7 +29,10 @@
 
             <div class="track" id="track-{{track.track_id}}">
                 <div class="track-main">
-                    <div class="track-image"><img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy" onclick="PlayPauseTrack('{{track.track_id}}')"></div>
+                    <div class="track-image">
+                        <img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy" onclick="PlayPauseTrack('{{track.track_id}}')">
+                        {% if track.lyrics %}<div class="track-image-lyrics">T</div>{% endif %}
+                    </div>
                     <div>
                         <div class="track-title">{% if track.track_id in track_id2scale %}
                         <span class="circle" style="background-color: hsl({{track_id2scale[track.track_id].scale * 120}}, 70%, 50%)" onclick="ShowTrackNotification({{track.track_id}}, {{track_id2scale[track.track_id].correct}}, {{track_id2scale[track.track_id].incorrect}})"></span>{% endif %}{{track.title}}</div>

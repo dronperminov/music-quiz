@@ -1,3 +1,13 @@
+.content {
+    position: relative;
+}
+
+.content > .vertical-ham {
+    position: absolute;
+    right: 10px;
+    top: 1em;
+}
+
 .artist-image {
     border-radius: 1.5em;
     text-align: center;
