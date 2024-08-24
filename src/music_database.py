@@ -219,8 +219,10 @@ class MusicDatabase:
     def search_artists_groups(self, params: ArtistsGroupsSearch) -> Tuple[int, List[ArtistsGroup]]:
         query = {}
         total = self.database.artists_groups.count_documents(query)
-        groups = self.database.artists_groups.find(query).skip(params.page * params.page_size).limit(params.page_size)
-        return total, [ArtistsGroup.from_dict(group) for group in groups]
+        groups = sorted(self.database.artists_groups.find(query), key=lambda group: (group[params.order], group["group_id"]))
+        skip = params.page * params.page_size
+
+        return total, [ArtistsGroup.from_dict(group) for group in groups[skip:skip + params.page_size]]
 
     def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> Tuple[int, int]:
         yandex2artist_id = {}
