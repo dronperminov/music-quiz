@@ -47,7 +47,7 @@ def parse_artists(params: ArtistsParse, user: Optional[User] = Depends(get_user)
         return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
 
     try:
-        tracks, artists = yandex_music_parser.parse_artists(artist_ids=params.artist_ids, max_tracks=params.max_tracks, max_artists=params.max_artists)
+        tracks, artists = yandex_music_parser.parse_artists(params.artist_ids, params.max_tracks, params.max_artists, params.from_playlist)
         new_artists, new_tracks = music_database.add_from_yandex(artists=artists, tracks=tracks, username=user.username)
         return JSONResponse({"status": "success", "tracks": len(tracks), "artists": len(artists), "new_tracks": new_tracks, "new_artists": new_artists})
     except Exception as error:

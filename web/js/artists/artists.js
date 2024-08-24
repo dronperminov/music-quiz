@@ -205,8 +205,12 @@ function BuildAdminInfo() {
     let urlInput = MakeElement("basic-textarea", urlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/artist/...", id: "artist-url"}, "textarea")
     MakeElement("error", info, {id: "artist-url-error"})
 
+    let fromPlaylistBlock = MakeElement("info-checkbox-line", info)
+    let fromPlaylistInput = MakeCheckbox(fromPlaylistBlock, "artist-from-playlist", true)
+    let fromPlaylistLabel = MakeElement("", fromPlaylistBlock, {innerText: "Парсить плейлист", "for": "artist-from-playlist"}, "label")
+
     let maxTracksBlock = MakeElement("info-input-line", info)
-    let maxTracksLabel = MakeElement("", maxTracksBlock, {innerText: "Треков не более:", "for": "artist-max-tracks"}, "label")
+    let maxTracksLabel = MakeElement("", maxTracksBlock, {innerText: "Треков не более (на исполнителя):", "for": "artist-max-tracks"}, "label")
     let maxTracksInput = MakeElement("basic-input", maxTracksBlock, {type: "text", value: "20", id: "artist-max-tracks"}, "input")
     MakeElement("error", info, {id: "artist-max-tracks-error"})
 

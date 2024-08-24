@@ -7,14 +7,14 @@ function GetParseInfo(response) {
     return `<ul>${parseInfo}</ul>`
 }
 
-function ParseArtists(buttons, artistIds, maxTracks = 20, maxArtists = 4) {
+function ParseArtists(buttons, artistIds, maxTracks = 20, maxArtists = 4, fromPlaylist = true) {
     if (artistIds.length == 0)
         return
 
     for (let button of buttons)
         button.setAttribute("disabled", "")
 
-    SendRequest("/parse-artists", {artist_ids: artistIds, max_tracks: maxTracks, max_artists: maxArtists}).then(response => {
+    SendRequest("/parse-artists", {artist_ids: artistIds, max_tracks: maxTracks, max_artists: maxArtists, from_playlist: fromPlaylist}).then(response => {
         for (let button of buttons)
             button.removeAttribute("disabled")
 
@@ -49,7 +49,7 @@ function AddArtist(buttons) {
     if (urls === null)
         return
 
-    let maxTracksInput = new NumberInput("artist-max-tracks", 1, 20, /^\d+$/g)
+    let maxTracksInput = new NumberInput("artist-max-tracks", 1, 100, /^\d+$/g)
     let maxTracks = maxTracksInput.GetValue()
     if (maxTracks === null)
         return
@@ -59,6 +59,8 @@ function AddArtist(buttons) {
     if (maxArtists === null)
         return
 
+    let fromPlaylist = document.getElementById("artist-from-playlist").checked
+
     let artistIds = Array.from(new Set(urls.map(url => /artist\/(?<artistId>\d+)/g.exec(url).groups.artistId)))
-    ParseArtists(buttons, artistIds, maxTracks, maxArtists)
+    ParseArtists(buttons, artistIds, maxTracks, maxArtists, fromPlaylist)
 }
