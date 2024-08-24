@@ -212,6 +212,10 @@ class MusicDatabase:
     def get_artists_group_id(self) -> int:
         return self.database.get_identifier("artists_groups")
 
+    def get_artists_group(self, group_id: int) -> Optional[ArtistsGroup]:
+        group = self.database.artists_groups.find_one({"group_id": group_id})
+        return ArtistsGroup.from_dict(group) if group else None
+
     def search_artists_groups(self, params: ArtistsGroupsSearch) -> Tuple[int, List[ArtistsGroup]]:
         query = {}
         total = self.database.artists_groups.count_documents(query)

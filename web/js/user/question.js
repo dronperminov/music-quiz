@@ -27,7 +27,7 @@ function ReplaceTrackData() {
     SetMediaSessionMetadata(track.trackId)
 }
 
-function ShowAnswer() {
+function ShowAnswer(correct = null) {
     if (answerTime !== null) {
         answerTime = (performance.now() - answerTime) / 1000
         let answerTimeSpan = document.getElementById("answer-time")
@@ -58,10 +58,16 @@ function ShowAnswer() {
     player.SetTimecode("")
     player.SetPlaybackRate(1)
     player.ShowIcons()
+
+    if (correct === null)
+        return
+
+    let button = document.getElementById(`answer-button-${correct ? "incorrect" : "correct"}`)
+    button.classList.add("hidden")
 }
 
 function SendAnswer(correct) {
-    let answer = {correct: correct}
+    let answer = {correct: correct, group_id: groupId}
 
     if (answerTime !== null)
         answer.answer_time = answerTime

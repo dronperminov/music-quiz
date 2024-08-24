@@ -57,19 +57,23 @@
         <div class="track-modifications" id="track-modifications">Внимание, <b>скорость трека изменена</b>: {{question.track_modifications.playback_rate|round(2)}}x</div>
         {% endif %}
 
+        {% if group %}
+        <div class="group-buttons hidden" id="show-answer">
+            {% for artist_id in group_variants %}
+            <button class="basic-button gradient-button" onclick="ShowAnswer({{(artist_id in track.artists)|tojson}})">{{artist_id2artist[artist_id].name}}</button>
+            {% endfor %}
+        </div>
+        {% else %}
         <button class="basic-button gradient-button hidden" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
+        {%endif %}
 
         <div class="answer-block hidden" id="answer">
             <div class="answer"><b>Ответ:</b> {{question.answer}}</div>
             <div class="description hidden"><b>Время ответа:</b> <span id="answer-time"></span></div>
 
             <div class="answer-buttons">
-                <div>
-                    <button class="basic-button green-button" id="answer-button-correct" onclick="SendAnswer(true)">Знаю</button>
-                </div>
-                <div>
-                    <button class="basic-button red-button" id="answer-button-incorrect" onclick="SendAnswer(false)">Не знаю</button>
-                </div>
+                <button class="basic-button green-button" id="answer-button-correct" onclick="SendAnswer(true)">{% if group %}Правильно!{% else %}Знаю{% endif %}</button>
+                <button class="basic-button red-button" id="answer-button-incorrect" onclick="SendAnswer(false)">{% if group %}Неправильно :С{% else %}Не знаю{% endif %}</button>
             </div>
 
             <h3>Исполнител{{ "и" if track.artists|length > 1 else "ь" }}:</h3>
@@ -116,6 +120,7 @@
         let players = new PlayerCollection({withIcons: false})
         let infos = new InfoPanels()
 
+        const groupId = {% if group %}{{group.group_id}}{% else %}null{% endif %}
         const track = new Track({{jsonable_encoder(track)|tojson}})
         const artists = [{% for artist_id in track.artists %}{{jsonable_encoder(artist_id2artist[artist_id])|tojson}},{% endfor %}]
         const artistId2scale = {{artist_id2scale|tojson}}

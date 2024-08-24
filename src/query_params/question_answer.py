@@ -6,3 +6,4 @@ from typing import Optional
 class QuestionAnswer:
     correct: bool
     answer_time: Optional[float]
+    group_id: Optional[int]

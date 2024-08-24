@@ -10,12 +10,12 @@ function ArtistsGroup(data) {
 ArtistsGroup.prototype.Build = function() {
     let group = MakeElement("artists-group")
     let groupImage = MakeElement("artists-group-image", group)
-    let groupImageLink = MakeElement("", groupImage, {href: `/artists-groups/${this.groupId}`}, "a")
+    let groupImageLink = MakeElement("", groupImage, {href: `/group-question/${this.groupId}`}, "a")
     let groupImageImg = MakeElement("", groupImageLink, {src: this.imageUrl, loading: "lazy"}, "img")
 
     let groupData = MakeElement("artists-group-data", group)
     let groupName = MakeElement("artists-group-name", groupData)
-    let groupNameLink = MakeElement("", groupName, {href: `/artists-groups/${this.groupId}`, innerText: this.name}, "a")
+    let groupNameLink = MakeElement("", groupName, {href: `/group-question/${this.groupId}`, innerText: this.name}, "a")
 
     let groupDescription = MakeElement("artists-group-description", groupData, {innerText: this.description})
     let groupStats = MakeElement("artists-group-stats", groupData, {innerHTML: GetWordForm(this.artistIds.length, ['исполнитель', 'исполнителя', 'исполнителей'])})

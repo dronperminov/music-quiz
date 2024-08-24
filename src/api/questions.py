@@ -45,12 +45,49 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
     return HTMLResponse(content=content)
 
 
+@router.get("/group-question/{group_id}")
+def get_group_question(group_id: int, user: Optional[User] = Depends(get_user)) -> Response:
+    if not user:
+        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote(f"/question?group_id={group_id}", safe="")}')
+
+    settings = database.get_settings(username=user.username)
+    group = music_database.get_artists_group(group_id=group_id)
+
+    if not group.artist_ids:
+        return send_error(user=user, title=f'Группа "{group.name}" пустая', text="В этой группе пока нет исполнителей.")
+
+    question = questions_database.get_question(settings, group_id=group_id)
+
+    if question is None:
+        return send_error(user=user, title=f'Не удалось сгенерировать вопрос для группы "{group.name}"', text="Кажется, у исполнителей этой группы закончились треки.")
+
+    track = music_database.get_track(track_id=question.track_id)
+    artist_id2artist = music_database.get_artists_by_ids(artist_ids=track.artists + group.artist_ids)
+    artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}
+
+    template = templates.get_template("user/question.html")
+    content = template.render(
+        user=user,
+        page="question",
+        version=get_static_hash(),
+        settings=settings,
+        question=question,
+        track=track,
+        artist_id2artist=artist_id2artist,
+        group=group,
+        group_variants=group.get_variants(track),
+        artist_id2scale=artist_id2scale,
+        jsonable_encoder=jsonable_encoder
+    )
+    return HTMLResponse(content=content)
+
+
 @router.post("/answer-question")
 def answer_question(answer: QuestionAnswer, user: Optional[User] = Depends(get_user)) -> JSONResponse:
     if not user:
         return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
 
-    if not questions_database.have_question(user.username):
+    if not questions_database.have_question(user.username, group_id=answer.group_id):
         return JSONResponse({"status": "error", "message": "В базе отсутствует вопрос, на который можно ответить"})
 
     questions_database.answer_question(user.username, answer)
