@@ -31,6 +31,17 @@ function MakeCheckbox(parent, id, checked = false) {
     return input
 }
 
+function MakeDetails(parent, header, className = "details") {
+    let details = MakeElement(className, parent)
+    let detailsHeader = MakeElement("details-header", details)
+    let detailsIcon = MakeElement("details-icon", detailsHeader, {}, "span")
+    let detailsHeaderText = MakeElement("", detailsHeader, {innerText: header}, "span")
+
+    detailsHeader.addEventListener("click", () => details.classList.toggle("details-open"))
+
+    return MakeElement("details-content", details)
+}
+
 function GetWordForm(count, forms, onlyForm = false) {
     let index = 0
 

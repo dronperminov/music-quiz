@@ -11,26 +11,7 @@
     {% include "components/menu.html" %}
 
     <div class="content">
-        <div class="artist-image">
-            <img src="{{artist.image_urls[0] if artist.image_urls else '/images/artists/default.png'}}">
-        </div>
-
-        <div class="artist-name">{% if artist.source.name == "yandex" %}<a href="https://music.yandex.ru/artist/{{artist.source.yandex_id}}" target="_blank"><img src="/images/ya_music.svg"></a>{% endif %}{{artist.name}}</div>
-        <div class="artist-stats">{% if artist.artist_type.to_rus() %}{{artist.artist_type.to_rus()}} | {% endif %}{% if artist.listen_count >= 1000 %}{{artist.format_listen_count()}} слушателей{% else %}{{get_word_form(artist.listen_count, ['слушатель', 'слушателя', 'слушателей'])}}{% endif %} | {{get_word_form(artist.tracks|length, ['трек', 'трека', 'треков'])}}</div>
-
-        <div class="details">
-            <div class="details-header" onclick="this.parentNode.classList.toggle('details-open')"><span class="details-icon"></span> Об исполнителе</div>
-
-            <div class="details-content">
-                {% if artist.description %}<div class="artist-about">{{artist.description}}</div>{% endif %}
-                {% if artist.genres %}<div class="artist-about"><b>Жанры:</b> {% for genre in artist.genres %}{{ ", " if loop.index0 else "" }}{{genre.to_rus()}}{% endfor %}</div>{% endif %}
-                <div class="artist-about"><b>Всего треков:</b> {{artist.tracks_count }}</div>
-                <div class="artist-about"><b>Добавлен:</b> {{artist.metadata.created_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{artist.metadata.created_by }}</div>
-                {% if not artist.metadata.is_initial() %}<div class="artist-about"><b>Обновлён:</b> {{artist.metadata.updated_at.strftime("%d.%m.%Y в %H:%M:%S")}} пользователем @{{artist.metadata.updated_by }}</div>{% endif %}
-
-                <div class="artist-about admin-block"><a class="link" href="#" onclick="ShowHistory('/artist-history/{{artist.artist_id}}')">История изменений</a></div>
-            </div>
-        </div>
+        <div id="artist"></div>
 
         <div class="artist-line"></div>
 
@@ -109,6 +90,7 @@
     <script src="/js/entities/language.js?v={{version}}"></script>
     <script src="/js/entities/metadata.js?v={{version}}"></script>
     <script src="/js/entities/track.js?v={{version}}"></script>
+    <script src="/js/entities/artist.js?v={{version}}"></script>
 
     <script src="/js/tracks/track.js?v={{version}}"></script>
     <script src="/js/artists/artist.js?v={{version}}"></script>
@@ -116,14 +98,17 @@
         let infos = new InfoPanels()
         let players = new PlayerCollection()
 
-        const artist = {{jsonable_encoder(artist)|tojson}}
+        const artistData = {{jsonable_encoder(artist)|tojson}}
         const tracks = {{jsonable_encoder(tracks)|tojson}}
         let infoBlock = document.getElementById("info-block")
 
         for (let track of tracks) {
             track = new Track(track)
-            infos.Add(track.BuildInfo([artist]))
+            infos.Add(track.BuildInfo([artistData]))
         }
+
+        let artist = new Artist(artistData)
+        artist.BuildPage()
     </script>
     {% include "components/footer.html" %}
 </body>

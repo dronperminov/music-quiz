@@ -7,13 +7,13 @@ function Metadata(metadata, createText, updateText) {
     this.updateText = updateText
 }
 
-Metadata.prototype.BuildInfo = function(parent) {
+Metadata.prototype.BuildInfo = function(parent, className = "info-line") {
     let created = ParseDateTime(this.createdAt)
-    MakeElement("info-line", parent, {innerHTML: `<b>${this.createText}:</b> ${created.date} в ${created.time} пользователем @${this.createdBy}`})
+    MakeElement(className, parent, {innerHTML: `<b>${this.createText}:</b> ${created.date} в ${created.time} пользователем @${this.createdBy}`})
 
     if (this.createdAt == this.updatedAt)
         return
 
     let updated = ParseDateTime(this.updatedAt)
-    MakeElement("info-line", parent, {innerHTML: `<b>Обновлён:</b> ${updated.date} в ${updated.time} пользователем @${this.updatedBy}`})
+    MakeElement(className, parent, {innerHTML: `<b>Обновлён:</b> ${updated.date} в ${updated.time} пользователем @${this.updatedBy}`})
 }

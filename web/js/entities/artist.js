@@ -80,27 +80,40 @@ Artist.prototype.BuildInfo = function() {
 
     this.metadata.BuildInfo(info)
 
-    let history = MakeElement("info-line admin-block", info)
-    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
-    history.addEventListener("click", () => ShowHistory(`/artist-history/${this.artistId}`))
-
-    let buttons = []
-
-    if (this.source.name == "yandex") {
-        let buttonBlock = MakeElement("info-line admin-block", info)
-        let button = MakeElement("basic-button gradient-button", buttonBlock, {innerText: "Распарсить"}, "button")
-        buttons.push(button)
-
-        button.addEventListener("click", () => ParseArtists([button], [this.source.yandex_id]))
-    }
-
-    let removeBlock = MakeElement("info-line admin-block", info)
-    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить исполнителя"}, "button")
-    buttons.push(removeButton)
-
-    removeButton.addEventListener("click", () => this.Remove(buttons))
+    this.BuildAdmin(info)
 
     return info
+}
+
+Artist.prototype.BuildPage = function(blockId = "artist") {
+    let artist = document.getElementById(blockId)
+
+    let artistImage = MakeElement("artist-image", artist)
+    let artistImageImg = MakeElement("", artistImage, {src: this.imageUrls[0], loading: "lazy"}, "img")
+
+    let artistName = MakeElement("artist-name", artist)
+
+    if (this.source.name == "yandex") {
+        let link = MakeElement("", artistName, {href: `https://music.yandex.ru/artist/${this.source.yandex_id}`, target: "_blank"}, "a")
+        let img = MakeElement("", link, {src: "/images/ya_music.svg"}, "img")
+    }
+
+    let span = MakeElement("", artistName, {innerText: this.name}, "span")
+
+    let artistStats = MakeElement("artist-stats", artist, {innerHTML: this.GetStats()})
+
+    let detailsAbout = MakeDetails(artist, "Об исполнителе")
+
+    if (this.description.length > 0)
+        MakeElement("artist-about", detailsAbout, {innerHTML: this.description})
+
+    let artistTypeBlock = MakeElement("artist-about", detailsAbout)
+    this.BuildArtistType(artistTypeBlock)
+
+    let genresBlock = MakeElement("artist-about", detailsAbout)
+    this.BuildGenres(genresBlock)
+
+    this.metadata.BuildInfo(detailsAbout, "artist-about")
 }
 
 Artist.prototype.BuildArtistType = function(block) {
@@ -127,6 +140,28 @@ Artist.prototype.BuildArtistType = function(block) {
 
 Artist.prototype.BuildGenres = function(block) {
     MakeElement("", block, {innerHTML: `<b>Жанры:</b> ${this.genres.ToRus()}`}, "span")
+}
+
+Artist.prototype.BuildAdmin = function(block, className = "info-line") {
+    let history = MakeElement(`${className} admin-block`, block)
+    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
+    history.addEventListener("click", () => ShowHistory(`/artist-history/${this.artistId}`))
+
+    let buttons = []
+
+    if (this.source.name == "yandex") {
+        let buttonBlock = MakeElement(`${className} admin-block`, block)
+        let button = MakeElement("basic-button gradient-button", buttonBlock, {innerText: "Распарсить"}, "button")
+        buttons.push(button)
+
+        button.addEventListener("click", () => ParseArtists([button], [this.source.yandex_id]))
+    }
+
+    let removeBlock = MakeElement(`${className} admin-block`, block)
+    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить исполнителя"}, "button")
+    buttons.push(removeButton)
+
+    removeButton.addEventListener("click", () => this.Remove(buttons))
 }
 
 Artist.prototype.FormatListenCount = function() {
