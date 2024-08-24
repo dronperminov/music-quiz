@@ -97,6 +97,8 @@ function BuildHistory(parent, history) {
             objectId = ` <a class="link" href="/artists/${action.artist_id}">${action.artist_id}</a>`
         else if (action.name == "remove_artist")
             objectId = ` ${action.artist_id}`
+        else if (action.name == "add_track")
+            objectId = ` ${action.track.track_id}`
         else if (action.name == "edit_track" || action.name == "remove_track")
             objectId = ` ${action.track_id}`
 
