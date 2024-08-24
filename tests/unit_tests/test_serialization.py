@@ -8,52 +8,19 @@ from src.entities.lyrics import Lyrics
 from src.entities.lyrics_line import LyricsLine
 from src.entities.metadata import Metadata
 from src.entities.note import Note
-from src.entities.question import Question
+from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, NameByTrackQuestion, Question
 from src.entities.question_settings import QuestionSettings
 from src.entities.settings import Settings
 from src.entities.source import HandSource, YandexSource
 from src.entities.track import Track
 from src.entities.track_landmark import TrackLandmark
 from src.entities.track_modification_settings import TrackModificationSettings
-from src.entities.track_modifications import TrackModifications
 from src.entities.user import User
 from src.enums import ArtistType, ArtistsCount, Genre, Language, QuestionType, UserRole
 
 
 class TestSerialization(TestCase):
-    def test_user_serialization(self) -> None:
-        user = User(
-            username="admin",
-            password_hash="password hash",
-            full_name="user full name",
-            role=UserRole.ADMIN,
-            avatar_url="url to avatar"
-        )
-
-        user_dict = user.to_dict()
-        user_from_dict = User.from_dict(user_dict)
-        self.assertEqual(user, user_from_dict)
-
-    def test_artist_serialization(self) -> None:
-        artist = Artist(
-            artist_id=1,
-            source=YandexSource(yandex_id="123"),
-            name="artist name",
-            description="artist description",
-            artist_type=ArtistType.BAND,
-            image_urls=["url1", "url2", "url3"],
-            listen_count=123000,
-            tracks={1: 1, 5: 2, 8: 3},
-            tracks_count=10,
-            genres=[Genre.ROCK, Genre.POP],
-            metadata=Metadata.initial("system")
-        )
-
-        artist_dict = artist.to_dict()
-        artist_from_dict = Artist.from_dict(artist_dict)
-        self.assertEqual(artist, artist_from_dict)
-
-    def test_track_serialization(self) -> None:
+    def __get_track(self) -> Track:
         lyrics = Lyrics(
             lines=[
                 LyricsLine(time=0.5, text="line 1"),
@@ -65,7 +32,7 @@ class TestSerialization(TestCase):
             lrc=True
         )
 
-        track = Track(
+        return Track(
             track_id=6,
             source=HandSource(),
             title="title",
@@ -80,11 +47,22 @@ class TestSerialization(TestCase):
             metadata=Metadata.initial("system")
         )
 
-        track_dict = track.to_dict()
-        track_from_dict = Track.from_dict(track_dict)
-        self.assertEqual(track, track_from_dict)
+    def __get_artist(self, artist_id: int) -> Artist:
+        return Artist(
+            artist_id=artist_id,
+            source=YandexSource(yandex_id="123"),
+            name=f"artist {artist_id} name",
+            description=f"artist {artist_id} description",
+            artist_type=ArtistType.BAND,
+            image_urls=["url1", "url2", "url3"],
+            listen_count=123000,
+            tracks={1: 1, 5: 2, 8: 3},
+            tracks_count=10,
+            genres=[Genre.ROCK, Genre.POP],
+            metadata=Metadata.initial("system")
+        )
 
-    def test_settings_serialization(self) -> None:
+    def __get_settings(self) -> Settings:
         track_modifications = TrackModificationSettings(
             change_playback_rate=False,
             probability=0
@@ -106,7 +84,7 @@ class TestSerialization(TestCase):
             track_modifications=track_modifications
         )
 
-        settings = Settings(
+        return Settings(
             username="user",
             show_progress=True,
             question_settings=question_settings,
@@ -115,31 +93,53 @@ class TestSerialization(TestCase):
             updated_at=datetime(2024, 1, 1)
         )
 
+    def test_user_serialization(self) -> None:
+        user = User(
+            username="admin",
+            password_hash="password hash",
+            full_name="user full name",
+            role=UserRole.ADMIN,
+            avatar_url="url to avatar"
+        )
+
+        user_dict = user.to_dict()
+        user_from_dict = User.from_dict(user_dict)
+        self.assertEqual(user, user_from_dict)
+
+    def test_artist_serialization(self) -> None:
+        artist = self.__get_artist(1)
+        artist_dict = artist.to_dict()
+        artist_from_dict = Artist.from_dict(artist_dict)
+        self.assertEqual(artist, artist_from_dict)
+
+    def test_track_serialization(self) -> None:
+        track = self.__get_track()
+        track_dict = track.to_dict()
+        track_from_dict = Track.from_dict(track_dict)
+        self.assertEqual(track, track_from_dict)
+
+    def test_settings_serialization(self) -> None:
+        settings = self.__get_settings()
         settings_dict = settings.to_dict()
         settings_from_dict = Settings.from_dict(settings_dict)
         self.assertEqual(settings, settings_from_dict)
 
     def test_question_serialization(self) -> None:
-        track_modifications = TrackModifications(
-            playback_rate=1
-        )
+        track = self.__get_track()
+        artist_id2artist = {1: self.__get_artist(1), 3: self.__get_artist(3)}
+        settings = self.__get_settings()
 
-        question = Question(
-            username="user",
-            question_type=QuestionType.ARTIST_BY_TRACK,
-            group_id=245,
-            track_id=3,
-            title="question title",
-            answer="question answer",
-            question_timecode="0-123",
-            question_seek=5.3,
-            answer_seek=None,
-            track_modifications=track_modifications,
-            correct=None,
-            answer_time=56.5,
-            timestamp=datetime(2024, 5, 2, 23, 59)
-        )
+        question = ArtistByTrackQuestion.generate(track=track, artist_id2artist=artist_id2artist, settings=settings, group_id=235)
+        question_dict = question.to_dict()
+        question_from_dict = Question.from_dict(question_dict)
+        self.assertEqual(question, question_from_dict)
 
+        question = ArtistByIntroQuestion.generate(track=track, artist_id2artist=artist_id2artist, settings=settings, group_id=235)
+        question_dict = question.to_dict()
+        question_from_dict = Question.from_dict(question_dict)
+        self.assertEqual(question, question_from_dict)
+
+        question = NameByTrackQuestion.generate(track=track, settings=settings, group_id=235)
         question_dict = question.to_dict()
         question_from_dict = Question.from_dict(question_dict)
         self.assertEqual(question, question_from_dict)
