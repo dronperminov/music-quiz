@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 from src import MusicDatabase
 from src.database import Database
 from src.entities.artist import Artist
+from src.entities.artists_group import ArtistsGroup
 from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, NameByTrackQuestion, Question
 from src.entities.question_settings import QuestionSettings
 from src.entities.settings import Settings
@@ -148,6 +149,28 @@ class QuestionsDatabase:
                 artist_id2scale[artist.artist_id] = {"correct": correct, "incorrect": incorrect, "scale": correct / total}
 
         return artist_id2scale
+
+    def get_groups_scales(self, username: str, groups: List[ArtistsGroup]) -> Dict[int, dict]:
+        group_ids = [group.group_id for group in groups]
+
+        artist_ids = list({artist_id for group in groups for artist_id in group.artist_ids})
+        artist_id2tracks = {artist["artist_id"]: artist["tracks"] for artist in self.database.artists.find({"artist_id": {"$in": artist_ids}}, {"artist_id": 1, "tracks": 1})}
+
+        track_ids = list({track_position["track_id"] for artist_tracks in artist_id2tracks.values() for track_position in artist_tracks})
+        track_id2scale = {track_id: {False: 0, True: 0} for track_id in track_ids}
+
+        for question in self.database.questions.find({"username": username, "correct": {"$ne": None}, "track_id": {"$in": track_ids}, "group_id": {"$in": group_ids}}):
+            track_id2scale[question["track_id"]][question["correct"]] += 1
+
+        group_id2scale = {}
+        for group in groups:
+            correct = sum(track_id2scale[track_position["track_id"]][True] for artist_id in group.artist_ids for track_position in artist_id2tracks[artist_id])
+            incorrect = sum(track_id2scale[track_position["track_id"]][False] for artist_id in group.artist_ids for track_position in artist_id2tracks[artist_id])
+
+            if total := correct + incorrect:
+                group_id2scale[group.group_id] = {"correct": correct, "incorrect": incorrect, "scale": correct / total}
+
+        return group_id2scale
 
     def __get_track_weight(self, track: dict, feature2balance: Dict[str, Dict[str, float]], features2count: Dict[tuple, float], track_id2weight: Dict[int, float]) -> float:
         track_weight = 1 / features2count[tuple(track[feature] for feature in feature2balance)]

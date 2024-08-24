@@ -63,7 +63,7 @@
 
             for (let group of response.artists_groups) {
                 group = new ArtistsGroup(group)
-                groups.appendChild(group.Build())
+                groups.appendChild(group.Build(response.group_id2scale))
                 infos.Add(group.BuildInfo(response.artist_id2name))
             }
         })
