@@ -31,7 +31,6 @@
 .artists-group-name {
     font-weight: bold;
     font-size: 1.2em;
-    margin-bottom: 0.4em;
 }
 
 .artists-group-name a {
@@ -46,8 +45,14 @@
 .artists-group-stats {
     color: var(--subtext-color);
     font-size: 0.8em;
-    margin-bottom: 10px;
+    margin-top: 0.4em;
     vertical-align: middle;
+}
+
+.artists-group-description {
+    margin-top: 0.2em;
+    color: var(--subtext-color);
+    font-size: 0.75em;
 }
 
 .artists-group-menu {

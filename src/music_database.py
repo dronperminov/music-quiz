@@ -268,6 +268,15 @@ class MusicDatabase:
 
         return total, [ArtistsGroup.from_dict(group) for group in groups[skip:skip + params.page_size]]
 
+    def get_groups_tracks_count(self, groups: List[ArtistsGroup]) -> Dict[int, int]:
+        group_id2tracks_count = {}
+
+        for group in groups:
+            query = {"artists": {"$in": group.artist_ids, "$size": 1}}
+            group_id2tracks_count[group.group_id] = self.database.tracks.count_documents(query)
+
+        return group_id2tracks_count
+
     def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> Tuple[int, int]:
         yandex2artist_id = {}
         artist_id2yandex_tracks = {}

@@ -1,10 +1,11 @@
-function ArtistsGroup(data) {
+function ArtistsGroup(data, tracksCount) {
     this.groupId = data.group_id
     this.name = data.name
     this.description = data.description
     this.artistIds = data.artist_ids
     this.imageUrl = data.image_url
     this.metadata = new Metadata(data.metadata, "Создана", "Обновлена")
+    this.tracksCount = tracksCount
 }
 
 ArtistsGroup.prototype.Build = function(groupId2scale) {
@@ -27,7 +28,7 @@ ArtistsGroup.prototype.Build = function(groupId2scale) {
     let groupNameLink = MakeElement("", groupName, {href: `/group-question/${this.groupId}`, innerText: this.name}, "a")
 
     let groupDescription = MakeElement("artists-group-description", groupData, {innerText: this.description})
-    let groupStats = MakeElement("artists-group-stats", groupData, {innerHTML: GetWordForm(this.artistIds.length, ['исполнитель', 'исполнителя', 'исполнителей'])})
+    let groupStats = MakeElement("artists-group-stats", groupData, {innerHTML: this.GetStats()})
 
     let groupMenu = MakeElement("artists-group-menu", group)
     let verticalHam = MakeElement("vertical-ham", groupMenu, {innerHTML: "<div></div><div></div><div></div>"})
@@ -51,8 +52,10 @@ ArtistsGroup.prototype.BuildInfo = function(artistId2name) {
 
     if (this.artistIds.length > 0) {
         let artists = this.artistIds.map(artistId => `<li><a class="link" href="/artists/${artistId}">${artistId2name[artistId]}</a></li>`).join("")
-        MakeElement("info-description-line", info, {innerHTML: `<p><b>Исполнители:</b></p><ul>${artists}</ul>`})
+        MakeElement("info-line", info, {innerHTML: `<p><b>Исполнители:</b></p><ul>${artists}</ul>`})
     }
+
+    MakeElement("info-line", info, {innerHTML: `<b>Количество треков:</b> ${this.tracksCount}`})
 
     this.metadata.BuildInfo(info)
 
@@ -68,6 +71,12 @@ ArtistsGroup.prototype.BuildAdmin = function(block) {
 
     let removeButton = MakeElement("basic-button red-button", adminBlock, {innerText: "Удалить группу"}, "button")
     removeButton.addEventListener("click", () => this.Remove([removeButton]))
+}
+
+ArtistsGroup.prototype.GetStats = function() {
+    let artists = GetWordForm(this.artistIds.length, ['исполнитель', 'исполнителя', 'исполнителей'])
+    let tracks = GetWordForm(this.tracksCount, ['трек', 'трека', 'треков'])
+    return [artists, tracks].join(", ")
 }
 
 ArtistsGroup.prototype.Remove = function(buttons) {

@@ -30,6 +30,7 @@ def get_artists_groups(user: Optional[User] = Depends(get_user)) -> HTMLResponse
 def search_artist_groups(params: ArtistsGroupsSearch, user: Optional[User] = Depends(get_user)) -> JSONResponse:
     total, artists_groups = music_database.search_artists_groups(params=params)
     artist_id2name = music_database.get_artist_names_by_ids(list({artist_id for group in artists_groups for artist_id in group.artist_ids}))
+    group_id2tracks_count = music_database.get_groups_tracks_count(groups=artists_groups)
 
     if user:
         settings = database.get_settings(username=user.username)
@@ -42,7 +43,8 @@ def search_artist_groups(params: ArtistsGroupsSearch, user: Optional[User] = Dep
         "total": total,
         "artists_groups": jsonable_encoder(artists_groups),
         "artist_id2name": jsonable_encoder(artist_id2name),
-        "group_id2scale": jsonable_encoder(group_id2scale)
+        "group_id2scale": jsonable_encoder(group_id2scale),
+        "group_id2tracks_count": jsonable_encoder(group_id2tracks_count)
     })
 
 

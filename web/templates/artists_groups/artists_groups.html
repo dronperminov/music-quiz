@@ -10,34 +10,7 @@
     <div class="content">
         <h1>Группы похожих исполнителей</h1>
 
-        <div class="artists-groups" id="artists-groups">
-            {% for group in artists_groups %}
-            <div class="artists-group">
-                <div class="artists-group-image">
-                    <a href="/artists-groups/{{group.group_id}}"><img src="{{group.image_url}}"></a>
-                </div>
-                <div class="artists-group-data">
-                    <div class="artists-group-name"><a href="/artists-groups/{{group.group_id}}">{{group.name}}</a></div>
-                    <div class="artists-group-description">{{group.description}}</div>
-                    <div class="artists-group-artists">
-                        <p>Исполнители, входящие в группу:</p>
-                        <ul>
-                            {% for artist_id in group.artist_ids %}
-                            <li><a class="link" href="/artists/{{artist_id}}">{{artist_id2artist[artist_id].name}}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-                <div class="artists-group-menu">
-                    <div class="vertical-ham">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+        <div class="artists-groups" id="artists-groups"></div>
     </div>
 
     <script src="/js/utils/utils.js?v={{version}}"></script>
@@ -64,8 +37,8 @@
             }
 
             for (let group of response.artists_groups) {
-                group = new ArtistsGroup(group)
-                groups.appendChild(group.Build(response.group_id2scale))
+                group = new ArtistsGroup(group, response.group_id2tracks_count[group.group_id])
+                groups.appendChild(group.Build(response.group_id2scale, ))
                 infos.Add(group.BuildInfo(response.artist_id2name))
             }
         })
