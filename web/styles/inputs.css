@@ -60,6 +60,11 @@ iniut[type="search"]::-webkit-search-decoration {
     border-color: var(--border-color);
 }
 
+.auto-resize-textarea {
+    resize: none;
+    min-height: 2.1em;
+}
+
 .basic-select {
     border: 1px solid var(--border-color);
     border-radius: 0.8em;

@@ -3,6 +3,7 @@ from datetime import datetime
 
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
+from src.entities.note import Note
 from src.entities.track import Track
 
 
@@ -176,4 +177,32 @@ class RemoveArtistsGroupAction(HistoryAction):
             **super().to_dict(),
             "name": self.name,
             "group_id": self.group_id
+        }
+
+
+@dataclass
+class AddNoteAction(HistoryAction):
+    name = "add_note"
+    note: Note
+
+    def to_dict(self) -> dict:
+        return {
+            **super().to_dict(),
+            "name": self.name,
+            "note": self.note.to_dict()
+        }
+
+
+@dataclass
+class EditNoteAction(HistoryAction):
+    name = "edit_note"
+    artist_id: int
+    diff: dict
+
+    def to_dict(self) -> dict:
+        return {
+            **super().to_dict(),
+            "name": self.name,
+            "artist_id": self.artist_id,
+            "diff": self.diff
         }

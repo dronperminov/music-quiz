@@ -25,7 +25,7 @@
 
         <div class="artist-tracks">
             {% for track in tracks %}
-            <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} preload="metadata"></audio>
+            <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} {% if note and track.track_id in note.track_id2seek %}data-note-seek="{{note.track_id2seek[track.track_id]}}"{% endif %} preload="metadata"></audio>
 
             <div class="track" id="track-{{track.track_id}}">
                 <div class="track-main">
@@ -94,6 +94,8 @@
     <script src="/js/utils/player_collection.js?v={{version}}"></script>
     <script src="/js/utils/history.js?v={{version}}"></script>
 
+    <script src="/js/inputs/note_input.js?v={{version}}"></script>
+
     <script src="/js/entities/genre.js?v={{version}}"></script>
     <script src="/js/entities/artist_type.js?v={{version}}"></script>
     <script src="/js/entities/language.js?v={{version}}"></script>
@@ -113,11 +115,11 @@
 
         for (let track of tracks) {
             track = new Track(track)
-            infos.Add(track.BuildInfo([artistData]))
+            infos.Add(track.BuildInfo([artistData], {{artist.artist_id}}))
         }
 
         let artist = new Artist(artistData)
-        artist.BuildPage()
+        artist.BuildPage({{jsonable_encoder(note)|tojson}})
     </script>
     {% include "components/footer.html" %}
 </body>

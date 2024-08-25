@@ -9,9 +9,10 @@ from pydub import AudioSegment
 from src.database import Database
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
-from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditTrackAction, \
-    RemoveArtistAction, RemoveArtistsGroupAction, RemoveTrackAction
+from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddNoteAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditNoteAction, \
+    EditTrackAction, RemoveArtistAction, RemoveArtistsGroupAction, RemoveTrackAction
 from src.entities.metadata import Metadata
+from src.entities.note import Note
 from src.entities.source import YandexSource
 from src.entities.track import Track
 from src.enums import ArtistsCount, Language
@@ -111,6 +112,7 @@ class MusicDatabase:
             diff = ArtistsGroup.from_dict(group_data).get_diff(group.to_dict())
             self.update_artists_group(group_id=group.group_id, diff=diff, username=username)
 
+        self.database.notes.delete_many({"artist_id": artist_id})
         self.database.artists.delete_one({"artist_id": artist_id})
         self.database.history.insert_one(action.to_dict())
 
@@ -175,7 +177,11 @@ class MusicDatabase:
             if not tracks:
                 self.remove_artist(artist.artist_id, username=username)
 
-        # TODO: remove from notes
+        for note_dict in self.database.notes.find({"track_id2seek.track_id": track_id}):
+            note = Note.from_dict(note_dict)
+            note.track_id2seek.pop(track_id)
+            self.database.notes.update_one({"artist_id": note.artist_id, "username": note.username}, {"$set": note.to_dict()})
+
         self.database.questions.delete_many({"track_id": track_id})
         self.database.tracks.delete_one({"track_id": track_id})
         self.database.history.insert_one(action.to_dict())
@@ -276,6 +282,34 @@ class MusicDatabase:
             group_id2tracks_count[group.group_id] = self.database.tracks.count_documents(query)
 
         return group_id2tracks_count
+
+    def get_note(self, artist_id: int, username: str) -> Optional[Note]:
+        note = self.database.notes.find_one({"artist_id": artist_id, "username": username})
+        return Note.from_dict(note) if note else None
+
+    def add_note(self, note: Note) -> None:
+        artist = self.database.artists.find_one({"artist_id": note.artist_id}, {"name": 1})
+        assert self.database.notes.find_one({"artist_id": note.artist_id, "username": note.username}) is None
+        assert artist is not None
+
+        action = AddNoteAction(username=note.username, timestamp=datetime.now(), note=note)
+        self.database.notes.insert_one(note.to_dict())
+        self.database.history.insert_one(action.to_dict())
+
+        self.logger.info(f'Added note for artist "{artist["name"]}" ({note.artist_id}) by @{note.username}')
+
+    def update_note(self, note: Note) -> None:
+        original_note = self.get_note(artist_id=note.artist_id, username=note.username)
+        assert original_note is not None
+
+        if not (diff := original_note.get_diff(note.to_dict())):
+            return
+
+        action = EditNoteAction(username=note.username, timestamp=datetime.now(), artist_id=note.artist_id, diff=diff)
+        self.database.notes.update_one({"artist_id": note.artist_id, "username": note.username}, {"$set": {key: key_diff["new"] for key, key_diff in diff.items()}})
+        self.database.history.insert_one(action.to_dict())
+
+        self.logger.info(f"Updated note for artist {note.artist_id} by @{note.username} (keys: {[key for key in diff]})")
 
     def add_from_yandex(self, artists: List[dict], tracks: List[dict], username: str) -> Tuple[int, int]:
         yandex2artist_id = {}

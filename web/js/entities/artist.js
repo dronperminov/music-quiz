@@ -85,7 +85,7 @@ Artist.prototype.BuildInfo = function() {
     return info
 }
 
-Artist.prototype.BuildPage = function(blockId = "artist") {
+Artist.prototype.BuildPage = function(note, blockId = "artist") {
     let artist = document.getElementById(blockId)
 
     let artistImage = MakeElement("artist-image", artist)
@@ -102,18 +102,8 @@ Artist.prototype.BuildPage = function(blockId = "artist") {
 
     let artistStats = MakeElement("artist-stats", artist, {innerHTML: this.GetStats()})
 
-    let detailsAbout = MakeDetails(artist, "Об исполнителе")
-
-    if (this.description.length > 0)
-        MakeElement("artist-about", detailsAbout, {innerHTML: this.description})
-
-    let artistTypeBlock = MakeElement("artist-about", detailsAbout)
-    this.BuildArtistType(artistTypeBlock)
-
-    let genresBlock = MakeElement("artist-about", detailsAbout)
-    this.BuildGenres(genresBlock)
-
-    this.metadata.BuildInfo(detailsAbout, "artist-about")
+    this.BuildPageAbout(artist)
+    this.BuildNote(artist, note)
 }
 
 Artist.prototype.BuildArtistType = function(block) {
@@ -140,6 +130,33 @@ Artist.prototype.BuildArtistType = function(block) {
 
 Artist.prototype.BuildGenres = function(block) {
     MakeElement("", block, {innerHTML: `<b>Жанры:</b> ${this.genres.ToRus()}`}, "span")
+}
+
+Artist.prototype.BuildPageAbout = function(block) {
+    let detailsAbout = MakeDetails(block, "Об исполнителе")
+
+    if (this.description.length > 0)
+        MakeElement("artist-about", detailsAbout, {innerHTML: this.description})
+
+    let artistTypeBlock = MakeElement("artist-about", detailsAbout)
+    this.BuildArtistType(artistTypeBlock)
+
+    let genresBlock = MakeElement("artist-about", detailsAbout)
+    this.BuildGenres(genresBlock)
+
+    this.metadata.BuildInfo(detailsAbout, "artist-about")
+}
+
+Artist.prototype.BuildNote = function(block, note) {
+    let noteBlock = MakeElement("artist-note", block)
+    let noteHeader = MakeElement("artist-note-header", noteBlock, {innerText: "Личные заметки"})
+    let noteTextarea = MakeElement("basic-textarea auto-resize-textarea", noteBlock, {placeholder: "Напишите здесь что-нибудь"}, "textarea")
+
+    if (note !== null)
+        noteTextarea.value = note.text
+
+    let input = new NoteInput(noteTextarea)
+    noteTextarea.addEventListener("change", () => this.UpdateNote(noteTextarea))
 }
 
 Artist.prototype.BuildAdmin = function(block) {
@@ -199,5 +216,19 @@ Artist.prototype.Remove = function(buttons) {
         }
 
         location.reload()
+    })
+}
+
+Artist.prototype.UpdateNote = function(textarea) {
+    let text = textarea.value.trim()
+    textarea.value = text
+
+    SendRequest("/update-note", {text: text, artist_id: this.artistId}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            ShowNotification(`Не удалось обновить текст заметки исполнителя "${this.name}".<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+        }
+        else {
+            ShowNotification(`Текст заметки исполнителя "${this.name}" успешно обновлён`, "success-notification", 3500)
+        }
     })
 }

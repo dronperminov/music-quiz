@@ -53,6 +53,16 @@
     margin-bottom: 0.5em;
 }
 
+.artist-note {
+    margin-top: 0.8em;
+}
+
+.artist-note-header {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 0.2em;
+}
+
 .artist-line {
     margin: 0.8em 0;
     height: 1px;

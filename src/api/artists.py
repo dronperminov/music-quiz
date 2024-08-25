@@ -68,6 +68,7 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
 
     tracks = sorted(music_database.get_artist_tracks(artist_id), key=lambda track: artist.tracks[track.track_id])
     artist2name = music_database.get_artist_names_by_ids(list({artist_id for track in tracks for artist_id in track.artists}))
+    note = music_database.get_note(artist_id=artist_id, username=user.username)
 
     if user:
         settings = database.get_settings(username=user.username)
@@ -82,6 +83,7 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
         version=get_static_hash(),
         artist=artist,
         tracks=tracks,
+        note=note,
         artist2name=artist2name,
         track_id2scale=track_id2scale,
         get_word_form=get_word_form,

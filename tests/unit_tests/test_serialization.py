@@ -4,9 +4,7 @@ from unittest import TestCase
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
 from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditTrackAction, HistoryAction, \
-    RemoveArtistAction, \
-    RemoveArtistsGroupAction, \
-    RemoveTrackAction
+    RemoveArtistAction, RemoveArtistsGroupAction, RemoveTrackAction
 from src.entities.lyrics import Lyrics
 from src.entities.lyrics_line import LyricsLine
 from src.entities.metadata import Metadata
@@ -16,7 +14,6 @@ from src.entities.question_settings import QuestionSettings
 from src.entities.settings import Settings
 from src.entities.source import HandSource, YandexSource
 from src.entities.track import Track
-from src.entities.track_landmark import TrackLandmark
 from src.entities.track_modification_settings import TrackModificationSettings
 from src.entities.user import User
 from src.enums import ArtistType, ArtistsCount, Genre, Language, QuestionType, UserRole
@@ -148,16 +145,11 @@ class TestSerialization(TestCase):
         self.assertEqual(question, question_from_dict)
 
     def test_note_serialization(self) -> None:
-        track_landmarks = [
-            TrackLandmark(track_id=1, timecode="30.2-67", text="landmark text 1"),
-            TrackLandmark(track_id=4, timecode="", text="landmark text 2"),
-        ]
-
         note = Note(
             username="system",
             artist_id=4,
             text="note text",
-            track_landmarks=track_landmarks
+            track_id2seek={1: 40.4, 56: 120.5}
         )
 
         note_dict = note.to_dict()

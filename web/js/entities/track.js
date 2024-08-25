@@ -12,7 +12,7 @@ function Track(data) {
     this.metadata = new Metadata(data.metadata, "Добавлен", "Обновлён")
 }
 
-Track.prototype.BuildInfo = function(artists = null) {
+Track.prototype.BuildInfo = function(artists = null, artistId = null) {
     let info = MakeElement("info")
     info.setAttribute("id", `info-track-${this.trackId}`)
 
@@ -49,6 +49,7 @@ Track.prototype.BuildInfo = function(artists = null) {
     this.metadata.BuildInfo(info)
 
     this.BuildLyrics(info)
+    this.BuildNote(info, artistId)
     this.BuildAdmin(info)
 
     return info
@@ -109,6 +110,25 @@ Track.prototype.BuildLyrics = function(block) {
     }
 }
 
+Track.prototype.BuildNote = function(block, artistId) {
+    if (artistId === null)
+        return
+
+    let audio = document.getElementById(`audio-${this.trackId}`)
+    let haveNote = audio.hasAttribute("data-note-seek")
+
+    let addNoteButton = MakeElement("basic-button gradient-button hidden", block, {innerText: "Добавить в заметки"}, "button")
+    let removeNoteButton = MakeElement("basic-button gradient-button hidden", block, {innerText: "Удалить из заметок"}, "button")
+
+    if (haveNote)
+        removeNoteButton.classList.remove("hidden")
+    else
+        addNoteButton.classList.remove("hidden")
+
+    addNoteButton.addEventListener("click", () => this.UpdateNote([addNoteButton, removeNoteButton], artistId))
+    removeNoteButton.addEventListener("click", () => this.UpdateNote([addNoteButton, removeNoteButton], artistId))
+}
+
 Track.prototype.BuildAdmin = function(block) {
     let adminBlock = MakeElement("admin-buttons admin-block", block)
 
@@ -165,5 +185,33 @@ Track.prototype.Remove = function(buttons) {
         }
 
         location.reload()
+    })
+}
+
+Track.prototype.UpdateNote = function(buttons, artistId) {
+    let audio = document.getElementById(`audio-${this.trackId}`)
+    let seek = audio.currentTime
+
+    for (let button of buttons)
+        button.setAttribute("disabled", "")
+
+    SendRequest("/update-note", {artist_id: artistId, track: {track_id: this.trackId, seek: seek}}).then(response => {
+        for (let button of buttons)
+            button.removeAttribute("disabled")
+
+        if (response.status != SUCCESS_STATUS) {
+            ShowNotification(`Не удалось обновить заметку.<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+            return
+        }
+
+        ShowNotification(`Заметка успешно обновлена`, "success-notification", 3500)
+
+        for (let button of buttons)
+            button.classList.toggle("hidden")
+
+        if (audio.hasAttribute("data-note-seek"))
+            audio.removeAttribute("data-note-seek")
+        else
+            audio.setAttribute("data-note-seek", seek)
     })
 }
