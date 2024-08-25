@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
+from src.entities.artists_group_settings import ArtistsGroupSettings
 from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditTrackAction, HistoryAction, \
     RemoveArtistAction, RemoveArtistsGroupAction, RemoveTrackAction
 from src.entities.lyrics import Lyrics
@@ -84,10 +85,15 @@ class TestSerialization(TestCase):
             track_modifications=track_modifications
         )
 
+        artists_group_settings = ArtistsGroupSettings(
+            max_variants=4
+        )
+
         return Settings(
             username="user",
             show_progress=True,
             question_settings=question_settings,
+            artists_group_settings=artists_group_settings,
             autoplay=True,
             show_knowledge_status=True,
             updated_at=datetime(2024, 1, 1)

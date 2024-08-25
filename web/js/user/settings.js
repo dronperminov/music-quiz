@@ -74,6 +74,17 @@ function GetQuestionSettings() {
     }
 }
 
+function GetArtistsGroupSettings() {
+    let maxVariants = maxVariantsInput.GetValue()
+
+    if (maxVariants === null)
+        return null
+
+    return {
+        max_variants: maxVariants,
+    }
+}
+
 function UpdateMainSettings() {
     let settings = {
         show_progress: document.getElementById("show-progress").checked,
@@ -99,5 +110,18 @@ function UpdateQuestionSettings() {
             ShowNotification(`<b>Ошибка</b>: не удалось обновить настройки вопросов<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
         else
             ShowNotification(`Настройки вопросов успешно обновлены`, "success-notification", 1000)
+    })
+}
+
+function UpdateArtistsGroupSettings() {
+    let settings = GetArtistsGroupSettings()
+    if (settings === null)
+        return
+
+    SendRequest("/artists_group_settings", settings).then(response => {
+        if (response.status != SUCCESS_STATUS)
+            ShowNotification(`<b>Ошибка</b>: не удалось обновить настройки групп<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+        else
+            ShowNotification(`Настройки групп успешно обновлены`, "success-notification", 1000)
     })
 }

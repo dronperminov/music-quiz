@@ -83,7 +83,7 @@ def get_group_question(group_id: int, user: Optional[User] = Depends(get_user)) 
         artist_id2note=artist_id2note,
         artist_id2artist=artist_id2artist,
         group=group,
-        group_variants=group.get_variants(track),
+        group_variants=group.get_variants(track, settings.artists_group_settings.max_variants),
         artist_id2scale=artist_id2scale,
         jsonable_encoder=jsonable_encoder
     )

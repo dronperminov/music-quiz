@@ -46,14 +46,14 @@ class ArtistsGroup:
 
         return diff
 
-    def get_variants(self, track: Track) -> List[int]:
-        if len(self.artist_ids) <= 4:
+    def get_variants(self, track: Track, max_variants: int) -> List[int]:
+        if len(self.artist_ids) <= max_variants:
             variants = [artist_id for artist_id in self.artist_ids]
         else:
             correct = [artist_id for artist_id in track.artists if artist_id in self.artist_ids]
             assert len(correct) == 1
             incorrect = [artist_id for artist_id in self.artist_ids if artist_id not in correct]
-            variants = correct + random.sample(incorrect, k=3)
+            variants = correct + random.sample(incorrect, k=max_variants - 1)
 
         random.shuffle(variants)
         return variants
