@@ -125,8 +125,7 @@ function ShowHistory(url, params = null) {
     let info = document.getElementById("info-history")
 
     if (info === null) {
-        let body = document.getElementsByTagName("body")[0]
-        info = MakeElement("info", body, {id: "info-history"})
+        info = MakeElement("info", null, {id: "info-history"})
 
         MakeElement("close-icon", info, {title: "Закрыть"})
         MakeElement("info-header-line", info, {innerText: "История изменений"})

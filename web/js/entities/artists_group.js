@@ -60,14 +60,13 @@ ArtistsGroup.prototype.BuildInfo = function(artistId2name) {
     return info
 }
 
-ArtistsGroup.prototype.BuildAdmin = function(block, className = "info-line") {
-    let history = MakeElement(`${className} admin-block`, block)
-    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
-    history.addEventListener("click", () => ShowHistory(`/artists-group-history/${this.groupId}`))
+ArtistsGroup.prototype.BuildAdmin = function(block) {
+    let adminBlock = MakeElement("admin-buttons admin-block", block)
 
-    let removeBlock = MakeElement(`${className} admin-block`, block)
-    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить группу"}, "button")
+    let historyButton = MakeElement("basic-button gradient-button", adminBlock, {innerText: "История изменений"}, "button")
+    historyButton.addEventListener("click", () => ShowHistory(`/artists-group-history/${this.groupId}`))
 
+    let removeButton = MakeElement("basic-button red-button", adminBlock, {innerText: "Удалить группу"}, "button")
     removeButton.addEventListener("click", () => this.Remove([removeButton]))
 }
 

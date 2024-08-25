@@ -389,6 +389,22 @@ h1 + .description {
     color: var(--success-color);
 }
 
+.admin-buttons {
+    margin-top: 1em;
+    padding-top: 1em;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    justify-content: space-between;
+}
+
+.admin-buttons button {
+    min-width: 160px;
+    flex: 1 1 calc(100% / 3 - 0.5em);
+    text-align: center;
+}
+
 @media (max-width: 767px) {
     :root {
         --max-width: unset;

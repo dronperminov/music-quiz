@@ -142,25 +142,22 @@ Artist.prototype.BuildGenres = function(block) {
     MakeElement("", block, {innerHTML: `<b>Жанры:</b> ${this.genres.ToRus()}`}, "span")
 }
 
-Artist.prototype.BuildAdmin = function(block, className = "info-line") {
-    let history = MakeElement(`${className} admin-block`, block)
-    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
-    history.addEventListener("click", () => ShowHistory(`/artist-history/${this.artistId}`))
-
+Artist.prototype.BuildAdmin = function(block) {
+    let adminBlock = MakeElement("admin-buttons admin-block", block)
     let buttons = []
 
-    if (this.source.name == "yandex") {
-        let buttonBlock = MakeElement(`${className} admin-block`, block)
-        let button = MakeElement("basic-button gradient-button", buttonBlock, {innerText: "Распарсить"}, "button")
-        buttons.push(button)
+    let historyButton = MakeElement("basic-button gradient-button", adminBlock, {innerText: "История изменений"}, "button")
+    buttons.push(historyButton)
+    historyButton.addEventListener("click", () => ShowHistory(`/artist-history/${this.artistId}`))
 
-        button.addEventListener("click", () => ParseArtists([button], [this.source.yandex_id]))
+    if (this.source.name == "yandex") {
+        let button = MakeElement("basic-button gradient-button", adminBlock, {innerText: "Распарсить"}, "button")
+        buttons.push(button)
+        button.addEventListener("click", () => ParseArtists(buttons, [this.source.yandex_id]))
     }
 
-    let removeBlock = MakeElement(`${className} admin-block`, block)
-    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить исполнителя"}, "button")
+    let removeButton = MakeElement("basic-button red-button", adminBlock, {innerText: "Удалить исполнителя"}, "button")
     buttons.push(removeButton)
-
     removeButton.addEventListener("click", () => this.Remove(buttons))
 }
 

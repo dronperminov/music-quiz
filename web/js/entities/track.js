@@ -49,14 +49,7 @@ Track.prototype.BuildInfo = function(artists = null) {
     this.metadata.BuildInfo(info)
 
     this.BuildLyrics(info)
-
-    let history = MakeElement("info-line admin-block", info)
-    let historyLink = MakeElement("link", history, {href: "#", innerText: "История изменений"}, "a")
-    history.addEventListener("click", () => ShowHistory(`/track-history/${this.trackId}`))
-
-    let removeBlock = MakeElement("info-line admin-block", info)
-    let removeButton = MakeElement("basic-button red-button", removeBlock, {innerText: "Удалить трек"}, "button")
-    removeButton.addEventListener("click", () => this.Remove([removeButton]))
+    this.BuildAdmin(info)
 
     return info
 }
@@ -114,6 +107,16 @@ Track.prototype.BuildLyrics = function(block) {
         if (index1 != index2)
             MakeElement("", lyrics, {}, "br")
     }
+}
+
+Track.prototype.BuildAdmin = function(block) {
+    let adminBlock = MakeElement("admin-buttons admin-block", block)
+
+    let historyButton = MakeElement("basic-button gradient-button", adminBlock, {innerText: "История изменений"}, "button")
+    historyButton.addEventListener("click", () => ShowHistory(`/track-history/${this.trackId}`))
+
+    let removeButton = MakeElement("basic-button red-button", adminBlock, {innerText: "Удалить трек"}, "button")
+    removeButton.addEventListener("click", () => this.Remove([removeButton]))
 }
 
 Track.prototype.FormatDuration = function() {
