@@ -85,7 +85,7 @@ function UpdateMainSettings() {
         if (response.status != SUCCESS_STATUS)
             ShowNotification(`<b>Ошибка</b>: не удалось обновить настройки<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
         else
-            ShowNotification(`Настройки успшено обновлены`, "success-notification", 1000)
+            ShowNotification(`Настройки успешно обновлены`, "success-notification", 1000)
     })
 }
 
@@ -98,6 +98,6 @@ function UpdateQuestionSettings() {
         if (response.status != SUCCESS_STATUS)
             ShowNotification(`<b>Ошибка</b>: не удалось обновить настройки вопросов<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
         else
-            ShowNotification(`Настройки вопросов успшено обновлены`, "success-notification", 1000)
+            ShowNotification(`Настройки вопросов успешно обновлены`, "success-notification", 1000)
     })
 }

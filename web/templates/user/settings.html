@@ -345,7 +345,13 @@
                 </div>
             </div>
 
-            <div class="settings-item-description">Как часто можно повторно задавать вопрос, на который был дан <b>некорректный</b> ответ вместо загадывания нового.</div>
+            <div class="settings-item-description">
+                <p>Как часто можно повторно задавать вопрос, на который был дан <b>некорректный</b> ответ вместо загадывания нового. Для быстрого изменения доступны следующие варианты:</p>
+                <ul>
+                    <li><span class="settings-item-label" onclick="repeatIncorrectProbabilityInput.SetValue(0); UpdateQuestionSettings()">никогда (0%)</span> – не повторять вовсе;</li>
+                    <li><span class="settings-item-label" onclick="repeatIncorrectProbabilityInput.SetValue(5); UpdateQuestionSettings()">иногда (5%)</span> – примерно каждый 20-ый вопрос будет являться повтором;</li>
+                    <li><span class="settings-item-label" onclick="repeatIncorrectProbabilityInput.SetValue(25); UpdateQuestionSettings()">часто (25%)</span> – примерно каждый четвёртый вопрос будет являться повтором.</li>
+                </ul></div>
             <div class="error" id="repeat-incorrect-probability-error"></div>
         </div>
 
