@@ -24,10 +24,10 @@ def update_note(params: NoteUpdate, user: Optional[User] = Depends(get_user)) ->
     if note is None:
         music_database.add_note(params.to_note(username=user.username))
     else:
-        if params.text:
+        if params.text is not None:
             note.text = params.text
 
-        if params.track:
+        if params.track is not None:
             note.update_track(track_id=params.track.track_id, seek=params.track.seek)
 
         music_database.update_note(note)

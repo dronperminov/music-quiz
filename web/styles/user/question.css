@@ -49,3 +49,14 @@
     margin-top: 1em;
     margin-bottom: 2.5em;
 }
+
+.notes {
+    margin-top: 1.5em;
+}
+
+.note {
+    margin-top: 0.5em;
+    border: 1px solid var(--border-color);
+    border-radius: 1em;
+    padding: 1em 0.5em;
+}

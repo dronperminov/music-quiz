@@ -42,7 +42,7 @@ class QuestionsDatabase:
             if question.is_valid({track["track_id"] for track in tracks}, settings):
                 return self.__update_question(question, settings)
 
-            self.database.questions.delete_one({"username": settings.username, "correct": None, group_id: group_id})
+            self.database.questions.delete_one({"username": settings.username, "correct": None, "group_id": group_id})
 
         last_questions = self.__get_last_questions(username=settings.username, track_ids=[track["track_id"] for track in tracks], group_id=group_id)
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]

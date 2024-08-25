@@ -29,6 +29,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
     track = music_database.get_track(track_id=question.track_id)
     artist_id2artist = music_database.get_artists_by_ids(artist_ids=track.artists)
     artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}
+    artist_id2note = music_database.get_artist_notes(artist_ids=track.artists, username=user.username, with_text=True)
     note = music_database.get_note(artist_id=track.artists[0], username=user.username) if len(track.artists) == 1 else None
 
     template = templates.get_template("user/question.html")
@@ -40,6 +41,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
         question=question,
         track=track,
         note=note,
+        artist_id2note=artist_id2note,
         artist_id2artist=artist_id2artist,
         artist_id2scale=artist_id2scale,
         jsonable_encoder=jsonable_encoder
@@ -66,6 +68,7 @@ def get_group_question(group_id: int, user: Optional[User] = Depends(get_user)) 
     track = music_database.get_track(track_id=question.track_id)
     artist_id2artist = music_database.get_artists_by_ids(artist_ids=track.artists + group.artist_ids)
     artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}
+    artist_id2note = music_database.get_artist_notes(artist_ids=track.artists, username=user.username, with_text=True)
     note = music_database.get_note(artist_id=track.artists[0], username=user.username) if len(track.artists) == 1 else None
 
     template = templates.get_template("user/question.html")
@@ -77,6 +80,7 @@ def get_group_question(group_id: int, user: Optional[User] = Depends(get_user)) 
         question=question,
         track=track,
         note=note,
+        artist_id2note=artist_id2note,
         artist_id2artist=artist_id2artist,
         group=group,
         group_variants=group.get_variants(track),

@@ -287,6 +287,15 @@ class MusicDatabase:
         note = self.database.notes.find_one({"artist_id": artist_id, "username": username})
         return Note.from_dict(note) if note else None
 
+    def get_artist_notes(self, artist_ids: List[int], username: str, with_text: bool) -> Dict[int, Note]:
+        artist_id2note = {}
+
+        for note in self.database.notes.find({"artist_id": {"$in": artist_ids}, "username": username}):
+            if not with_text or note["text"]:
+                artist_id2note[note["artist_id"]] = Note.from_dict(note)
+
+        return artist_id2note
+
     def add_note(self, note: Note) -> None:
         artist = self.database.artists.find_one({"artist_id": note.artist_id}, {"name": 1})
         assert self.database.notes.find_one({"artist_id": note.artist_id, "username": note.username}) is None
