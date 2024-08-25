@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from uvicorn.config import LOGGING_CONFIG
 
 from src import database
-from src.api import api, artists, artists_groups, auth, notes, questions, settings, tracks
+from src.api import analytics, api, artists, artists_groups, auth, notes, questions, settings, tracks
 
 
 def init_routers() -> None:
@@ -19,6 +19,7 @@ def init_routers() -> None:
     app.include_router(tracks.router)
     app.include_router(artists_groups.router)
     app.include_router(notes.router)
+    app.include_router(analytics.router)
 
 
 def init_static_directories() -> None:

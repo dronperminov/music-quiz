@@ -82,3 +82,6 @@ class Artist:
             return f"{self.listen_count / 1000:.2f}K"
 
         return str(self.listen_count)
+
+    def get_image_url(self) -> str:
+        return self.image_urls[0] if self.image_urls else "/images/artists/default.png"

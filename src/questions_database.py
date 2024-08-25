@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 
 from src import MusicDatabase
 from src.database import Database
+from src.entities.analytics import Analytics
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
 from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, NameByTrackQuestion, Question
@@ -171,6 +172,12 @@ class QuestionsDatabase:
                 group_id2scale[group.group_id] = {"correct": correct, "incorrect": incorrect, "scale": correct / total}
 
         return group_id2scale
+
+    def get_analytics(self, username: str) -> Analytics:
+        questions = list(self.database.questions.find({"username": username, "correct": {"$ne": None}}))
+        track_ids = list({question["track_id"] for question in questions})
+        track_id2artist_ids = {track["track_id"]: track["artists"] for track in self.database.tracks.find({"track_id": {"$in": track_ids}})}
+        return Analytics.evaluate(questions, track_id2artist_ids)
 
     def __get_track_weight(self, track: dict, feature2balance: Dict[str, Dict[str, float]], features2count: Dict[tuple, float], track_id2weight: Dict[int, float]) -> float:
         track_weight = 1 / features2count[tuple(track[feature] for feature in feature2balance)]

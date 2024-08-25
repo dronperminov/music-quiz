@@ -13,9 +13,9 @@
             <li><a href="/question">ТРЕНИРОВКА</a></li>
             <li><a href="/artists-groups">ГРУПЫ ПОХОЖИХ ИСПОЛНИТЕЛЕЙ</a></li>
             {% if user %}
+            <li><a href="/analytics">АНАЛИТИКА</a></li>
             <li><a href="/settings">НАСТРОЙКИ</a></li>
-            <li class="menu-profile"><a href="/profile"><img class="menu-profile-img" id="menu-profile-image" src="{{user.avatar_url}}" alt="аватар пользователя {{user.username}}" /><span class="menu-profile-text"> Мой профиль</span></a></li>
-            <li><a onclick="Logout()">ВЫЙТИ</a></li>
+            <li class="menu-profile"><a onclick="Logout()"><img class="menu-profile-img" id="menu-profile-image" src="{{user.avatar_url}}" alt="аватар пользователя {{user.username}}" /><span class="menu-profile-text"> ВЫЙТИ</span></a></li>
             {% else %}
             <li><a href="/login">ВХОД</a></li>
             {% endif %}

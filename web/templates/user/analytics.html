@@ -1,0 +1,171 @@
+{% set title = "Аналитика | Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/user/analytics.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+    {% set main = analytics.main %}
+
+    <div class="content">
+        <h1>Аналитика</h1>
+
+        <div class="profile">
+            <img src="{{user.avatar_url}}">
+        </div>
+
+        <div class="profile-name">{{user.full_name}}</div>
+
+        <h3>Общая статистика</h3>
+
+        <div class="analytics-block">
+            <div class="analytics-total-value" onclick="ToggleChart('total-time-block')">{{main.time.format_total(main.time.total)}}</div>
+            <div class="analytics-description">Суммарное время, потребовавшееся на ответ</div>
+            <div class="analytics-chart" id="total-time-block">
+                <div class="analytics-bar">
+                    {% if main.time.other_total > 0 %}<div class="other-background" style="width: {{main.time.other_total_percents}}%"></div>{% endif %}
+                    {% if main.time.group_total > 0 %}<div class="group-background" style="width: {{main.time.group_total_percents}}%"></div>{% endif %}
+                </div>
+                <div class="analytics-list">
+                    {% if main.time.other_total > 0 %}
+                    <div class="analytics-time-label"><span class="circle other-background"></span> Тренировка</div>
+                    <div class="analytics-time">{{main.time.format_total(main.time.other_total)}}</div>
+                    {% endif %}
+
+                    {% if main.time.group_total > 0 %}
+                    <div class="analytics-time-label"><span class="circle group-background"></span> Группы исполнителей</div>
+                    <div class="analytics-time">{{main.time.format_total(main.time.group_total)}}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-block">
+            <div class="analytics-title" onclick="ToggleChart('questions-chart-block')">Количество ответов</div>
+            <div class="analytics-description">Учитываются как ответы в <a class="link" href="/question">тренировке</a>, так и в <a class="link" href="/artists-groups">группах похожих исполнителей</a>.</div>
+            <div class="analytics-items">
+                <div class="analytics-item">
+                    <div class="analytics-item-value">{{main.questions.total}}</div>
+                    <div class="analytics-item-name"><b>всего</b></div>
+                </div>
+
+                <div class="analytics-item">
+                    <div class="analytics-item-value">{{main.questions.correct_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle correct-background"></span> <b>верно</b>: {{main.questions.correct}}</div>
+                </div>
+
+                <div class="analytics-item">
+                    <div class="analytics-item-value">{{main.questions.incorrect_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle incorrect-background"></span> <b>неверно</b>: {{main.questions.incorrect}}</div>
+                </div>
+            </div>
+            <div class="analytics-chart" id="questions-chart-block">
+                <svg id="questions-chart"></svg>
+            </div>
+        </div>
+
+        <div class="analytics-block">
+            <div class="analytics-title" onclick="ToggleChart('times-chart-block'); ShowTimesChart('total')">Среднее время ответа</div>
+            <div class="analytics-description">Количество <b>секунд</b>, потребовавшихся на ответ в среднем</div>
+            <div class="analytics-items">
+                <div class="analytics-item" onclick="ShowTimesChart('total')">
+                    <div class="analytics-item-value">{{main.time.total_mean|round(1)}}</div>
+                    <div class="analytics-item-name">всего</div>
+                </div>
+
+                <div class="analytics-item" onclick="ShowTimesChart('correct')">
+                    <div class="analytics-item-value">{{main.time.correct_mean|round(1)}}</div>
+                    <div class="analytics-item-name"><span class="circle correct-background"></span> верно</div>
+                </div>
+
+                <div class="analytics-item" onclick="ShowTimesChart('incorrect')">
+                    <div class="analytics-item-value">{{main.time.incorrect_mean|round(1)}}</div>
+                    <div class="analytics-item-name"><span class="circle incorrect-background"></span> неверно</div>
+                </div>
+            </div>
+            <div class="analytics-chart" id="times-chart-block">
+                <svg id="times-total-chart"></svg>
+                <svg class="hidden" id="times-correct-chart"></svg>
+                <svg class="hidden" id="times-incorrect-chart"></svg>
+            </div>
+        </div>
+
+        <h3>Исполнители</h3>
+
+        <div class="analytics-block">
+            <div class="analytics-title" onclick="ToggleTable('correct-artists')">Топ угадываемых</div>
+            <div class="analytics-images">
+                {% for artist_data in analytics.artists.correct[:10] %}
+                <div class="analytics-image">
+                    <a href="/artists/{{artist_data.artist_id}}"><img src="{{artist_id2artist[artist_data.artist_id].get_image_url()}}"></a>
+                    <div>{{artist_id2artist[artist_data.artist_id].name}}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="analytics-table hidden" id="correct-artists">
+                <table>
+                    <tr><th>Исполнитель</th><th>Вопросы</th><th>Время</th></tr>
+                    {% for artist_data in analytics.artists.correct %}
+                    <tr>
+                        <td><a class="link" href="/artists/{{artist_data.artist_id}}">{{artist_id2artist[artist_data.artist_id].name}}</a></td>
+                        <td class="analytics-table-min-width">{{artist_data.count}}</td>
+                        <td class="analytics-table-min-width">{{analytics.artists.correct_time[artist_data.artist_id]|round(1)}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="analytics-block">
+            <div class="analytics-title" onclick="ToggleTable('incorrect-artists')">Топ неугадываемых</div>
+            <div class="analytics-images">
+                {% for artist_data in analytics.artists.incorrect[:10] %}
+                <div class="analytics-image">
+                    <a class="link" href="/artists/{{artist_data.artist_id}}"><img src="{{artist_id2artist[artist_data.artist_id].get_image_url()}}"></a>
+                    <div>{{artist_id2artist[artist_data.artist_id].name}}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="analytics-table hidden" id="incorrect-artists">
+                <table>
+                    <tr><th>Исполнитель</th><th>Вопросы</th><th>Время</th></tr>
+                    {% for artist_data in analytics.artists.incorrect %}
+                    <tr>
+                        <td><a class="link" href="/artists/{{artist_data.artist_id}}">{{artist_id2artist[artist_data.artist_id].name}}</a></td>
+                        <td class="analytics-table-min-width">{{artist_data.count}}</td>
+                        <td class="analytics-table-min-width">{{analytics.artists.incorrect_time[artist_data.artist_id]|round(1)}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/charts/chart.js?v={{version}}"></script>
+    <script src="/js/charts/bar_chart.js?v={{version}}"></script>
+    <script src="/js/user/analytics.js?v={{version}}"></script>
+
+    <script>
+        const key2color = {
+            total: "#d82e6b",
+            correct: "#47b39c",
+            incorrect: "#ec6b56"
+        }
+
+        const questionsData = [
+            {value: {{main.questions.correct}}, color: key2color.correct},
+            {value: {{main.questions.incorrect}}, color: key2color.incorrect},
+        ]
+
+        const timesData = {
+            total: [{% for key in main.time.histogram_keys %}{label: "{{key}}", count: {{main.time.histogram[key]}} },{% endfor %}],
+            correct: [{% for key in main.time.histogram_keys %}{label: "{{key}}", count: {{main.time.histogram_correct[key]}} },{% endfor %}],
+            incorrect: [{% for key in main.time.histogram_keys %}{label: "{{key}}", count: {{main.time.histogram_incorrect[key]}} },{% endfor %}]
+        }
+
+        PlotQuestionsChart()
+    </script>
+
+    {% include "components/footer.html" %}
+</body>
+</html>
