@@ -10,6 +10,9 @@ function SignIn() {
     let error = document.getElementById("error")
     error.innerText = ""
 
+    let params = new URLSearchParams(window.location.search)
+    let redirectUrl = params.get("back_url")
+
     SendRequest("/sign-in", {username, password}).then(response => {
         if (response.status != SUCCESS_STATUS) {
             error.innerText = response.message
@@ -17,6 +20,6 @@ function SignIn() {
         }
 
         localStorage.setItem(TOKEN_NAME, response.token)
-        location.href = response.redirect_url
+        location.href = redirectUrl ? redirectUrl : "/"
     })
 }

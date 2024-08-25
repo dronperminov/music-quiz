@@ -34,7 +34,7 @@ def sign_in(data: SignIn) -> JSONResponse:
         return JSONResponse({"status": "error", "message": "Имя пользователя или пароль введены неверно"})
 
     access_token = create_access_token(user["username"])
-    response = JSONResponse(content={"status": "success", "token": access_token, "redirect_url": "/"})
+    response = JSONResponse(content={"status": "success", "token": access_token})
     response.set_cookie(key=COOKIE_NAME, value=access_token, httponly=True)
     return response
 
