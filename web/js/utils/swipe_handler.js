@@ -5,7 +5,7 @@ const SWIPE_HANDLER_RIGHT = "right"
 const SWIPE_HANDLER_VERTICAL = "vertical"
 const SWIPE_HANDLER_HORIZONTAL = "horizontal"
 
-function SwipeHandler(block, onSwipe, direction, swipePart = 0.4, moveDelta = 10) {
+function SwipeHandler(block, onSwipe, direction, swipePart = 150, moveDelta = 10) {
     this.block = block
     this.onSwipe = onSwipe
 
@@ -96,11 +96,18 @@ SwipeHandler.prototype.MouseMove = function(point) {
     this.block.style.transform = `translate(${this.deltaX}px, ${this.deltaY}px)`
 }
 
+SwipeHandler.prototype.CheckDelta = function(delta, size) {
+    if (this.swipePart < 1)
+        return Math.abs(delta) > size * this.swipePart
+
+    return Math.abs(delta) > this.swipePart
+}
+
 SwipeHandler.prototype.MouseUp  = function() {
     this.isPressed = false
 
     if (this.IsSwiped()) {
-        if (Math.abs(this.deltaX) > this.block.clientWidth * this.swipePart || Math.abs(this.deltaY) > this.block.clientHeight * this.swipePart)
+        if (this.CheckDelta(this.deltaX, this.block.clientWidth) || this.CheckDelta(this.deltaY, this.block.clientHeight))
             this.onSwipe()
         else
             this.block.style.transform = `translate(0, 0)`
