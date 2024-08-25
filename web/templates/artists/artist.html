@@ -115,7 +115,7 @@
 
         for (let track of tracks) {
             track = new Track(track)
-            infos.Add(track.BuildInfo([artistData], {{artist.artist_id}}))
+            infos.Add(track.BuildInfo([artistData]))
         }
 
         let artist = new Artist(artistData)

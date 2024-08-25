@@ -12,7 +12,7 @@ function Track(data) {
     this.metadata = new Metadata(data.metadata, "Добавлен", "Обновлён")
 }
 
-Track.prototype.BuildInfo = function(artists = null, artistId = null) {
+Track.prototype.BuildInfo = function(artists = null) {
     let info = MakeElement("info")
     info.setAttribute("id", `info-track-${this.trackId}`)
 
@@ -49,7 +49,7 @@ Track.prototype.BuildInfo = function(artists = null, artistId = null) {
     this.metadata.BuildInfo(info)
 
     this.BuildLyrics(info)
-    this.BuildNote(info, artistId)
+    this.BuildNote(info, artists == null || artists.length > 1 ? null : artists[0].artist_id)
     this.BuildAdmin(info)
 
     return info
