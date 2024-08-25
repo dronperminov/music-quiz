@@ -120,7 +120,7 @@ class ArtistByTrackQuestion(Question):
     @classmethod
     def generate(cls: "ArtistByTrackQuestion", track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> "ArtistByTrackQuestion":
         question = cls(
-            title=f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)}",
+            title=ArtistByTrackQuestion.get_title(track, artist_id2artist, settings, group_id),
             answer=", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists),
             question_seek=Question.get_random_seek(track, settings.question_settings.start_from_chorus),
         )
@@ -130,9 +130,16 @@ class ArtistByTrackQuestion(Question):
 
     def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: Settings) -> "ArtistByTrackQuestion":
         super().update(track, artist_id2artist, settings)
-        self.title = f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)}"
+        self.title = ArtistByTrackQuestion.get_title(track, artist_id2artist, settings, self.group_id)
         self.answer = ", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists)
         return self
+
+    @staticmethod
+    def get_title(track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> str:
+        if group_id:
+            return f'Назовите автор{"а" if len(track.artists) == 1 else "ов"}'
+
+        return f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)}"
 
 
 @dataclass
@@ -162,7 +169,7 @@ class ArtistByIntroQuestion(Question):
     @classmethod
     def generate(cls: "ArtistByIntroQuestion", track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> "ArtistByIntroQuestion":
         question = cls(
-            title=f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)} по вступлению",
+            title=ArtistByTrackQuestion.get_title(track, artist_id2artist, settings, group_id),
             answer=", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists),
             question_seek=0,
             question_timecode=f"0,{round(track.lyrics.lines[0].time - 1, 2)}"
@@ -179,6 +186,13 @@ class ArtistByIntroQuestion(Question):
 
     def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: Settings) -> "ArtistByIntroQuestion":
         super().update(track, artist_id2artist, settings)
-        self.title = f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)} по вступлению"
+        self.title = self.get_title(track, artist_id2artist, settings, self.group_id)
         self.answer = ", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists)
         return self
+
+    @staticmethod
+    def get_title(track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> str:
+        if group_id:
+            return f'Назовите автор{"а" if len(track.artists) == 1 else "ов"} по вступлению'
+
+        return f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)} по вступлению"
