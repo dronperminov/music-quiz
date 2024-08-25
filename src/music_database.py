@@ -9,8 +9,8 @@ from pydub import AudioSegment
 from src.database import Database
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
-from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditTrackAction, RemoveArtistAction, \
-    RemoveArtistsGroupAction, RemoveTrackAction
+from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, AddTrackAction, EditArtistAction, EditArtistsGroupAction, EditTrackAction, \
+    RemoveArtistAction, RemoveArtistsGroupAction, RemoveTrackAction
 from src.entities.metadata import Metadata
 from src.entities.source import YandexSource
 from src.entities.track import Track
