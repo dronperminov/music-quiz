@@ -15,5 +15,5 @@ Metadata.prototype.BuildInfo = function(parent, className = "info-line") {
         return
 
     let updated = ParseDateTime(this.updatedAt)
-    MakeElement(className, parent, {innerHTML: `<b>Обновлён:</b> ${updated.date} в ${updated.time} пользователем @${this.updatedBy}`})
+    MakeElement(className, parent, {innerHTML: `<b>${this.updateText}:</b> ${updated.date} в ${updated.time} пользователем @${this.updatedBy}`})
 }
