@@ -15,10 +15,6 @@
     --content-background: #eeeeee;
     --block-background: #f4f4f4;
 
-    --gradient-button-color: #fff;
-    --gradient-button-border: var(--main-color);
-    --gradient-button-background: linear-gradient(45deg, #e9273f 0%, #c239a3 100%);
-
     /* status */
     --error-color: #f44336;
     --error-background: #f4d3d0;
@@ -28,6 +24,31 @@
     --warning-background: #f8f3d6;
     --info-color: #4480ae;
     --info-background: #cde8f5;
+
+    /* buttons */
+    --green-button-color: var(--success-color);
+    --green-button-border: var(--success-color);
+    --green-button-background: var(--success-background);
+
+    --green-button-hover-color: #ffffff;
+    --green-button-hover-border: var(--success-color);
+    --green-button-hover-background: var(--success-color);
+
+    --red-button-color: var(--error-color);
+    --red-button-border: var(--error-color);
+    --red-button-background: var(--error-background);
+
+    --red-button-hover-color: #ffffff;
+    --red-button-hover-border: var(--error-color);
+    --red-button-hover-background: var(--error-color);
+
+    --gradient-button-color: #fff;
+    --gradient-button-border: var(--main-color);
+    --gradient-button-background: linear-gradient(45deg, #e9273f 0%, #c239a3 100%);
+
+    --gradient-button-hover-color: #fafafa;
+    --gradient-button-hover-border: var(--main-color);
+    --gradient-button-hover-background: linear-gradient(45deg, #e9425c 0%, #cc50a9 100%);
 
     /* menu  */
     --menu-height: 55px;

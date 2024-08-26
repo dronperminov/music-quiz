@@ -198,6 +198,14 @@ iniut[type="search"]::-webkit-search-decoration {
     font-size: 0.9em;
     cursor: pointer;
     outline: none;
+    transition: all .1s ease-out;
+}
+
+.gradient-link:hover {
+    background: var(--gradient-button-hover-background);
+    border-color: var(--gradient-button-hover-border);
+    color: var(--gradient-button-hover-color);
+    transition: all .1s ease-in;
 }
 
 .basic-button {
@@ -216,27 +224,51 @@ iniut[type="search"]::-webkit-search-decoration {
 }
 
 .green-button {
-    background-color: var(--success-background);
-    color: var(--success-color);
-    border-color: var(--success-color);
+    background-color: var(--green-button-background);
+    color: var(--green-button-color);
+    border-color: var(--green-button-color);
+    transition: all .1s ease-out;
+}
+
+.green-button:hover {
+    background-color: var(--green-button-hover-background);
+    color: var(--green-button-hover-color);
+    border-color: var(--green-button-hover-color);
+    transition: all .1s ease-in;
 }
 
 .red-button {
-    background-color: var(--error-background);
-    color: var(--error-color);
-    border-color: var(--error-color);
+    background-color: var(--red-button-background);
+    color: var(--red-button-color);
+    border-color: var(--red-button-color);
+    transition: all .1s ease-out;
+}
+
+.red-button:hover {
+    background-color: var(--red-button-hover-background);
+    color: var(--red-button-hover-color);
+    border-color: var(--red-button-hover-color);
+    transition: all .1s ease-in;
 }
 
 .gradient-button {
     background: var(--gradient-button-background);
     border-color: var(--gradient-button-border);
     color: var(--gradient-button-color);
+    transition: all .1s ease-out;
+}
+
+.gradient-button:hover {
+    background: var(--gradient-button-hover-background);
+    border-color: var(--gradient-button-hover-border);
+    color: var(--gradient-button-hover-color);
+    transition: all .1s ease-in;
 }
 
 .basic-button[disabled] {
-    background: var(--disabled-color);
-    border-color: var(--border-color);
-    color: var(--subtext-color);
+    background: var(--disabled-color) !important;
+    border-color: var(--border-color) !important;
+    color: var(--subtext-color) !important;
     pointer-events: none;
     user-select: none;
 }
