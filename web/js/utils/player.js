@@ -52,7 +52,7 @@ Player.prototype.Build = function(trackId, config) {
         this.lyricsUpdater = new LyricsUpdater(`lyrics-updater-${trackId}`, (seek) => this.Seek(seek))
         this.lyricsIcon.classList.remove("hidden")
 
-        if (this.lyricsUpdater.HaveChorus())
+        if (this.lyricsUpdater.lrc && this.lyricsUpdater.HaveChorus())
             this.chorusIcon.classList.remove("hidden")
 
         if (this.lyricsUpdater.IsOpen())
@@ -162,7 +162,7 @@ Player.prototype.ToggleLyrics = function() {
 }
 
 Player.prototype.SeekToChorus = function() {
-    if (this.lyricsUpdater === null)
+    if (this.lyricsUpdater === null || !this.lyricsUpdater.lrc)
         return
 
     let time = this.lyricsUpdater.GetChorusTime(this.audio.currentTime)

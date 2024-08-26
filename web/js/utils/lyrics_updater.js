@@ -4,6 +4,7 @@ function LyricsUpdater(blockId, seek, deltaTime = 4000) {
 
     this.deltaTime = deltaTime
     this.wheelTime = null
+    this.lrc = this.block.hasAttribute("data-lrc") ? this.block.getAttribute("data-lrc") == "true" : false
 
     this.InitLines(seek)
     this.InitEvents()
@@ -17,7 +18,8 @@ LyricsUpdater.prototype.InitLines = function(seek) {
         let time = +line.getAttribute("data-time")
         this.lines.push({line: line, time: time})
 
-        line.addEventListener("click", () => seek(time))
+        if (this.lrc)
+            line.addEventListener("click", () => seek(time))
 
         if (line.classList.contains("lyrics-line-chorus") && (this.lines.length == 1 || !this.lines[this.lines.length - 2].line.classList.contains("lyrics-line-chorus")))
             this.chorusTimes.push(time)
@@ -38,7 +40,7 @@ LyricsUpdater.prototype.ResetLines = function() {
 LyricsUpdater.prototype.Update = function(time) {
     this.ResetLines()
 
-    if (time < this.lines[0].time)
+    if (time < this.lines[0].time || !this.lrc)
         return
 
     let index = 0

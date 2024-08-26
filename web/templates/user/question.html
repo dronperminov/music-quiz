@@ -79,8 +79,8 @@
             <h3>Исполнител{{ "и" if track.artists|length > 1 else "ь" }}:</h3>
             <div id="artists"></div>
 
-            {% if track.lyrics and track.lyrics.lrc %}
-            <div id="lyrics-updater-{{track.track_id}}">
+            {% if track.lyrics %}
+            <div id="lyrics-updater-{{track.track_id}}" data-lrc="{{track.lyrics.lrc|tojson}}">
             <h3>Текст</h3>
 
             <div class="lyrics-updater">

@@ -63,8 +63,8 @@
                 </div>
                 <div class="player" id="player-{{track.track_id}}"></div>
                 <div class="error" id="error-{{track.track_id}}"></div>
-                {% if track.lyrics and track.lyrics.lrc %}
-                <div class="lyrics-updater lyrics-updater-disabled hidden" id="lyrics-updater-{{track.track_id}}">
+                {% if track.lyrics %}
+                <div class="lyrics-updater lyrics-updater-disabled hidden" data-lrc="{{track.lyrics.lrc|tojson}}" id="lyrics-updater-{{track.track_id}}">
                     <div class="lyrics-lines">
                         {% set indices = track.lyrics.get_chorus_indices() %}
                         {% for line in track.lyrics.lines %}
