@@ -156,7 +156,7 @@ Artist.prototype.BuildPageAbout = function(block) {
 }
 
 Artist.prototype.BuildNote = function(block, note) {
-    let noteBlock = MakeElement("artist-note", block)
+    let noteBlock = MakeElement("user-block artist-note", block)
     let noteHeader = MakeElement("artist-note-header", noteBlock, {innerText: "Личные заметки"})
     let noteTextarea = MakeElement("basic-textarea auto-resize-textarea", noteBlock, {placeholder: "Напишите здесь что-нибудь"}, "textarea")
 

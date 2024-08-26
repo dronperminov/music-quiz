@@ -1,0 +1,43 @@
+.logo {
+    text-align: center;
+}
+
+.logo img {
+    width: 150px;
+    vertical-align: middle
+}
+
+.logo-text {
+    font-family: Montserrat;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center;
+
+    margin-bottom: 0.3em;
+}
+
+.slogan {
+    font-size: 1em;
+    text-align: center;
+    margin-bottom: 1.5em;
+}
+
+.mode {
+    padding: 1em;
+    border-radius: 1em;
+    border: 1px solid var(--main-color);
+    margin-bottom: 1.5em;
+}
+
+.mode-title {
+    font-family: Montserrat;
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-bottom: 0.5em;
+    text-align: center;
+}
+
+.mode-description {
+    color: var(--subtext-color);
+    margin-bottom: 1em;
+}

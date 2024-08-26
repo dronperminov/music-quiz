@@ -122,6 +122,10 @@ html:not([data-user-role="admin"]) .admin-block {
     display: none;
 }
 
+html:not([data-user="user"]) .user-block {
+    display: none;
+}
+
 h1 {
     margin-bottom: 0.6em;
 }

@@ -68,13 +68,14 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
 
     tracks = sorted(music_database.get_artist_tracks(artist_id), key=lambda track: artist.tracks[track.track_id])
     artist2name = music_database.get_artist_names_by_ids(list({artist_id for track in tracks for artist_id in track.artists}))
-    note = music_database.get_note(artist_id=artist_id, username=user.username)
 
     if user:
+        note = music_database.get_note(artist_id=artist_id, username=user.username)
         settings = database.get_settings(username=user.username)
         artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=[artist]) if settings.show_knowledge_status else {}
         track_id2scale = questions_database.get_tracks_scales(username=user.username, tracks=tracks) if settings.show_knowledge_status else {}
     else:
+        note = None
         artist_id2scale = {}
         track_id2scale = {}
 

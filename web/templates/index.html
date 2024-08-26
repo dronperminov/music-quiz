@@ -1,11 +1,32 @@
 {% set title = "Музыкальный квиз Плюшевой наковальни" %}
 {% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/index.css?v={{version}}">
 </head>
 <body ondragstart="return false">
     {% include "components/menu.html" %}
 
     <div class="content">
-        <h1>Музыкальный квиз Плюшевой наковальни</h1>
+        <div class="logo">
+            <img src="/images/logo.svg">
+        </div>
+
+        <div class="logo-text">МУЗЫКАЛЬНОЕ ПРИЛОЖЕНИЕ</div>
+
+        <div class="slogan">Тренируйся угадывать исполнителей треков и улучшай свои музыкальные знания!</div>
+
+        <div class="mode">
+            <div class="mode-title">ТРЕНИРОВКА</div>
+            <div class="mode-description">Угадай исполнителя или группу на слух!</div>
+            <a class="basic-button gradient-button" href="/question">НАЧАТЬ ТРЕНИРОВКУ</a>
+        </div>
+
+        <div class="mode">
+            <div class="mode-title">ОТЛИЧИЕ ИСПОЛНИТЕЛЕЙ</div>
+            <div class="mode-description">Уверен, что можешь отличить <b>Демо</b> от <b>Красок</b>? А <b>Panic! At the disco</b> от <b>Fall Out Boy</b>? Проверь свои знания, выбрав группу схожих исполнителей!</div>
+            <a class="basic-button gradient-button" href="/artists-groups">ВЫБРАТЬ ГРУППУ</a>
+        </div>
+
+        <div class="description">В будущем тут будет больше контента, но пока только это.</div>
     </div>
 
     {% include "components/footer.html" %}

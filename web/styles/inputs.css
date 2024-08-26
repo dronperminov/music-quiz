@@ -210,6 +210,8 @@ iniut[type="search"]::-webkit-search-decoration {
     font-size: 1em;
     cursor: pointer;
     outline: none;
+    display: block;
+    text-align: center;
     width: 100%;
 }
 
