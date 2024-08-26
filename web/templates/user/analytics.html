@@ -161,10 +161,14 @@
 
         <div class="analytics-block">
             <div class="analytics-title">Жанры</div>
+            {% if analytics.tracks.genres.values()|sum == 0 %}
+            <div class="analytics-no-info">Пока что нет информации</div>
+            {% else %}
             <div class="analytics-description">Показаны жанры, доля которых выше 2%.</div>
             <div class="analytics-chart analytics-chart-open">
                 <svg id="genres-chart"></svg>
             </div>
+            {% endif %}
         </div>
     </div>
 

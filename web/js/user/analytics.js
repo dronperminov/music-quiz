@@ -84,6 +84,10 @@ function ToggleTable(blockId) {
 
 function PlotGenresChart() {
     let svg = document.getElementById("genres-chart")
+
+    if (svg === null)
+        return
+
     let radar = new RadarChart({labelSize: 10})
     radar.Plot(svg, genresData)
 }
