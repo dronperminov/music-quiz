@@ -1,4 +1,9 @@
+{% if user.username == show_user.username %}
 {% set title = "Аналитика | Музыкальный квиз Плюшевой наковальни" %}
+{% else %}
+{% set title = "Аналитика пользователя @%s | Музыкальный квиз Плюшевой наковальни" % show_user.username %}
+{% endif %}
+
 {% include "components/header.html" %}
     <link rel="stylesheet" type="text/css" href="/styles/user/analytics.css?v={{version}}">
 </head>
