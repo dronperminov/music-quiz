@@ -55,3 +55,15 @@ class Genre(Enum):
         }
 
         return genre2rus[self]
+
+    def to_color(self) -> str:
+        genre2color = {
+            Genre.ROCK: "#ec6b56",
+            Genre.HIP_HOP: "#ffc154",
+            Genre.POP: "#47b39c",
+            Genre.ELECTRO: "#d82e6b",
+            Genre.DISCO: "#ffc154",
+            Genre.JAZZ_SOUL: "#478bb3"
+        }
+
+        return genre2color[self]

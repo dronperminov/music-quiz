@@ -11,7 +11,7 @@ class ArtistsAnalytics:
     incorrect_time: Dict[int, float]
 
     @classmethod
-    def create(cls: "ArtistsAnalytics", questions: List[dict], track_id2artist_ids: Dict[int, List[int]], top_count: int = 20, min_questions: int = 3) -> "ArtistsAnalytics":
+    def evaluate(cls: "ArtistsAnalytics", questions: List[dict], track_id2artist_ids: Dict[int, List[int]], top_count: int = 20, min_questions: int = 3) -> "ArtistsAnalytics":
         artists = {False: defaultdict(int), True: defaultdict(int)}
         time = {False: defaultdict(list), True: defaultdict(list)}
 

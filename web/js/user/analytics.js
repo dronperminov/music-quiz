@@ -71,3 +71,9 @@ function ToggleTable(blockId) {
     if (!block.classList.contains("hidden"))
         block.scrollIntoView({behavior: "smooth"})
 }
+
+function PlotGenresChart() {
+    let svg = document.getElementById("genres-chart")
+    let radar = new RadarChart({labelSize: 10})
+    radar.Plot(svg, genresData)
+}

@@ -176,8 +176,8 @@ class QuestionsDatabase:
     def get_analytics(self, username: str) -> Analytics:
         questions = list(self.database.questions.find({"username": username, "correct": {"$ne": None}}))
         track_ids = list({question["track_id"] for question in questions})
-        track_id2artist_ids = {track["track_id"]: track["artists"] for track in self.database.tracks.find({"track_id": {"$in": track_ids}})}
-        return Analytics.evaluate(questions, track_id2artist_ids)
+        tracks = list(self.database.tracks.find({"track_id": {"$in": track_ids}}))
+        return Analytics.evaluate(questions, tracks)
 
     def __get_track_weight(self, track: dict, feature2balance: Dict[str, Dict[str, float]], features2count: Dict[tuple, float], track_id2weight: Dict[int, float]) -> float:
         track_weight = 1 / features2count[tuple(track[feature] for feature in feature2balance)]
