@@ -26,13 +26,20 @@
     background-color: var(--block-background);
     padding: 0.5em 0.7em;
     margin-bottom: 1em;
+    scroll-margin-top: 65px;
 }
 
 .analytics-title {
     font-weight: bold;
     font-size: 1.1em;
-    margin-bottom: 1em;
+    margin-bottom: 1.5em;
     cursor: pointer;
+    display: inline-block;
+    border-bottom: 1px dashed var(--text-color);
+}
+
+.analytics-title:hover {
+    border-bottom-style: solid;
 }
 
 .analytics-description {
@@ -41,7 +48,7 @@
 }
 
 .analytics-title + .analytics-description {
-    margin: -1em 0 1.5em 0;
+    margin: -1.5em 0 1.5em 0;
 }
 
 .analytics-items {
@@ -60,6 +67,10 @@
     border: none;
 }
 
+.analytics-item-interactive {
+    cursor: pointer;
+}
+
 .analytics-item-value {
     font-size: 1.8em;
     font-weight: bold;
@@ -70,11 +81,15 @@
     font-size: 0.9em;
 }
 
+.analytics-label-selected {
+    font-weight: bold;
+}
+
 .analytics-chart {
     text-align: center;
     max-height: 0;
     overflow: hidden;
-    transition: all .2s ease-out;
+    transition: all .2s linear;
 }
 
 #questions-chart {
@@ -90,7 +105,7 @@
 
 .analytics-chart-open {
     max-height: 250px;
-    transition: all .2s ease-in;
+    transition: all .2s linear;
 }
 
 .correct-background {
@@ -124,6 +139,7 @@
 .analytics-bar div {
     display: table-cell;
     height: 1.7em;
+    transition: all .2s linear;
 }
 
 .analytics-bar div:first-child {
@@ -134,6 +150,11 @@
 .analytics-bar div:last-child {
     border-top-right-radius: 0.7em;
     border-bottom-right-radius: 0.7em;
+}
+
+.analytics-bar-small div {
+    height: 0.5em;
+    transition: all .2s linear;
 }
 
 .analytics-list {
@@ -154,7 +175,9 @@
 
 .analytics-table {
     scroll-margin: 65px;
-    margin-top: 1.5em;
+    margin-top: 0.75em;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75em;
 }
 
 .analytics-table table {
@@ -173,7 +196,7 @@
 }
 
 .analytics-images {
-    display: grid;
+    display: inline-grid;
     grid-auto-flow: column;
     max-width: 100%;
     overflow-x: auto;
@@ -195,4 +218,10 @@
 .analytics-image div {
     font-size: 0.8em;
     text-align: center;
+}
+
+.analytics-no-info {
+    font-weight: bold;
+    text-align: center;
+    font-size: 0.9em;
 }

@@ -18,13 +18,16 @@
         <h3>Общая статистика</h3>
 
         <div class="analytics-block">
-            <div class="analytics-total-value" onclick="ToggleChart('total-time-block')">{{main.time.format_total(main.time.total)}}</div>
-            <div class="analytics-description">Суммарное время, потребовавшееся на ответ</div>
-            <div class="analytics-chart" id="total-time-block">
-                <div class="analytics-bar">
+            <div onclick="ToggleTotalTimeChart()">
+                <div class="analytics-total-value">{{main.time.format_total(main.time.total)}}</div>
+                <div class="analytics-description">Суммарное время, потребовавшееся на ответ (нажмите, чтобы увидеть подробности)</div>
+                <div class="analytics-bar analytics-bar-small" id="total-time-small-bar">
                     {% if main.time.other_total > 0 %}<div class="other-background" style="width: {{main.time.other_total_percents}}%"></div>{% endif %}
                     {% if main.time.group_total > 0 %}<div class="group-background" style="width: {{main.time.group_total_percents}}%"></div>{% endif %}
                 </div>
+            </div>
+
+            <div class="analytics-chart" id="total-time-block">
                 <div class="analytics-list">
                     {% if main.time.other_total > 0 %}
                     <div class="analytics-time-label"><span class="circle other-background"></span> Тренировка</div>
@@ -41,21 +44,21 @@
 
         <div class="analytics-block">
             <div class="analytics-title" onclick="ToggleChart('questions-chart-block')">Количество ответов</div>
-            <div class="analytics-description">Учитываются как ответы в <a class="link" href="/question">тренировке</a>, так и в <a class="link" href="/artists-groups">группах похожих исполнителей</a>.</div>
+            <div class="analytics-description">Учитываются как ответы в <a class="link" href="/question">тренировке</a>, так и в <a class="link" href="/artists-groups">группах похожих исполнителей</a>. Нажмите на показатель, чтобы увидеть диаграмму.</div>
             <div class="analytics-items">
-                <div class="analytics-item">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions-chart-block')">
                     <div class="analytics-item-value">{{main.questions.total}}</div>
                     <div class="analytics-item-name"><b>всего</b></div>
                 </div>
 
-                <div class="analytics-item">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions-chart-block')">
                     <div class="analytics-item-value">{{main.questions.correct_percents|round(1)}}%</div>
-                    <div class="analytics-item-name"><span class="circle correct-background"></span> <b>верно</b>: {{main.questions.correct}}</div>
+                    <div class="analytics-item-name"><span class="circle correct-background"></span><b>верно</b>: {{main.questions.correct}}</div>
                 </div>
 
-                <div class="analytics-item">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions-chart-block')">
                     <div class="analytics-item-value">{{main.questions.incorrect_percents|round(1)}}%</div>
-                    <div class="analytics-item-name"><span class="circle incorrect-background"></span> <b>неверно</b>: {{main.questions.incorrect}}</div>
+                    <div class="analytics-item-name"><span class="circle incorrect-background"></span><b>неверно</b>: {{main.questions.incorrect}}</div>
                 </div>
             </div>
             <div class="analytics-chart" id="questions-chart-block">
@@ -63,23 +66,23 @@
             </div>
         </div>
 
-        <div class="analytics-block">
-            <div class="analytics-title" onclick="ToggleChart('times-chart-block'); ShowTimesChart('total')">Среднее время ответа</div>
-            <div class="analytics-description">Количество <b>секунд</b>, потребовавшихся на ответ в среднем</div>
+        <div class="analytics-block" id="times-block">
+            <div class="analytics-title" onclick="ToggleTimesChart()">Среднее время ответа</div>
+            <div class="analytics-description">Количество <b>секунд</b>, потребовавшихся на ответ в среднем. Нажмите на показатель, чтобы увидеть подробную диаграмму.</div>
             <div class="analytics-items">
-                <div class="analytics-item" onclick="ShowTimesChart('total')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTimesChart('total')">
                     <div class="analytics-item-value">{{main.time.total_mean|round(1)}}</div>
-                    <div class="analytics-item-name">всего</div>
+                    <div class="analytics-item-name" id="times-total-label">всего</div>
                 </div>
 
-                <div class="analytics-item" onclick="ShowTimesChart('correct')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTimesChart('correct')">
                     <div class="analytics-item-value">{{main.time.correct_mean|round(1)}}</div>
-                    <div class="analytics-item-name"><span class="circle correct-background"></span> верно</div>
+                    <div class="analytics-item-name" id="times-correct-label"><span class="circle correct-background"></span>верно</div>
                 </div>
 
-                <div class="analytics-item" onclick="ShowTimesChart('incorrect')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTimesChart('incorrect')">
                     <div class="analytics-item-value">{{main.time.incorrect_mean|round(1)}}</div>
-                    <div class="analytics-item-name"><span class="circle incorrect-background"></span> неверно</div>
+                    <div class="analytics-item-name" id="times-incorrect-label"><span class="circle incorrect-background"></span>неверно</div>
                 </div>
             </div>
             <div class="analytics-chart" id="times-chart-block">
@@ -93,6 +96,8 @@
 
         <div class="analytics-block">
             <div class="analytics-title" onclick="ToggleTable('correct-artists')">Топ угадываемых</div>
+            <div class="analytics-description">Исполнители, которые были верно угаданы наибольшее количество раз (без учёта групп, как минимум трижды).</div>
+            {% if analytics.artists.correct %}
             <div class="analytics-images">
                 {% for artist_data in analytics.artists.correct[:10] %}
                 <div class="analytics-image">
@@ -113,10 +118,15 @@
                     {% endfor %}
                 </table>
             </div>
+            {% else %}
+            <div class="analytics-no-info">Пока что нет информации</div>
+            {% endif %}
         </div>
 
         <div class="analytics-block">
             <div class="analytics-title" onclick="ToggleTable('incorrect-artists')">Топ неугадываемых</div>
+            <div class="analytics-description">Исполнители, которые не были угаданы наибольшее количество раз (без учёта групп, как минимум трижды).</div>
+            {% if analytics.artists.incorrect %}
             <div class="analytics-images">
                 {% for artist_data in analytics.artists.incorrect[:10] %}
                 <div class="analytics-image">
@@ -137,6 +147,9 @@
                     {% endfor %}
                 </table>
             </div>
+            {% else %}
+            <div class="analytics-no-info">Пока что нет информации</div>
+            {% endif %}
         </div>
     </div>
 

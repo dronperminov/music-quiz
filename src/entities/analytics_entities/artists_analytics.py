@@ -11,7 +11,7 @@ class ArtistsAnalytics:
     incorrect_time: Dict[int, float]
 
     @classmethod
-    def create(cls: "ArtistsAnalytics", questions: List[dict], track_id2artist_ids: Dict[int, List[int]], top_count: int = 20) -> "ArtistsAnalytics":
+    def create(cls: "ArtistsAnalytics", questions: List[dict], track_id2artist_ids: Dict[int, List[int]], top_count: int = 20, min_questions: int = 3) -> "ArtistsAnalytics":
         artists = {False: defaultdict(int), True: defaultdict(int)}
         time = {False: defaultdict(list), True: defaultdict(list)}
 
@@ -26,7 +26,8 @@ class ArtistsAnalytics:
                     time[question["correct"]][artist_id].append(question["answer_time"])
 
         for key, key_artists in artists.items():
-            artists[key] = sorted([{"artist_id": artist_id, "count": count} for artist_id, count in key_artists.items()], key=lambda artist: -artist["count"])[:top_count]
+            sorted_artists = sorted([{"artist_id": artist_id, "count": count} for artist_id, count in key_artists.items()], key=lambda artist: -artist["count"])
+            artists[key] = [artist for artist in sorted_artists if artist["count"] >= min_questions][:top_count]
             time[key] = {artist_data["artist_id"]: ArtistsAnalytics.mean(time[key][artist_data["artist_id"]]) for artist_data in artists[key]}
 
         return cls(
