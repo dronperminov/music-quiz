@@ -2,7 +2,7 @@ function RadarChart(config = null) {
 	if (config === null)
         config = {}
 
-	this.paddingX = config.paddingX || 25
+	this.paddingX = config.paddingX || 75
 	this.paddingY = config.paddingY || 10
 
 	this.labelColor = config.labelColor || "#212121"
