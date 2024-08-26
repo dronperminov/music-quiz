@@ -31,8 +31,8 @@ Track.prototype.BuildInfo = function(artists = null) {
         MakeElement("info-header-line", info, {innerHTML: this.title})
     }
 
-    if (this.year > 0)
-        MakeElement("info-line", info, {innerHTML: `<b>Год выхода:</b> ${this.year}`})
+    let yearBlock = MakeElement("info-line", info)
+    this.BuildYear(yearBlock)
 
     if (artists !== null)
         MakeElement("info-line", info, {innerHTML: this.GetArtistPositions(artists)})
@@ -73,6 +73,52 @@ Track.prototype.BuildLanguage = function(block) {
             this.language.value = select.value
             select.classList.add("text-select")
             select.classList.remove("basic-select")
+        })
+    })
+}
+
+Track.prototype.BuildYear = function(block) {
+    let label = MakeElement("", block, {innerHTML: `<b>Год выхода:</b> `}, "span")
+    let input = MakeElement("text-input", block, {type: "text", value: this.year}, "input")
+
+    let html = document.getElementsByTagName("html")[0]
+    if (!html.hasAttribute("data-user-role") || html.getAttribute("data-user-role") != "admin") {
+        input.classList.add("text-input-disabled")
+        return
+    }
+
+    input.addEventListener("click", () => {
+        input.classList.remove("text-input")
+        input.classList.add("basic-input")
+        input.classList.add("basic-input-inline")
+        input.select()
+    })
+
+    label.addEventListener("click", () => {
+        input.value = this.year
+        input.classList.remove("basic-input")
+        input.classList.remove("basic-input-inline")
+        input.classList.add("text-input")
+    })
+
+    input.addEventListener("change", () => {
+        let year = input.value
+
+        if (year.match(/^[12]\d\d\d$/g) === null) {
+            ShowNotification(`Значение "${year}" не является валидным годом`, "error-notification", 3500)
+            return
+        }
+
+        SendRequest("/update-track", {track_id: this.trackId, year: +year}).then(response => {
+            if (response.status != SUCCESS_STATUS) {
+                ShowNotification(`Не удалось обновить год выхода<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+                input.value = `${this.year}`
+                return
+            }
+
+            this.year = +year
+            input.classList.add("text-input")
+            input.classList.remove("basic-input")
         })
     })
 }

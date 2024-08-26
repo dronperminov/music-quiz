@@ -10,7 +10,12 @@
     background: transparent;
     outline: none;
     font-size: 1em;
+    font-family: Inter;
     transition: border-color 150ms ease-in;
+}
+
+.basic-input-inline {
+    width: unset !important;
 }
 
 .basic-input:hover, .basic-input:focus {
@@ -26,6 +31,19 @@
 
 .basic-input::-webkit-outer-spin-button, .basic-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
+}
+
+.text-input {
+    font-family: Inter;
+    border: none;
+    padding: 0;
+    background: transparent;
+    font-size: 1em;
+    outline: none;
+}
+
+.text-input-disabled {
+    pointer-events: none;
 }
 
 input[type="search"]::-webkit-search-cancel-button,
