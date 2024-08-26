@@ -42,21 +42,21 @@
             </div>
         </div>
 
-        <div class="analytics-block">
-            <div class="analytics-title analytics-title-interactive" onclick="ToggleChart('questions-chart-block')">Количество ответов</div>
+        <div class="analytics-block" id="questions-block">
+            <div class="analytics-title analytics-title-interactive" onclick="ToggleChart('questions')">Количество ответов</div>
             <div class="analytics-description">Учитываются как ответы в <a class="link" href="/question">тренировке</a>, так и в <a class="link" href="/artists-groups">группах похожих исполнителей</a>. Нажмите на показатель, чтобы увидеть диаграмму.</div>
             <div class="analytics-items">
-                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions-chart-block')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions')">
                     <div class="analytics-item-value">{{main.questions.total}}</div>
                     <div class="analytics-item-name"><b>всего</b></div>
                 </div>
 
-                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions-chart-block')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions')">
                     <div class="analytics-item-value">{{main.questions.correct_percents|round(1)}}%</div>
                     <div class="analytics-item-name"><span class="circle correct-background"></span><b>верно</b>: {{main.questions.correct}}</div>
                 </div>
 
-                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions-chart-block')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions')">
                     <div class="analytics-item-value">{{main.questions.incorrect_percents|round(1)}}%</div>
                     <div class="analytics-item-name"><span class="circle incorrect-background"></span><b>неверно</b>: {{main.questions.incorrect}}</div>
                 </div>
@@ -94,7 +94,7 @@
 
         <h3>Исполнители</h3>
 
-        <div class="analytics-block">
+        <div class="analytics-block" id="correct-artists-block">
             <div class="analytics-title{% if analytics.artists.correct %} analytics-title-interactive{% endif %}" onclick="ToggleTable('correct-artists')">Топ угадываемых</div>
             <div class="analytics-description">Исполнители, которые были верно угаданы наибольшее количество раз (без учёта групп, как минимум трижды).</div>
             {% if analytics.artists.correct %}
@@ -106,7 +106,7 @@
                 </div>
                 {% endfor %}
             </div>
-            <div class="analytics-table hidden" id="correct-artists">
+            <div class="analytics-table hidden" id="correct-artists-table">
                 <table>
                     <tr><th>Исполнитель</th><th>Вопросы</th><th>Время</th></tr>
                     {% for artist_data in analytics.artists.correct %}
@@ -123,7 +123,7 @@
             {% endif %}
         </div>
 
-        <div class="analytics-block">
+        <div class="analytics-block" id="incorrect-artists-block">
             <div class="analytics-title{% if analytics.artists.incorrect %} analytics-title-interactive{% endif %}" onclick="ToggleTable('incorrect-artists')">Топ неугадываемых</div>
             <div class="analytics-description">Исполнители, которые не были угаданы наибольшее количество раз (без учёта групп, как минимум трижды).</div>
             {% if analytics.artists.incorrect %}
@@ -135,7 +135,7 @@
                 </div>
                 {% endfor %}
             </div>
-            <div class="analytics-table hidden" id="incorrect-artists">
+            <div class="analytics-table hidden" id="incorrect-artists-table">
                 <table>
                     <tr><th>Исполнитель</th><th>Вопросы</th><th>Время</th></tr>
                     {% for artist_data in analytics.artists.incorrect %}
@@ -173,7 +173,7 @@
 
     <script>
         const key2color = {
-            total: "#d82e6b",
+            total: "#2f7bf0",
             correct: "#47b39c",
             incorrect: "#ec6b56"
         }

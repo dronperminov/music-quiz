@@ -5,13 +5,21 @@ function PlotQuestionsChart() {
 }
 
 function ToggleChart(blockId) {
-    let block = document.getElementById(blockId)
-    block.classList.toggle("analytics-chart-open")
+    let chartBlock = document.getElementById(`${blockId}-chart-block`)
+    chartBlock.classList.toggle("analytics-chart-open")
+
+    if (chartBlock.classList.contains("analytics-chart-open")) {
+        let block = document.getElementById(`${blockId}-block`)
+        block.scrollIntoView({behavior: "smooth"})
+    }
 }
 
 function ShowChart(blockId) {
-    let block = document.getElementById(blockId)
-    block.classList.add("analytics-chart-open")
+    let chartBlock = document.getElementById(`${blockId}-chart-block`)
+    chartBlock.classList.add("analytics-chart-open")
+
+    let block = document.getElementById(`${blockId}-block`)
+    block.scrollIntoView({behavior: "smooth"})
 }
 
 function ToggleTotalTimeChart() {
@@ -61,15 +69,17 @@ function ShowTimesChart(targetKey) {
 }
 
 function ToggleTable(blockId) {
-    let block = document.getElementById(blockId)
+    let table = document.getElementById(`${blockId}-table`)
 
-    if (block === null)
+    if (table === null)
         return
 
-    block.classList.toggle("hidden")
+    table.classList.toggle("hidden")
 
-    if (!block.classList.contains("hidden"))
+    if (!table.classList.contains("hidden")) {
+        let block = document.getElementById(`${blockId}-block`)
         block.scrollIntoView({behavior: "smooth"})
+    }
 }
 
 function PlotGenresChart() {
