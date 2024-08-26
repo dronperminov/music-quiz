@@ -33,7 +33,7 @@
                         <div class="track-artists">
                             {% for artist_id in track.artists %}{{", " if loop.index0 else ""}}
                             {% if artist_id != artist.artist_id %}<a class="link" href="/artists/{{artist_id}}">{{artist2name[artist_id]}}</a>{% else %}<b>{{artist2name[artist_id]}}</b>{% endif %}{% endfor %}
-                            {% if track.year > 0 %}(<a class="link" href="https://www.google.com/search?q={{artist.name}} {{track.title}} год выхода" target="_blank">{{track.year}}</a>){% endif %}
+                            {% if track.year > 0 %}(<a class="link" href="https://www.google.com/search?q={{(artist.name + ' ' +track.title)|urlencode}} год выхода" target="_blank">{{track.year}}</a>){% endif %}
                         </div>
                     </div>
                     <div class="track-controls">

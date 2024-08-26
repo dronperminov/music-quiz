@@ -18,11 +18,16 @@ function ReplaceTrackData() {
     let year = document.getElementById("track-year")
     year.innerText = track.year
 
+    let artistNames = []
     for (let artist of artists) {
         let link = document.getElementById(`link-artist-${artist.artist_id}`)
         link.setAttribute("href", `/artists/${artist.artist_id}`)
         link.innerText = artist.name
+        artistNames.push(artist.name)
     }
+
+    let query = `${artistNames.join(" ")} ${track.title} год выхода`
+    year.href = `https://www.google.com/search?q=${encodeURI(query)}`
 
     SetMediaSessionMetadata(track.trackId)
 }
