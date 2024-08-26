@@ -54,7 +54,7 @@ class Artist:
     def get_tracks_dict(self) -> List[dict]:
         return [{"track_id": track_id, "position": position} for track_id, position in self.tracks.items()]
 
-    def get_diff(self, data: dict) -> dict:
+    def get_diff(self, data: dict, from_yandex: bool = False) -> dict:
         artist_data = self.to_dict()
         diff = {}
 
@@ -62,7 +62,7 @@ class Artist:
             if field in data and artist_data[field] != data[field]:
                 diff[field] = {"prev": artist_data[field], "new": data[field]}
 
-        if "artist_type" in data and artist_data["artist_type"] != data["artist_type"] and data["artist_type"] != ArtistType.UNKNOWN.value:
+        if not from_yandex and "artist_type" in data and artist_data["artist_type"] != data["artist_type"] and data["artist_type"] != ArtistType.UNKNOWN.value:
             diff["artist_type"] = {"prev": artist_data["artist_type"], "new": data["artist_type"]}
 
         if "tracks" in data:

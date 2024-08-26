@@ -348,7 +348,7 @@ class MusicDatabase:
             artist = Artist.from_dict(artist)
             yandex2artist_id[yandex_id] = artist.artist_id
             artist_id2yandex_tracks[artist.artist_id] = yandex_tracks
-            self.update_artist(artist_id=artist.artist_id, diff=artist.get_diff(yandex_artist), username=username)
+            self.update_artist(artist_id=artist.artist_id, diff=artist.get_diff(yandex_artist, from_yandex=True), username=username)
             return
 
         artist_id = self.get_artist_id()
@@ -370,7 +370,7 @@ class MusicDatabase:
 
         if (track := self.database.tracks.find_one({"source.yandex_id": yandex_id})) is not None:
             track = Track.from_dict(track)
-            self.update_track(track_id=track.track_id, diff=track.get_diff(yandex_track), username=username)
+            self.update_track(track_id=track.track_id, diff=track.get_diff(yandex_track, from_yandex=True), username=username)
             return
 
         track = Track.from_dict({

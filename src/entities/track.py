@@ -60,11 +60,16 @@ class Track:
             metadata=Metadata.from_dict(data["metadata"])
         )
 
-    def get_diff(self, data: dict) -> dict:
+    def get_diff(self, data: dict, from_yandex: bool = False) -> dict:
         track_data = self.to_dict()
         diff = {}
 
-        for field in ["title", "artists", "year", "lyrics", "genres", "duration", "downloaded", "image_url"]:
+        fields = ["title", "artists", "lyrics", "genres", "duration", "downloaded", "image_url"]
+
+        if not from_yandex:
+            fields.append("year")
+
+        for field in fields:
             if field in data and track_data[field] != data[field]:
                 diff[field] = {"prev": track_data[field], "new": data[field]}
 
