@@ -18,4 +18,4 @@ class ArtistsGroupSettings:
 
     @classmethod
     def default(cls: "ArtistsGroupSettings") -> "ArtistsGroupSettings":
-        return cls(max_variants=4)
+        return cls(max_variants=6)

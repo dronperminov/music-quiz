@@ -77,9 +77,9 @@ class QuestionSettings:
             show_simple_artist_type=False,
             genres={genre: 1 / len(Genre) for genre in Genre},
             years={(start_year, end_year): 1 / len(years) for start_year, end_year in years},
-            languages={language: 1 / (len(Language) - 1) for language in Language},  # exclude unknown
+            languages={language: 1 / (len(Language) - 1) for language in Language if language != Language.UNKNOWN},  # exclude unknown
             artists_count={artists_count: 1 / len(ArtistsCount) for artists_count in ArtistsCount},
-            listen_count=("", ""),
+            listen_count=(100000, ""),
             question_types={question_type: 1 / len(QuestionType) for question_type in QuestionType},
             track_position=("", ""),
             black_list=[],
