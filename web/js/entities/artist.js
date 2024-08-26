@@ -22,13 +22,7 @@ Artist.prototype.Build = function(artistId2scale = null) {
 
     let artistName = MakeElement("artist-name", artistInfo)
 
-    if (artistId2scale !== null && this.artistId in artistId2scale) {
-        let scale = artistId2scale[this.artistId]
-        let circle = MakeElement("circle", artistName, {style: `background-color: hsl(${scale.scale * 120}, 70%, 50%)`})
-        let correct = GetWordForm(scale.correct, ['корректный', 'корректных', 'корректных'])
-        let incorrect = GetWordForm(scale.incorrect, ['некорректный', 'некорректных', 'некорректных'])
-        circle.addEventListener("click", () => ShowNotification(`<b>${this.name}</b>: ${correct} и ${incorrect}`, 'info-notification', 3000))
-    }
+    this.BuildScale(artistName, artistId2scale)
 
     let artistNameLink = MakeElement("", artistName, {href: `/artists/${this.artistId}`, innerText: this.name}, "a")
 
@@ -85,7 +79,7 @@ Artist.prototype.BuildInfo = function() {
     return info
 }
 
-Artist.prototype.BuildPage = function(note, blockId = "artist") {
+Artist.prototype.BuildPage = function(artistId2scale, note, blockId = "artist") {
     let artist = document.getElementById(blockId)
 
     let artistImage = MakeElement("artist-image", artist)
@@ -100,10 +94,24 @@ Artist.prototype.BuildPage = function(note, blockId = "artist") {
 
     let span = MakeElement("", artistName, {innerText: this.name}, "span")
 
+    let scaleBlock = MakeElement("artist-scale", artist)
+    this.BuildScale(scaleBlock, artistId2scale)
+
     let artistStats = MakeElement("artist-stats", artist, {innerHTML: this.GetStats()})
 
     this.BuildPageAbout(artist)
     this.BuildNote(artist, note)
+}
+
+Artist.prototype.BuildScale = function(block, artistId2scale) {
+    if (artistId2scale === null || !(this.artistId in artistId2scale))
+        return
+
+    let scale = artistId2scale[this.artistId]
+    let circle = MakeElement("circle", block, {style: `background-color: hsl(${scale.scale * 120}, 70%, 50%)`})
+    let correct = GetWordForm(scale.correct, ['корректный', 'корректных', 'корректных'])
+    let incorrect = GetWordForm(scale.incorrect, ['некорректный', 'некорректных', 'некорректных'])
+    circle.addEventListener("click", () => ShowNotification(`<b>${this.name}</b>: ${correct} и ${incorrect}`, 'info-notification', 3000))
 }
 
 Artist.prototype.BuildArtistType = function(block) {

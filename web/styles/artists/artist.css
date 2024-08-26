@@ -21,6 +21,14 @@
     vertical-align: top;
 }
 
+
+.artist-scale {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1.3em;
+}
+
 .artist-name {
     font-weight: bold;
     font-size: 1.5em;

@@ -72,8 +72,10 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
 
     if user:
         settings = database.get_settings(username=user.username)
+        artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=[artist]) if settings.show_knowledge_status else {}
         track_id2scale = questions_database.get_tracks_scales(username=user.username, tracks=tracks) if settings.show_knowledge_status else {}
     else:
+        artist_id2scale = {}
         track_id2scale = {}
 
     template = templates.get_template("artists/artist.html")
@@ -85,6 +87,7 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
         tracks=tracks,
         note=note,
         artist2name=artist2name,
+        artist_id2scale=artist_id2scale,
         track_id2scale=track_id2scale,
         get_word_form=get_word_form,
         jsonable_encoder=jsonable_encoder

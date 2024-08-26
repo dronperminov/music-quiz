@@ -113,7 +113,7 @@
         }
 
         let artist = new Artist(artistData)
-        artist.BuildPage({{jsonable_encoder(note)|tojson}})
+        artist.BuildPage({{jsonable_encoder(artist_id2scale)}}, {{jsonable_encoder(note)|tojson}})
     </script>
     {% include "components/footer.html" %}
 </body>
