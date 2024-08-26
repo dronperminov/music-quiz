@@ -1,6 +1,10 @@
+import re
+from typing import Optional
+
 from pymongo import ASCENDING, MongoClient
 
 from src.entities.settings import Settings
+from src.entities.user import User
 
 
 class Database:
@@ -68,6 +72,13 @@ class Database:
 
     def update_settings(self, settings: Settings) -> None:
         self.settings.update_one({"username": settings.username}, {"$set": settings.to_dict()})
+
+    def get_user(self, username: str) -> Optional[User]:
+        if not username:
+            return None
+
+        user = self.users.find_one({"username": {"$regex": f"^{re.escape(username)}$", "$options": "i"}})
+        return User.from_dict(user) if user else None
 
     def get_identifier(self, collection_name: str) -> int:
         identifier = self.identifiers.find_one_and_update({"_id": collection_name}, {"$inc": {"value": 1}}, return_document=True)
