@@ -207,6 +207,7 @@ iniut[type="search"]::-webkit-search-decoration {
 }
 
 .gradient-link {
+    display: inline-block;
     background: var(--gradient-button-background);
     color: var(--gradient-button-color);
     text-decoration: none;
@@ -280,6 +281,20 @@ iniut[type="search"]::-webkit-search-decoration {
     background: var(--gradient-button-hover-background);
     border-color: var(--gradient-button-hover-border);
     color: var(--gradient-button-hover-color);
+    transition: all .1s ease-in;
+}
+
+.white-button {
+    background-color: var(--white-button-background);
+    color: var(--white-button-color);
+    border-color: var(--white-button-color);
+    transition: all .1s ease-out;
+}
+
+.white-button:hover {
+    background-color: var(--white-button-hover-background);
+    color: var(--white-button-hover-color);
+    border-color: var(--white-button-hover-color);
     transition: all .1s ease-in;
 }
 

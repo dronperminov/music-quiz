@@ -48,20 +48,20 @@
         </div>
 
         <div class="analytics-block" id="questions-block">
-            <div class="analytics-title analytics-title-interactive" onclick="ToggleChart('questions')">Количество ответов</div>
+            <div class="analytics-title analytics-title-interactive" onclick="ToggleQuestionsChart()">Количество ответов</div>
             <div class="analytics-description">Учитываются как ответы в <a class="link" href="/question">тренировке</a>, так и в <a class="link" href="/artists-groups">группах похожих исполнителей</a>. Нажмите на показатель, чтобы увидеть диаграмму.</div>
             <div class="analytics-items">
-                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
                     <div class="analytics-item-value">{{main.questions.total}}</div>
                     <div class="analytics-item-name"><b>всего</b></div>
                 </div>
 
-                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
                     <div class="analytics-item-value">{{main.questions.correct_percents|round(1)}}%</div>
                     <div class="analytics-item-name"><span class="circle correct-background"></span><b>верно</b>: {{main.questions.correct}}</div>
                 </div>
 
-                <div class="analytics-item analytics-item-interactive" onclick="ShowChart('questions')">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
                     <div class="analytics-item-value">{{main.questions.incorrect_percents|round(1)}}%</div>
                     <div class="analytics-item-name"><span class="circle incorrect-background"></span><b>неверно</b>: {{main.questions.incorrect}}</div>
                 </div>
@@ -181,12 +181,6 @@
     <script src="/js/user/analytics.js?v={{version}}"></script>
 
     <script>
-        const key2color = {
-            total: "#2f7bf0",
-            correct: "#47b39c",
-            incorrect: "#ec6b56"
-        }
-
         const questionsData = [
             {value: {{main.questions.correct}}, color: key2color.correct},
             {value: {{main.questions.incorrect}}, color: key2color.incorrect},
@@ -204,7 +198,6 @@
             {% endfor %}
         ]
 
-        PlotQuestionsChart()
         PlotGenresChart()
     </script>
 

@@ -11,7 +11,7 @@ function ArtistsGroup(data, tracksCount) {
 ArtistsGroup.prototype.Build = function(groupId2scale) {
     let group = MakeElement("artists-group")
     let groupImage = MakeElement("artists-group-image", group)
-    let groupImageLink = MakeElement("", groupImage, {href: `/group-question/${this.groupId}`}, "a")
+    let groupImageLink = MakeElement("", groupImage, {href: `/artists-groups/${this.groupId}`}, "a")
     let groupImageImg = MakeElement("", groupImageLink, {src: this.imageUrl, loading: "lazy"}, "img")
 
     let groupData = MakeElement("artists-group-data", group)
@@ -25,10 +25,11 @@ ArtistsGroup.prototype.Build = function(groupId2scale) {
         circle.addEventListener("click", () => ShowNotification(`<b>${this.name}</b>: ${correct} и ${incorrect}`, 'info-notification', 3000))
     }
 
-    let groupNameLink = MakeElement("", groupName, {href: `/group-question/${this.groupId}`, innerText: this.name}, "a")
+    let groupNameLink = MakeElement("", groupName, {href: `/artists-groups/${this.groupId}`, innerText: this.name}, "a")
 
     let groupDescription = MakeElement("artists-group-description", groupData, {innerText: this.description})
     let groupStats = MakeElement("artists-group-stats", groupData, {innerHTML: this.GetStats()})
+    let groupLink = MakeElement("gradient-link", groupData, {href: `/group-question/${this.groupId}`, innerText: "К вопросам!"}, "a")
 
     let groupMenu = MakeElement("artists-group-menu", group)
     let verticalHam = MakeElement("vertical-ham", groupMenu, {innerHTML: "<div></div><div></div><div></div>"})

@@ -5,12 +5,12 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from src import database, music_database, questions_database
-from src.api import templates
+from src.api import send_error, templates
 from src.entities.user import User
 from src.enums import UserRole
 from src.query_params.artists_groups_search import ArtistsGroupsSearch
 from src.utils.auth import get_user
-from src.utils.common import get_static_hash
+from src.utils.common import get_static_hash, get_word_form
 
 router = APIRouter()
 
@@ -23,6 +23,30 @@ def get_artists_groups(user: Optional[User] = Depends(get_user)) -> HTMLResponse
         page="artists_groups",
         version=get_static_hash()
     )
+    return HTMLResponse(content=content)
+
+
+@router.get("/artists-groups/{group_id}")
+def get_artists_group(group_id: int, user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+    artists_group = music_database.get_artists_group(group_id=group_id)
+
+    if artists_group is None:
+        return send_error(title="Группа не найдена", text="Не удалось найти запрашиваемую группу схожих исполнителей. Возможно, она был удалена.", user=user)
+
+    artist_id2artists = music_database.get_artists_by_ids(artist_ids=artists_group.artist_ids)
+    group_analytics = questions_database.get_group_analytics(username=user.username, group=artists_group) if user else None
+
+    template = templates.get_template("artists_groups/artists_group.html")
+    content = template.render(
+        user=user,
+        page="artists_group",
+        version=get_static_hash(),
+        artists_group=artists_group,
+        artist_id2artists=artist_id2artists,
+        group_analytics=group_analytics,
+        get_word_form=get_word_form
+    )
+
     return HTMLResponse(content=content)
 
 

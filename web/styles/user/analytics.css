@@ -117,6 +117,10 @@
     transition: all .2s linear;
 }
 
+.unknown-background {
+    background-color: #bbbbbb;
+}
+
 .correct-background {
     background-color: #47b39c;
 }
@@ -143,12 +147,14 @@
     margin: 0.5em 0;
     display: table;
     width: 100%;
+    height: 1.7em;
 }
 
 .analytics-bar div {
     display: table-cell;
-    height: 1.7em;
     transition: all .2s linear;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .analytics-bar div:first-child {
@@ -161,7 +167,7 @@
     border-bottom-right-radius: 0.7em;
 }
 
-.analytics-bar-small div {
+.analytics-bar-small {
     height: 0.5em;
     transition: all .2s linear;
 }

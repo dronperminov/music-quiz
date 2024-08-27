@@ -42,6 +42,14 @@
     --red-button-hover-border: var(--error-color);
     --red-button-hover-background: var(--error-color);
 
+    --white-button-color: #f0f0f0;
+    --white-button-border: #f0f0f0;
+    --white-button-background: transparent;
+
+    --white-button-hover-color: #ffffff;
+    --white-button-hover-border: #ffffff;
+    --white-button-hover-background: #ffffff20;
+
     --gradient-button-color: #fff;
     --gradient-button-border: var(--main-color);
     --gradient-button-background: linear-gradient(45deg, #e9273f 0%, #c239a3 100%);

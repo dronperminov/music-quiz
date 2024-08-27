@@ -1,24 +1,27 @@
-function PlotQuestionsChart() {
+const key2color = {
+    total: "#2f7bf0",
+    correct: "#47b39c",
+    incorrect: "#ec6b56",
+    unknown: "#bbbbbb"
+}
+
+function ToggleQuestionsChart() {
+    let chartBlock = document.getElementById("questions-chart-block")
+    chartBlock.classList.toggle("analytics-chart-open")
+
+    if (chartBlock.classList.contains("analytics-chart-open"))
+        ShowQuestionsChart()
+}
+
+function ShowQuestionsChart() {
+    let chartBlock = document.getElementById("questions-chart-block")
+    chartBlock.classList.add("analytics-chart-open")
+
     let svg = document.getElementById("questions-chart")
     let chart = new Chart()
     chart.Plot(svg, questionsData)
-}
 
-function ToggleChart(blockId) {
-    let chartBlock = document.getElementById(`${blockId}-chart-block`)
-    chartBlock.classList.toggle("analytics-chart-open")
-
-    if (chartBlock.classList.contains("analytics-chart-open")) {
-        let block = document.getElementById(`${blockId}-block`)
-        block.scrollIntoView({behavior: "smooth"})
-    }
-}
-
-function ShowChart(blockId) {
-    let chartBlock = document.getElementById(`${blockId}-chart-block`)
-    chartBlock.classList.add("analytics-chart-open")
-
-    let block = document.getElementById(`${blockId}-block`)
+    let block = document.getElementById("questions-block")
     block.scrollIntoView({behavior: "smooth"})
 }
 

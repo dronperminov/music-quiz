@@ -8,6 +8,7 @@ from src.database import Database
 from src.entities.analytics import Analytics
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
+from src.entities.group_analytics import GroupAnalytics
 from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, NameByTrackQuestion, Question
 from src.entities.question_settings import QuestionSettings
 from src.entities.settings import Settings
@@ -118,7 +119,7 @@ class QuestionsDatabase:
         return list(self.database.tracks.aggregate([
             {"$addFields": {"artists_count": {"$cond": [{"$gt": [{"$size": "$artists"}, 1]}, "feat", "solo"]}}},
             {"$match": {"track_id": {"$in": list(possible_track_ids)}, "artists_count": "solo"}},
-            {"$project": {"track_id": 1}}
+            {"$project": {"track_id": 1, "artists": 1}}
         ]))
 
     def get_tracks_scales(self, username: str, tracks: List[Track]) -> Dict[int, dict]:
@@ -178,6 +179,11 @@ class QuestionsDatabase:
         track_ids = list({question["track_id"] for question in questions})
         tracks = list(self.database.tracks.find({"track_id": {"$in": track_ids}}))
         return Analytics.evaluate(questions, tracks)
+
+    def get_group_analytics(self, username: str, group: ArtistsGroup) -> GroupAnalytics:
+        questions = list(self.database.questions.find({"username": username, "correct": {"$ne": None}, "group_id": group.group_id}))
+        tracks = self.get_group_question_tracks(group_id=group.group_id)
+        return GroupAnalytics.evaluate(artist_ids=group.artist_ids, questions=questions, tracks=tracks)
 
     def __get_track_weight(self, track: dict, feature2balance: Dict[str, Dict[str, float]], features2count: Dict[tuple, float], track_id2weight: Dict[int, float]) -> float:
         track_weight = 1 / features2count[tuple(track[feature] for feature in feature2balance)]

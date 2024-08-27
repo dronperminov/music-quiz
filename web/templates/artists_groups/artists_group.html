@@ -1,0 +1,172 @@
+{% set title = "%s | Музыкальный квиз Плюшевой наковальни" % artists_group.name %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/user/analytics.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/artists_groups/artists_group.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>{{artists_group.name}}</h1>
+
+        {% if artists_group.description %}
+        <div class="artists-group-description">{{artists_group.description}}</div>
+        {% endif %}
+
+        <h3>Исполнители, входящие в группу:</h3>
+        <div class="artists-group-images">
+            {% for artist_id in artists_group.artist_ids %}
+            <div class="artists-group-image">
+                <a href="/artists/{{artist_id}}"><img src="{{artist_id2artists[artist_id].get_image_url()}}"></a>
+                <a href="/artists/{{artist_id}}" class="link">{{artist_id2artists[artist_id].name}}</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="action">Проверь свои знания! Переходи к <a class="link" href="/group-question/{{artists_group.group_id}}">вопросам</a>!</div>
+
+        {% if group_analytics and group_analytics.main.questions.total > 0 %}
+        <h2>Аналитика</h2>
+        {% set main = group_analytics.main %}
+
+        <div class="analytics-block" id="questions-block">
+            <div class="analytics-title analytics-title-interactive" onclick="ToggleQuestionsChart()">Ответы</div>
+            <div class="analytics-description">Нажмите на показатель, чтобы увидеть диаграмму.</div>
+            <div class="analytics-items">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
+                    <div class="analytics-item-value">{{main.questions.total}}</div>
+                    <div class="analytics-item-name"><b>всего</b></div>
+                </div>
+
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
+                    <div class="analytics-item-value">{{main.questions.correct_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle correct-background"></span><b>верно</b>: {{main.questions.correct}}</div>
+                </div>
+
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
+                    <div class="analytics-item-value">{{main.questions.incorrect_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle incorrect-background"></span><b>неверно</b>: {{main.questions.incorrect}}</div>
+                </div>
+            </div>
+            <div class="analytics-chart" id="questions-chart-block">
+                <svg id="questions-chart"></svg>
+            </div>
+        </div>
+
+        <div class="analytics-block" id="times-block">
+            <div class="analytics-title analytics-title-interactive" onclick="ToggleTimesChart()">Среднее время ответа</div>
+            <div class="analytics-description">Количество <b>секунд</b>, потребовавшихся на ответ в среднем. Нажмите на показатель, чтобы увидеть подробную диаграмму.</div>
+            <div class="analytics-items">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTimesChart('total')">
+                    <div class="analytics-item-value">{{main.time.total_mean|round(1)}}</div>
+                    <div class="analytics-item-name" id="times-total-label">всего</div>
+                </div>
+
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTimesChart('correct')">
+                    <div class="analytics-item-value">{{main.time.correct_mean|round(1)}}</div>
+                    <div class="analytics-item-name" id="times-correct-label"><span class="circle correct-background"></span>верно</div>
+                </div>
+
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTimesChart('incorrect')">
+                    <div class="analytics-item-value">{{main.time.incorrect_mean|round(1)}}</div>
+                    <div class="analytics-item-name" id="times-incorrect-label"><span class="circle incorrect-background"></span>неверно</div>
+                </div>
+            </div>
+            <div class="analytics-chart" id="times-chart-block">
+                <svg id="times-total-chart"></svg>
+                <svg class="hidden" id="times-correct-chart"></svg>
+                <svg class="hidden" id="times-incorrect-chart"></svg>
+            </div>
+        </div>
+
+        <div class="analytics-block" id="tracks-block">
+            <div class="analytics-title analytics-title-interactive" onclick="ToggleTracksChart()">Треки</div>
+            <div class="analytics-description">Вы услышали {% if group_analytics.tracks.listened < group_analytics.tracks.total %}<b>{{get_word_form(group_analytics.tracks.listened, ['трек', 'трека', 'треков'])}}</b> из <b>{{get_word_form(group_analytics.tracks.total, ['возможного', 'возможных', 'возможных'])}}</b>{% else %}все треки из <b>{{get_word_form(group_analytics.tracks.total, ['возможного', 'возможных', 'возможных'])}}</b>{% endif %}. Нажмите на показатель, чтобы увидеть диаграмму.</div>
+            <div class="analytics-description"></div>
+            <div class="analytics-items">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTracksChart()">
+                    <div class="analytics-item-value">{{group_analytics.tracks.correct_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle correct-background"></span><b>верно</b>: {{group_analytics.tracks.correct}}</div>
+                </div>
+
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTracksChart()">
+                    <div class="analytics-item-value">{{group_analytics.tracks.incorrect_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle incorrect-background"></span><b>неверно</b>: {{group_analytics.tracks.incorrect}}</div>
+                </div>
+
+                {% if group_analytics.tracks.unknown %}
+                <div class="analytics-item analytics-item-interactive" onclick="ShowTracksChart()">
+                    <div class="analytics-item-value">{{group_analytics.tracks.unknown_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle unknown-background"></span><b>когда как</b>: {{group_analytics.tracks.unknown}}</div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="analytics-chart" id="tracks-chart-block">
+                <svg id="tracks-chart"></svg>
+            </div>
+        </div>
+
+        <div class="analytics-block">
+            <div class="analytics-title">Исполнители</div>
+            <div class="analytics-description">Показана информация о знании треков каждого из исполнителей (чей трек хотя бы раз загадывался) – <span class="circle correct-background"></span>верных, <span class="circle incorrect-background"></span>неверных, <span class="circle unknown-background"></span>неоднозначных и <span class="circle group-background"></span>ещё не загаданных.</div>
+
+            <div class="artist-bars">
+                {% for artist_id in artists_group.artist_ids %}
+                {% if group_analytics.artists.unlistened[artist_id] != group_analytics.artists.total[artist_id] %}
+                <div class="artist-bars-name"><a href="/artists/{{artist_id}}" class="link">{{artist_id2artists[artist_id].name}}</a></div>
+
+                <div class="analytics-bar">
+                    {% if group_analytics.artists.correct[artist_id] %}
+                    <div class="correct-background" style="width: {{group_analytics.artists.correct_percents[artist_id]}}%;">{{group_analytics.artists.correct[artist_id]}}</div>
+                    {% endif %}
+
+                    {% if group_analytics.artists.incorrect[artist_id] %}
+                    <div class="incorrect-background" style="width: {{group_analytics.artists.incorrect_percents[artist_id]}}%;">{{group_analytics.artists.incorrect[artist_id]}}</div>
+                    {% endif %}
+
+                    {% if group_analytics.artists.unknown[artist_id] %}
+                    <div class="unknown-background" style="width: {{group_analytics.artists.unknown_percents[artist_id]}}%;">{{group_analytics.artists.unknown[artist_id]}}</div>
+                    {% endif %}
+
+                    {% if group_analytics.artists.unlistened[artist_id] %}
+                    <div class="group-background" style="width: {{group_analytics.artists.unlistened_percents[artist_id]}}%;">{{group_analytics.artists.unlistened[artist_id]}}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+
+    <script src="/js/charts/chart.js?v={{version}}"></script>
+    <script src="/js/charts/bar_chart.js?v={{version}}"></script>
+
+    <script src="/js/user/analytics.js?v={{version}}"></script>
+    <script src="/js/artists_groups/artists_group.js?v={{version}}"></script>
+
+    {% if group_analytics and group_analytics.main.questions.total > 0 %}
+    <script>
+        const tracksData = [
+            {value: {{group_analytics.tracks.correct}}, color: key2color.correct},
+            {value: {{group_analytics.tracks.incorrect}}, color: key2color.incorrect},
+            {value: {{group_analytics.tracks.unknown}}, color: key2color.unknown}
+        ]
+
+        const questionsData = [
+            {value: {{main.questions.correct}}, color: key2color.correct},
+            {value: {{main.questions.incorrect}}, color: key2color.incorrect},
+        ]
+
+        const timesData = {
+            total: [{% for key in main.time.histogram_keys %}{label: "{{key}}", count: {{main.time.histogram[key]}} },{% endfor %}],
+            correct: [{% for key in main.time.histogram_keys %}{label: "{{key}}", count: {{main.time.histogram_correct[key]}} },{% endfor %}],
+            incorrect: [{% for key in main.time.histogram_keys %}{label: "{{key}}", count: {{main.time.histogram_incorrect[key]}} },{% endfor %}]
+        }
+    </script>
+    {% endif %}
+
+    {% include "components/footer.html" %}
+</body>
+</html>
