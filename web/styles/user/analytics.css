@@ -117,8 +117,12 @@
     transition: all .2s linear;
 }
 
-.unknown-background {
+.unlistened-background {
     background-color: #bbbbbb;
+}
+
+.unknown-background {
+   background-color: #ffc154;
 }
 
 .correct-background {

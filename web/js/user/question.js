@@ -12,6 +12,10 @@ function ReplaceTrackData() {
     let image = document.getElementById("track-image")
     image.setAttribute("src", track.imageUrl)
 
+    let circle = document.getElementById("track-circle")
+    if (circle !== null)
+        circle.classList.remove("hidden")
+
     let title = document.getElementById("track-title")
     title.innerText = track.title
 

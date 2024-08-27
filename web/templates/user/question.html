@@ -22,7 +22,8 @@
                     <img id="track-image" src="/images/tracks/default.png" onclick="PlayPauseTrack('{{track.track_id}}')">
                 </div>
                 <div>
-                    <div class="track-title" id="track-title">НЕИЗВЕСТЕН</div>
+                    <div class="track-title">{% if track.track_id in track_id2scale %}
+                        <span id="track-circle" class="circle hidden" style="background-color: hsl({{track_id2scale[track.track_id].scale * 120}}, 70%, 50%)" onclick="ShowTrackNotification({{track.track_id}}, {{track_id2scale[track.track_id].correct}}, {{track_id2scale[track.track_id].incorrect}})"></span>{% endif %}<span id="track-title">НЕИЗВЕСТЕН</span></div>
                     <div class="track-artists" id="track-artists">{% for artist_id in track.artists %}{% if loop.index0 %}, {% endif %}<a class="link" id="link-artist-{{artist_id}}">unknown</a>{% endfor %} (<a class="link" target="_blank" id="track-year">?</a>)</div>
                 </div>
                 <div class="track-controls">

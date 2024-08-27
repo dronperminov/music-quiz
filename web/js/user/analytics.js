@@ -2,7 +2,7 @@ const key2color = {
     total: "#2f7bf0",
     correct: "#47b39c",
     incorrect: "#ec6b56",
-    unknown: "#bbbbbb"
+    unknown: "#ffc154"
 }
 
 function ToggleQuestionsChart() {

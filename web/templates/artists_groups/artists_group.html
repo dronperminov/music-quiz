@@ -108,7 +108,7 @@
 
         <div class="analytics-block">
             <div class="analytics-title">Исполнители</div>
-            <div class="analytics-description">Показана информация о знании треков каждого из исполнителей (чей трек хотя бы раз загадывался) – <span class="circle correct-background"></span>верных, <span class="circle incorrect-background"></span>неверных, <span class="circle unknown-background"></span>неоднозначных и <span class="circle group-background"></span>ещё не загаданных.</div>
+            <div class="analytics-description">Показана информация о знании треков каждого из исполнителей (чей трек хотя бы раз загадывался) – <span class="circle correct-background"></span>верных, <span class="circle incorrect-background"></span>неверных, <span class="circle unknown-background"></span>неоднозначных и <span class="circle unlistened-background"></span>ещё не загаданных.</div>
 
             <div class="artist-bars">
                 {% for artist_id in artists_group.artist_ids %}
@@ -129,7 +129,7 @@
                     {% endif %}
 
                     {% if group_analytics.artists.unlistened[artist_id] %}
-                    <div class="group-background" style="width: {{group_analytics.artists.unlistened_percents[artist_id]}}%;">{{group_analytics.artists.unlistened[artist_id]}}</div>
+                    <div class="unlistened-background" style="width: {{group_analytics.artists.unlistened_percents[artist_id]}}%;">{{group_analytics.artists.unlistened[artist_id]}}</div>
                     {% endif %}
                 </div>
                 {% endif %}
