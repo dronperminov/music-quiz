@@ -27,7 +27,7 @@ function ReplaceTrackData() {
     }
 
     let query = `${artistNames.join(" ")} ${track.title} год выхода`
-    year.href = `https://www.google.com/search?q=${encodeURI(query)}`
+    year.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`
 
     SetMediaSessionMetadata(track.trackId)
 }
