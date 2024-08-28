@@ -93,7 +93,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
         artist = self.music_database.get_artist(artist_id=2)
         self.assertEqual(len(artist.tracks), 2)
         self.assertEqual(artist.listen_count, 2544108)
-        self.assertEqual(artist.artist_type, ArtistType.SINGER_MALE)
+        self.assertEqual(artist.artist_type, ArtistType.PERFORMER_MALE)
         self.assertEqual(artist.tracks[2], 5)
         self.assertEqual(artist.tracks[3], 23)
 
@@ -113,7 +113,7 @@ class TestMusicDatabase(AbstractTestMusicDatabase):
 
         track = self.music_database.get_track(track_id=2)
         self.assertEqual(track.title, "Вселенная бесконечна")
-        self.assertEqual(track.year, 2013)
+        self.assertEqual(track.year, 2011)
         self.assertEqual(track.duration, 140)
 
         track = self.music_database.get_track(track_id=4)
