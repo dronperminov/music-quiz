@@ -24,6 +24,7 @@ class QuestionsDatabase:
         self.logger = logger
 
         self.alpha = 0.99
+        self.new_track_weight = 100
         self.last_questions_count = 500
 
     def have_question(self, username: str, group_id: Optional[int]) -> bool:
@@ -74,7 +75,14 @@ class QuestionsDatabase:
         return self.__update_question(question, settings)
 
     def get_question_track(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, group_id: Optional[int]) -> Track:
-        track_id2weight = {question.track_id: 1 - self.alpha ** (i + 1) for i, question in enumerate(last_questions)}
+        track_id2weight = dict()
+
+        for i, question in enumerate(last_questions):
+            if question.track_id not in track_id2weight:
+                track_id2weight[question.track_id] = 1 - self.alpha ** (i + 1)
+
+        artist_id2weight = {artist_id: track_id2weight.get(track["track_id"], self.new_track_weight) for track in tracks for artist_id in track["artists"]}
+        track_id2weight = {track["track_id"]: min(artist_id2weight[artist_id] for artist_id in track["artists"]) for track in tracks}
 
         if group_id is None:
             feature2balance = {
@@ -106,7 +114,7 @@ class QuestionsDatabase:
         return list(self.database.tracks.aggregate([
             {"$addFields": {"artists_count": {"$cond": [{"$gt": [{"$size": "$artists"}, 1]}, "feat", "solo"]}}},
             {"$match": {**settings.to_tracks_query(), "track_id": {"$in": list(possible_track_ids)}}},
-            {"$project": {"track_id": 1, "genres": 1, "language": 1, "year": 1, "artists_count": 1, "lyrics.lrc": 1, "lyrics.chorus": 1}}
+            {"$project": {"track_id": 1, "artists": 1, "genres": 1, "language": 1, "year": 1, "artists_count": 1, "lyrics.lrc": 1, "lyrics.chorus": 1}}
         ]))
 
     def get_group_question_tracks(self, group_id: int) -> List[dict]:
@@ -191,7 +199,7 @@ class QuestionsDatabase:
         for feature, feature2value in feature2balance.items():
             track_weight *= feature2value[track[feature]]
 
-        return track_weight * track_id2weight.get(track["track_id"], 1)
+        return track_weight * track_id2weight[track["track_id"]]
 
     def __generate_question_by_type(self, question_type: QuestionType, track: Track, settings: Settings, group_id: Optional[int]) -> Question:
         artist_id2artist = self.music_database.get_artists_by_ids(artist_ids=track.artists)
