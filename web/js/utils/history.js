@@ -105,8 +105,10 @@ function BuildHistory(parent, history) {
         else if (action.name == "remove_artist")
             objectId = ` ${action.artist_id}`
         else if (action.name == "add_track")
-            objectId = ` ${action.track.track_id}`
-        else if (action.name == "edit_track" || action.name == "remove_track")
+            objectId = ` <a class="link" href="/tracks/${action.track.track_id}">${action.track.track_id}</a>`
+        else if (action.name == "edit_track")
+            objectId = ` <a class="link" href="/tracks/${action.track_id}">${action.track_id}</a>`
+        else if (action.name == "remove_track")
             objectId = ` ${action.track_id}`
         else if (action.name == "add_artists_group")
             objectId = ` ${action.group.group_id}`
