@@ -81,7 +81,15 @@ class QuestionsDatabase:
             if question.track_id not in track_id2weight:
                 track_id2weight[question.track_id] = 1 - self.alpha ** (i + 1)
 
-        artist_id2weight = {artist_id: track_id2weight.get(track["track_id"], self.new_track_weight) for track in tracks for artist_id in track["artists"]}
+        artist_id2weight = dict()
+
+        for track in tracks:
+            weight = track_id2weight.get(track["track_id"], self.new_track_weight)
+
+            for artist_id in track["artists"]:
+                if weight <= artist_id2weight.get(artist_id, self.new_track_weight):
+                    artist_id2weight[artist_id] = weight
+
         track_id2weight = {track["track_id"]: min(artist_id2weight[artist_id] for artist_id in track["artists"]) for track in tracks}
 
         if group_id is None:
@@ -100,7 +108,7 @@ class QuestionsDatabase:
 
             track_weights = [self.__get_track_weight(track, feature2balance, features2count, track_id2weight) for track in tracks]
         else:
-            track_weights = [track_id2weight.get(track["track_id"], 1) for track in tracks]
+            track_weights = [track_id2weight[track["track_id"]] for track in tracks]
 
         track = random.choices(tracks, weights=track_weights, k=1)[0]
         return self.music_database.get_track(track_id=track["track_id"])
