@@ -1,8 +1,8 @@
 from typing import Optional
 
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, Query
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import database, music_database, questions_database
 from src.api import send_error, templates
@@ -27,14 +27,21 @@ def get_artists_groups(user: Optional[User] = Depends(get_user)) -> HTMLResponse
 
 
 @router.get("/artists-groups/{group_id}")
-def get_artists_group(group_id: int, user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+def get_artists_group(group_id: int, username: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
+    show_user = database.get_user(username=username)
+    if username and (not user or username.lower() == user.username.lower() or not show_user):
+        return RedirectResponse(url=f"/artists-groups/{group_id}")
+
+    if not show_user:
+        show_user = user
+
     artists_group = music_database.get_artists_group(group_id=group_id)
 
     if artists_group is None:
         return send_error(title="Группа не найдена", text="Не удалось найти запрашиваемую группу схожих исполнителей. Возможно, она был удалена.", user=user)
 
     artist_id2artists = music_database.get_artists_by_ids(artist_ids=artists_group.artist_ids)
-    group_analytics = questions_database.get_group_analytics(username=user.username, group=artists_group) if user else None
+    group_analytics = questions_database.get_group_analytics(username=show_user.username, group=artists_group) if user else None
 
     template = templates.get_template("artists_groups/artists_group.html")
     content = template.render(
@@ -42,6 +49,7 @@ def get_artists_group(group_id: int, user: Optional[User] = Depends(get_user)) -
         page="artists_group",
         version=get_static_hash(),
         artists_group=artists_group,
+        show_user=show_user,
         artist_id2artists=artist_id2artists,
         group_analytics=group_analytics,
         get_word_form=get_word_form

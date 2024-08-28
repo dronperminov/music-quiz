@@ -223,6 +223,11 @@ h1 + .description {
     margin-bottom: 1.2em;
 }
 
+h2 + .description {
+    margin-top: -0.8em;
+    margin-bottom: 0.8em;
+}
+
 .vertical-ham {
     cursor: pointer;
     padding: 0.15em;

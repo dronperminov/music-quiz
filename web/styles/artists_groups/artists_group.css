@@ -33,6 +33,12 @@
     font-size: 1.1em;
 }
 
+.avatar-circle {
+    width: 1.1em;
+    border-radius: 100%;
+    vertical-align: bottom;
+}
+
 #tracks-chart {
     margin-top: 1.5em;
     height: 150px;

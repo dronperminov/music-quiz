@@ -26,8 +26,12 @@
         <div class="action">Проверь свои знания! Переходи к <a class="link" href="/group-question/{{artists_group.group_id}}">вопросам</a>!</div>
 
         {% if group_analytics and group_analytics.main.questions.total > 0 %}
-        <h2>Аналитика</h2>
         {% set main = group_analytics.main %}
+        <h2>Аналитика</h2>
+
+        {% if show_user != user %}
+        <div class="description">Показана информация пользователя <img class="avatar-circle" src="{{show_user.avatar_url}}"> {{show_user.full_name}}</div>
+        {% endif %}
 
         <div class="analytics-block" id="questions-block">
             <div class="analytics-title analytics-title-interactive" onclick="ToggleQuestionsChart()">Ответы</div>
