@@ -23,8 +23,7 @@ class QuestionsDatabase:
         self.music_database = music_database
         self.logger = logger
 
-        self.alpha = 0.99
-        self.new_track_weight = 100
+        self.alpha = 0.999
         self.last_questions_count = 500
 
     def have_question(self, username: str, group_id: Optional[int]) -> bool:
@@ -84,10 +83,12 @@ class QuestionsDatabase:
         artist_id2weight = dict()
 
         for track in tracks:
-            weight = track_id2weight.get(track["track_id"], self.new_track_weight)
+            weight = track_id2weight.get(track["track_id"], 1)
 
             for artist_id in track["artists"]:
-                if weight <= artist_id2weight.get(artist_id, self.new_track_weight):
+                if artist_id in artist_id2weight:
+                    artist_id2weight[artist_id] *= weight
+                else:
                     artist_id2weight[artist_id] = weight
 
         track_id2weight = {track["track_id"]: min(artist_id2weight[artist_id] for artist_id in track["artists"]) for track in tracks}
