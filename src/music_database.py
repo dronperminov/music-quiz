@@ -128,6 +128,9 @@ class MusicDatabase:
         track = self.database.tracks.find_one({"track_id": track_id})
         return Track.from_dict(track) if track else None
 
+    def get_tracks_by_ids(self, track_ids: List[int]) -> List[Track]:
+        return [Track.from_dict(track) for track in self.database.tracks.find({"track_id": {"$in": track_ids}})]
+
     def get_artists_by_ids(self, artist_ids: List[int]) -> Dict[int, Artist]:
         return {artist["artist_id"]: Artist.from_dict(artist) for artist in self.database.artists.find({"artist_id": {"$in": artist_ids}})}
 

@@ -3,8 +3,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, Optional, Set
 
+from typing_extensions import Self
+
 from src.entities.artist import Artist
-from src.entities.settings import Settings
+from src.entities.question_settings import QuestionSettings
 from src.entities.track import Track
 from src.entities.track_modifications import TrackModifications
 from src.enums import QuestionType
@@ -25,13 +27,13 @@ class Question:
     answer_time: Optional[float] = field(init=False)
     timestamp: datetime = field(init=False)
 
-    def init_base(self, question_type: QuestionType, settings: Settings, track_id: int, group_id: Optional[int]) -> None:
+    def init_base(self, question_type: QuestionType, username: str, settings: QuestionSettings, track_id: int, group_id: Optional[int]) -> None:
         self.question_type = question_type
-        self.username = settings.username
+        self.username = username
         self.group_id = group_id
         self.track_id = track_id
 
-        self.track_modifications = TrackModifications.from_settings(settings.question_settings.track_modifications)
+        self.track_modifications = TrackModifications.from_settings(settings.track_modifications)
         self.remove_answer()
 
     def to_dict(self) -> dict:
@@ -50,7 +52,7 @@ class Question:
         }
 
     @classmethod
-    def from_dict(cls: "Question", data: dict) -> "Question":
+    def from_dict(cls: Self, data: dict) -> Self:
         question_type = QuestionType(data["question_type"])
 
         if question_type == QuestionType.ARTIST_BY_TRACK:
@@ -83,11 +85,11 @@ class Question:
         self.answer_time = None
         self.timestamp = datetime.now()
 
-    def is_valid(self, track_ids: Set[int], settings: Settings) -> bool:
-        return self.track_id in track_ids and self.question_type in settings.question_settings.question_types
+    def is_valid(self, track_ids: Set[int], settings: QuestionSettings) -> bool:
+        return self.track_id in track_ids and self.question_type in settings.question_types
 
-    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: Settings) -> "Question":
-        self.track_modifications = TrackModifications.from_settings(settings.question_settings.track_modifications)
+    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: QuestionSettings) -> Self:
+        self.track_modifications = TrackModifications.from_settings(settings.track_modifications)
         return self
 
     @staticmethod
@@ -118,44 +120,44 @@ class Question:
 @dataclass
 class ArtistByTrackQuestion(Question):
     @classmethod
-    def generate(cls: "ArtistByTrackQuestion", track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> "ArtistByTrackQuestion":
+    def generate(cls: Self, track: Track, artist_id2artist: Dict[int, Artist], username: str, settings: QuestionSettings, group_id: Optional[int]) -> Self:
         question = cls(
             title=ArtistByTrackQuestion.get_title(track, artist_id2artist, settings, group_id),
             answer=", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists),
-            question_seek=Question.get_random_seek(track, settings.question_settings.start_from_chorus),
+            question_seek=Question.get_random_seek(track, settings.start_from_chorus),
         )
 
-        question.init_base(question_type=QuestionType.ARTIST_BY_TRACK, settings=settings, track_id=track.track_id, group_id=group_id)
+        question.init_base(question_type=QuestionType.ARTIST_BY_TRACK, username=username, settings=settings, track_id=track.track_id, group_id=group_id)
         return question
 
-    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: Settings) -> "ArtistByTrackQuestion":
+    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: QuestionSettings) -> Self:
         super().update(track, artist_id2artist, settings)
         self.title = ArtistByTrackQuestion.get_title(track, artist_id2artist, settings, self.group_id)
         self.answer = ", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists)
         return self
 
     @staticmethod
-    def get_title(track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> str:
+    def get_title(track: Track, artist_id2artist: Dict[int, Artist], settings: QuestionSettings, group_id: Optional[int]) -> str:
         if group_id:
             return f'Назовите автор{"а" if len(track.artists) == 1 else "ов"}'
 
-        return f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)}"
+        return f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.show_simple_artist_type)}"
 
 
 @dataclass
 class NameByTrackQuestion(Question):
     @classmethod
-    def generate(cls: "NameByTrackQuestion", track: Track, settings: Settings, group_id: Optional[int]) -> "NameByTrackQuestion":
+    def generate(cls: Self, track: Track, username: str, settings: QuestionSettings, group_id: Optional[int]) -> Self:
         question = cls(
             title="Назовите название трека",
             answer=track.title,
-            question_seek=Question.get_random_seek(track, settings.question_settings.start_from_chorus)
+            question_seek=Question.get_random_seek(track, settings.start_from_chorus)
         )
 
-        question.init_base(question_type=QuestionType.NAME_BY_TRACK, settings=settings, track_id=track.track_id, group_id=group_id)
+        question.init_base(question_type=QuestionType.NAME_BY_TRACK, username=username, settings=settings, track_id=track.track_id, group_id=group_id)
         return question
 
-    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: Settings) -> "NameByTrackQuestion":
+    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: QuestionSettings) -> Self:
         super().update(track, artist_id2artist, settings)
         self.title = "Назовите название трека"
         self.answer = track.title
@@ -167,7 +169,7 @@ class ArtistByIntroQuestion(Question):
     question_timecode: str
 
     @classmethod
-    def generate(cls: "ArtistByIntroQuestion", track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> "ArtistByIntroQuestion":
+    def generate(cls: Self, track: Track, artist_id2artist: Dict[int, Artist], username: str, settings: QuestionSettings, group_id: Optional[int]) -> Self:
         question = cls(
             title=ArtistByTrackQuestion.get_title(track, artist_id2artist, settings, group_id),
             answer=", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists),
@@ -175,7 +177,7 @@ class ArtistByIntroQuestion(Question):
             question_timecode=f"0,{round(track.lyrics.lines[0].time - 1, 2)}"
         )
 
-        question.init_base(question_type=QuestionType.ARTIST_BY_INTRO, settings=settings, track_id=track.track_id, group_id=group_id)
+        question.init_base(question_type=QuestionType.ARTIST_BY_INTRO, username=username, settings=settings, track_id=track.track_id, group_id=group_id)
         return question
 
     def to_dict(self) -> dict:
@@ -184,15 +186,15 @@ class ArtistByIntroQuestion(Question):
             "question_timecode": self.question_timecode
         }
 
-    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: Settings) -> "ArtistByIntroQuestion":
+    def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: QuestionSettings) -> Self:
         super().update(track, artist_id2artist, settings)
         self.title = self.get_title(track, artist_id2artist, settings, self.group_id)
         self.answer = ", ".join(f'<a class="link" href="/artists/{artist_id}">{artist_id2artist[artist_id].name}</a>' for artist_id in track.artists)
         return self
 
     @staticmethod
-    def get_title(track: Track, artist_id2artist: Dict[int, Artist], settings: Settings, group_id: Optional[int]) -> str:
+    def get_title(track: Track, artist_id2artist: Dict[int, Artist], settings: QuestionSettings, group_id: Optional[int]) -> str:
         if group_id:
             return f'Назовите автор{"а" if len(track.artists) == 1 else "ов"} по вступлению'
 
-        return f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.question_settings.show_simple_artist_type)} по вступлению"
+        return f"Назовите {Question.get_artist_types(track, artist_id2artist, settings.show_simple_artist_type)} по вступлению"

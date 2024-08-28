@@ -12,12 +12,16 @@ from src.entities.metadata import Metadata
 from src.entities.note import Note
 from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, NameByTrackQuestion, Question
 from src.entities.question_settings import QuestionSettings
+from src.entities.quiz_tour import QuizTour
+from src.entities.quiz_tour_answer import QuizTourAnswer
+from src.entities.quiz_tour_question import QuizTourQuestion
 from src.entities.settings import Settings
 from src.entities.source import HandSource, YandexSource
 from src.entities.track import Track
 from src.entities.track_modification_settings import TrackModificationSettings
 from src.entities.user import User
 from src.enums import ArtistType, ArtistsCount, Genre, Language, QuestionType, UserRole
+from src.enums.quiz_tour_type import QuizTourType
 
 
 class TestSerialization(TestCase):
@@ -220,7 +224,7 @@ class TestSerialization(TestCase):
             history_action_from_dict = HistoryAction.from_dict(history_action_dict)
             self.assertEqual(history_action, history_action_from_dict)
 
-    def test_artists_group_serializarion(self) -> None:
+    def test_artists_group_serialization(self) -> None:
         group = ArtistsGroup(
             group_id=1,
             name="Some group name",
@@ -233,3 +237,43 @@ class TestSerialization(TestCase):
         group_dict = group.to_dict()
         group_from_dict = ArtistsGroup.from_dict(group_dict)
         self.assertEqual(group, group_from_dict)
+
+    def test_quiz_tour_serialization(self) -> None:
+        quiz_tour = QuizTour(
+            quiz_tour_id=1,
+            quiz_tour_type=QuizTourType.ALPHABET,
+            name="quiz tour name",
+            description="quiz tour description",
+            question_ids=[1, 5, 8],
+            image_url="image url",
+            created_at=datetime.now(),
+            created_by="user"
+        )
+
+        quiz_tour_dict = quiz_tour.to_dict()
+        quiz_tour_from_dict = QuizTour.from_dict(quiz_tour_dict)
+        self.assertEqual(quiz_tour, quiz_tour_from_dict)
+
+    def test_quiz_tour_question_serialization(self) -> None:
+        track = self.__get_track()
+        artist_id2artist = {1: self.__get_artist(1), 3: self.__get_artist(3)}
+        settings = self.__get_settings()
+        question = ArtistByTrackQuestion.generate(track=track, artist_id2artist=artist_id2artist, settings=settings, group_id=235)
+
+        quiz_tour_question = QuizTourQuestion(question_id=1, question=question, answer_time=25)
+        quiz_tour_question_dict = quiz_tour_question.to_dict()
+        quiz_tour_question_from_dict = QuizTourQuestion.from_dict(quiz_tour_question_dict)
+        self.assertEqual(quiz_tour_question, quiz_tour_question_from_dict)
+
+    def test_quiz_tour_answer_serialization(self) -> None:
+        answer = QuizTourAnswer(
+            question_id=1,
+            username="user",
+            correct=True,
+            timestamp=datetime.now(),
+            answer_time=45.25
+        )
+
+        answer_dict = answer.to_dict()
+        answer_from_dict = QuizTourAnswer.from_dict(answer_dict)
+        self.assertEqual(answer, answer_from_dict)

@@ -3,6 +3,8 @@ import random
 from collections import defaultdict
 from typing import Dict, List, Optional
 
+import numpy as np
+
 from src import MusicDatabase
 from src.database import Database
 from src.entities.analytics import Analytics
@@ -41,8 +43,8 @@ class QuestionsDatabase:
             return None
 
         if question := self.__get_user_question(username=settings.username, group_id=group_id):
-            if question.is_valid({track["track_id"] for track in tracks}, settings):
-                return self.__update_question(question, settings)
+            if question.is_valid({track["track_id"] for track in tracks}, settings.question_settings):
+                return self.__update_question(question, settings.question_settings)
 
             self.database.questions.delete_one({"username": settings.username, "correct": None, "group_id": group_id})
 
@@ -50,30 +52,29 @@ class QuestionsDatabase:
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
         if last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
-            question = self.repeat_incorrect_question(last_incorrect_questions, settings)
+            question = self.repeat_incorrect_question(last_incorrect_questions, settings.question_settings)
         else:
-            question = self.generate_question(tracks, last_questions, settings, group_id)
+            track = self.sample_question_tracks(tracks=tracks, last_questions=last_questions, settings=settings.question_settings, group_id=group_id, count=1)[0]
+            question = self.generate_question(track=track, username=settings.username, settings=settings.question_settings, group_id=group_id)
 
         self.database.questions.insert_one(question.to_dict())
         return question
 
-    def generate_question(self, tracks: List[dict], last_questions: List[Question], settings: Settings, group_id: Optional[int]) -> Question:
-        track = self.get_question_track(tracks=tracks, last_questions=last_questions, settings=settings.question_settings, group_id=group_id)
-
+    def generate_question(self, track: Track, username: str, settings: QuestionSettings, group_id: Optional[int]) -> Question:
         implemented_question_types = {QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK, QuestionType.ARTIST_BY_INTRO}
-        question_types = list(set(settings.question_settings.question_types).intersection(track.get_question_types()).intersection(implemented_question_types))
-        question_weights = [settings.question_settings.question_types[question_type] for question_type in question_types]
+        question_types = list(set(settings.question_types).intersection(track.get_question_types()).intersection(implemented_question_types))
+        question_weights = [settings.question_types[question_type] for question_type in question_types]
         question_type = random.choices(question_types, weights=question_weights, k=1)[0]
 
-        return self.__generate_question_by_type(question_type, track, settings, group_id)
+        return self.__generate_question_by_type(question_type, track, username, settings, group_id)
 
-    def repeat_incorrect_question(self, last_incorrect_questions: List[Question], settings: Settings) -> Question:
+    def repeat_incorrect_question(self, last_incorrect_questions: List[Question], settings: QuestionSettings) -> Question:
         question_weights = [1 - self.alpha ** (i + 1) for i in range(len(last_incorrect_questions))]
         question = random.choices(last_incorrect_questions, weights=question_weights, k=1)[0]
         question.remove_answer()
         return self.__update_question(question, settings)
 
-    def get_question_track(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, group_id: Optional[int]) -> Track:
+    def sample_question_tracks(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, group_id: Optional[int], count: int) -> List[Track]:
         track_id2weight = dict()
 
         for i, question in enumerate(last_questions):
@@ -111,8 +112,10 @@ class QuestionsDatabase:
         else:
             track_weights = [track_id2weight[track["track_id"]] for track in tracks]
 
-        track = random.choices(tracks, weights=track_weights, k=1)[0]
-        return self.music_database.get_track(track_id=track["track_id"])
+        total_weight = sum(track_weights)
+        track_weights = [weight / total_weight for weight in track_weights]
+        tracks = np.random.choice(tracks, p=track_weights, replace=False, size=count)
+        return self.music_database.get_tracks_by_ids(track_ids=[track["track_id"] for track in tracks])
 
     def get_question_tracks(self, settings: QuestionSettings) -> List[dict]:
         possible_track_ids = set()
@@ -210,17 +213,17 @@ class QuestionsDatabase:
 
         return track_weight * track_id2weight[track["track_id"]]
 
-    def __generate_question_by_type(self, question_type: QuestionType, track: Track, settings: Settings, group_id: Optional[int]) -> Question:
+    def __generate_question_by_type(self, question_type: QuestionType, track: Track, username: str, settings: QuestionSettings, group_id: Optional[int]) -> Question:
         artist_id2artist = self.music_database.get_artists_by_ids(artist_ids=track.artists)
 
         if question_type == QuestionType.ARTIST_BY_TRACK:
-            return ArtistByTrackQuestion.generate(track, artist_id2artist, settings, group_id)
+            return ArtistByTrackQuestion.generate(track, artist_id2artist, username, settings, group_id)
 
         if question_type == QuestionType.ARTIST_BY_INTRO:
-            return ArtistByIntroQuestion.generate(track, artist_id2artist, settings, group_id)
+            return ArtistByIntroQuestion.generate(track, artist_id2artist, username, settings, group_id)
 
         if question_type == QuestionType.NAME_BY_TRACK:
-            return NameByTrackQuestion.generate(track, settings, group_id)
+            return NameByTrackQuestion.generate(track, username, settings, group_id)
 
         raise ValueError("Invalid question type")
 
@@ -233,7 +236,7 @@ class QuestionsDatabase:
         last_questions = self.database.questions.find(query).sort("timestamp", -1).limit(self.last_questions_count)
         return [Question.from_dict(question) for question in last_questions]
 
-    def __update_question(self, question: Question, settings: Settings) -> Question:
+    def __update_question(self, question: Question, settings: QuestionSettings) -> Question:
         track = self.music_database.get_track(track_id=question.track_id)
         artist_id2artist = self.music_database.get_artists_by_ids(artist_ids=track.artists)
         return question.update(track=track, artist_id2artist=artist_id2artist, settings=settings)

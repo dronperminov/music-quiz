@@ -74,7 +74,7 @@ function FormatTime(time) {
 }
 
 function ParseDateTime(datetime) {
-    let match = (/^(?<year>\d\d\d\d)-(?<month>\d\d?)-(?<day>\d\d?)T(?<time>\d\d?:\d\d:\d\d?)$/g).exec(datetime)
+    let match = (/^(?<year>\d\d\d\d)-(?<month>\d\d?)-(?<day>\d\d?)T(?<time>\d\d?:\d\d:\d\d?)(\.\d+)?$/g).exec(datetime)
     let groups = match.groups
 
     return {date: `${groups.day}.${groups.month}.${groups.year}`, time: groups.time}

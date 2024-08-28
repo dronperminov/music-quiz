@@ -18,6 +18,9 @@ class Database:
     notes = None
     history = None
     artists_groups = None
+    quiz_tours = None
+    quiz_tour_questions = None
+    quiz_tour_answers = None
 
     def __init__(self, mongo_url: str, database_name: str) -> None:
         self.mongo_url = mongo_url
@@ -29,7 +32,7 @@ class Database:
 
         self.identifiers = database["identifiers"]
 
-        for name in ["artists", "tracks", "artists_groups"]:
+        for name in ["artists", "tracks", "artists_groups", "quiz_tours", "quiz_tour_questions"]:
             if self.identifiers.find_one({"_id": name}) is None:
                 self.identifiers.insert_one({"_id": name, "value": 0})
 
@@ -65,6 +68,15 @@ class Database:
         self.artists_groups = database["artists_groups"]
         self.artists_groups.create_index([("group_id", ASCENDING)], unique=True)
         self.artists_groups.create_index([("creator", ASCENDING)])
+
+        self.quiz_tours = database["quiz_tours"]
+        self.quiz_tours.create_index(([("quiz_tour_id", ASCENDING)]), unique=True)
+
+        self.quiz_tour_questions = database["quiz_tour_questions"]
+        self.quiz_tour_questions.create_index(([("question_id", ASCENDING)]), unique=True)
+
+        self.quiz_tour_answers = database["quiz_tour_answers"]
+        self.quiz_tour_answers.create_index(([("username", ASCENDING)]))
 
     def get_settings(self, username: str) -> Settings:
         settings = self.settings.find_one_and_update({"username": username}, {"$setOnInsert": Settings.default(username).to_dict()}, upsert=True, return_document=True)

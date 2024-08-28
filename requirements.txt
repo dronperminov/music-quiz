@@ -1,6 +1,7 @@
 fastapi
 Jinja2
 Levenshtein
+numpy
 passlib[bcrypt]
 pydub
 pymongo
