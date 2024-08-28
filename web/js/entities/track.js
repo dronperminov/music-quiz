@@ -50,6 +50,7 @@ Track.prototype.BuildInfo = function(artists = null) {
 
     this.BuildLyrics(info)
     this.BuildNote(info, artists == null || artists.length > 1 ? null : artists[0].artist_id)
+    this.BuildShare(info)
     this.BuildAdmin(info)
 
     return info
@@ -131,7 +132,8 @@ Track.prototype.BuildLyrics = function(block) {
     if (this.lyrics === null)
         return
 
-    let details = MakeElement("details", block)
+    let detailsBlock = MakeElement("info-line", block)
+    let details = MakeElement("details", detailsBlock)
     let detailsHeader = MakeElement("details-header", details)
     detailsHeader.addEventListener("click", () => details.classList.toggle('details-open'))
 
@@ -163,8 +165,9 @@ Track.prototype.BuildNote = function(block, artistId) {
     let audio = document.getElementById(`audio-${this.trackId}`)
     let haveNote = audio.hasAttribute("data-note-seek")
 
-    let addNoteButton = MakeElement("basic-button gradient-button hidden", block, {innerText: "Добавить в заметки"}, "button")
-    let removeNoteButton = MakeElement("basic-button gradient-button hidden", block, {innerText: "Удалить из заметок"}, "button")
+    let noteBlock = MakeElement("info-line", block)
+    let addNoteButton = MakeElement("basic-button gradient-button hidden", noteBlock, {innerText: "Добавить в заметки"}, "button")
+    let removeNoteButton = MakeElement("basic-button gradient-button hidden", noteBlock, {innerText: "Удалить из заметок"}, "button")
 
     if (haveNote)
         removeNoteButton.classList.remove("hidden")
@@ -173,6 +176,39 @@ Track.prototype.BuildNote = function(block, artistId) {
 
     addNoteButton.addEventListener("click", () => this.UpdateNote([addNoteButton, removeNoteButton], artistId))
     removeNoteButton.addEventListener("click", () => this.UpdateNote([addNoteButton, removeNoteButton], artistId))
+}
+
+Track.prototype.BuildShare = function(block) {
+    MakeElement("info-line", block, {innerHTML: "<br><b>Поделиться треком</b>"})
+
+    let asUnknownBlock = MakeElement("info-checkbox-line", block)
+    let asUnknownInput = MakeCheckbox(asUnknownBlock, `as-unknown-${this.trackId}`, false)
+    let asUnknownLabel = MakeElement("", asUnknownBlock, {innerText: "Без информации", "for": `as-unknown-${this.trackId}`}, "label")
+
+    let fromCurrentBlock = MakeElement("info-checkbox-line", block)
+    let fromCurrentInput = MakeCheckbox(fromCurrentBlock, `from-current-time-${this.trackId}`, true)
+    let fromCurrentLabel = MakeElement("", fromCurrentBlock, {innerText: "С текущего места", "for": `from-current-time-${this.trackId}`}, "label")
+
+    let shareBlock = MakeElement("info-line", block)
+    let shareButton = MakeElement("basic-button gradient-button", shareBlock, {innerText: "Поделиться"}, "button")
+    shareButton.addEventListener("click", async () => {
+        let params = []
+
+        if (asUnknownInput.checked)
+            params.push("as_unknown=true")
+
+        if (fromCurrentInput.checked) {
+            let audio = document.getElementById(`audio-${this.trackId}`)
+            params.push(`seek=${audio.currentTime}`)
+        }
+
+        let query = params.length > 0 ? `?${params.join("&")}` : ""
+        await navigator.share({
+            title: asUnknownInput.checked ? "Неизвестный трек" : `Трек ${this.title}`,
+            text: asUnknownInput.checked ? "Угадай, что за трек:" : "Лови трек:",
+            url: `https://music-quiz.plush-anvil.ru/tracks/${this.trackId}${query}`
+        })
+    })
 }
 
 Track.prototype.BuildAdmin = function(block) {
@@ -260,4 +296,35 @@ Track.prototype.UpdateNote = function(buttons, artistId) {
         else
             audio.setAttribute("data-note-seek", seek)
     })
+}
+
+Track.prototype.ReplaceUnknown = function(artists) {
+    let menu = document.getElementById("track-menu")
+    menu.removeAttribute("disabled")
+
+    let image = document.getElementById("track-image")
+    image.setAttribute("src", this.imageUrl)
+
+    let circle = document.getElementById("track-circle")
+    if (circle !== null)
+        circle.classList.remove("hidden")
+
+    let title = document.getElementById("track-title")
+    title.innerText = this.title
+
+    let year = document.getElementById("track-year")
+    year.innerText = this.year
+
+    let artistNames = []
+    for (let artist of artists) {
+        let link = document.getElementById(`link-artist-${artist.artist_id}`)
+        link.setAttribute("href", `/artists/${artist.artist_id}`)
+        link.innerText = artist.name
+        artistNames.push(artist.name)
+    }
+
+    let query = `${artistNames.join(" ")} ${this.title} год выхода`
+    year.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`
+
+    SetMediaSessionMetadata(this.trackId)
 }

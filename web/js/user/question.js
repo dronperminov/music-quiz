@@ -8,34 +8,6 @@ function InitQuestion() {
     answerTime = performance.now()
 }
 
-function ReplaceTrackData() {
-    let image = document.getElementById("track-image")
-    image.setAttribute("src", track.imageUrl)
-
-    let circle = document.getElementById("track-circle")
-    if (circle !== null)
-        circle.classList.remove("hidden")
-
-    let title = document.getElementById("track-title")
-    title.innerText = track.title
-
-    let year = document.getElementById("track-year")
-    year.innerText = track.year
-
-    let artistNames = []
-    for (let artist of artists) {
-        let link = document.getElementById(`link-artist-${artist.artist_id}`)
-        link.setAttribute("href", `/artists/${artist.artist_id}`)
-        link.innerText = artist.name
-        artistNames.push(artist.name)
-    }
-
-    let query = `${artistNames.join(" ")} ${track.title} год выхода`
-    year.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`
-
-    SetMediaSessionMetadata(track.trackId)
-}
-
 function ShowAnswer(correct = null) {
     if (answerTime !== null) {
         answerTime = (performance.now() - answerTime) / 1000
@@ -44,10 +16,7 @@ function ShowAnswer(correct = null) {
         answerTimeSpan.parentNode.classList.remove("hidden")
     }
 
-    let menu = document.getElementById("track-menu")
-    menu.removeAttribute("disabled")
-
-    ReplaceTrackData()
+    track.ReplaceUnknown(artists)
 
     let trackModifications = document.getElementById("track-modifications")
     if (trackModifications !== null)

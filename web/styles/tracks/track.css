@@ -29,6 +29,15 @@
     margin-bottom: 0.2em;
 }
 
+.track-title a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.track-title a:hover {
+    color: var(--main-color);
+}
+
 .track-image-lyrics {
     position: absolute;
     right: -0.1em;
@@ -91,5 +100,9 @@
 }
 
 .track .lyrics-updater {
+    margin-top: 1em;
+}
+
+.track-info {
     margin-top: 1em;
 }

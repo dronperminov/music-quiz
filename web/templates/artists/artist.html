@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         <div class="track-title">{% if track.track_id in track_id2scale %}
-                        <span class="circle" style="background-color: hsl({{track_id2scale[track.track_id].scale * 120}}, 70%, 50%)" onclick="ShowTrackNotification({{track.track_id}}, {{track_id2scale[track.track_id].correct}}, {{track_id2scale[track.track_id].incorrect}})"></span>{% endif %}{{track.title}}</div>
+                        <span class="circle" style="background-color: hsl({{track_id2scale[track.track_id].scale * 120}}, 70%, 50%)" onclick="ShowTrackNotification({{track.track_id}}, {{track_id2scale[track.track_id].correct}}, {{track_id2scale[track.track_id].incorrect}})"></span>{% endif %}<a href="/tracks/{{track.track_id}}">{{track.title}}</a></div>
                         <div class="track-artists">
                             {% for artist_id in track.artists %}{{", " if loop.index0 else ""}}
                             {% if artist_id != artist.artist_id %}<a class="link" href="/artists/{{artist_id}}">{{artist2name[artist_id]}}</a>{% else %}<b>{{artist2name[artist_id]}}</b>{% endif %}{% endfor %}

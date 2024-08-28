@@ -1,16 +1,53 @@
 from typing import Optional
 
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, Query
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
-from src import database, music_database
+from src import database, music_database, questions_database
+from src.api import send_error, templates
 from src.entities.user import User
 from src.enums import UserRole
 from src.query_params.track_update import TrackUpdate
 from src.utils.auth import get_user
+from src.utils.common import get_static_hash
 
 router = APIRouter()
+
+
+@router.get("/tracks/{track_id}")
+def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(False), user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+    track = music_database.get_track(track_id=track_id)
+
+    if not track:
+        return send_error(title="Трек не найден", text="Не удалось найти запрашиваемый трек. Возможно, он был удалён", user=user)
+
+    artist_id2artist = music_database.get_artists_by_ids(artist_ids=track.artists)
+
+    if user:
+        settings = database.get_settings(username=user.username)
+        track_id2scale = questions_database.get_tracks_scales(username=user.username, tracks=[track]) if settings.show_knowledge_status else {}
+        artist_id2scale = questions_database.get_artists_scales(username=user.username, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}
+    else:
+        settings = None
+        track_id2scale = {}
+        artist_id2scale = {}
+
+    template = templates.get_template("tracks/track.html")
+    content = template.render(
+        user=user,
+        page="track",
+        version=get_static_hash(),
+        settings=settings,
+        track=track,
+        seek=seek,
+        as_unknown=as_unknown,
+        artist_id2artist=artist_id2artist,
+        track_id2scale=track_id2scale,
+        artist_id2scale=artist_id2scale,
+        jsonable_encoder=jsonable_encoder
+    )
+    return HTMLResponse(content=content)
 
 
 @router.get("/track-history/{track_id}")

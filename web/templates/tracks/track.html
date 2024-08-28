@@ -1,4 +1,4 @@
-{% set title = "%s | Музыкальный квиз Плюшевой наковальни" % question.title %}
+{% set title = "Неизвестный трек | Музыкальный квиз Плюшевой наковальни" %}
 {% include "components/header.html" %}
     <link rel="stylesheet" type="text/css" href="/styles/utils/lyrics_updater.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
@@ -6,20 +6,18 @@
     <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/artists/artists.css?v={{version}}">
-    <link rel="stylesheet" type="text/css" href="/styles/user/question.css?v={{version}}">
 </head>
 <body ondragstart="return false">
     {% include "components/menu.html" %}
 
     <div class="content">
-        <div class="question-title">{{question.title}}</div>
-
-        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" data-playback-rate="{{question.track_modifications.playback_rate}}" {% if note and track.track_id in note.track_id2seek %}data-note-seek="{{note.track_id2seek[track.track_id]}}"{% endif %} preload="metadata" onplay="InitQuestion()"></audio>
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{seek}}" preload="metadata"></audio>
 
         <div class="track" id="track-{{track.track_id}}">
             <div class="track-main">
                 <div class="track-image">
                     <img id="track-image" src="/images/tracks/default.png" onclick="PlayPauseTrack('{{track.track_id}}')">
+                    {% if track.lyrics %}<div class="track-image-lyrics">T</div>{% endif %}
                 </div>
                 <div>
                     <div class="track-title">{% if track.track_id in track_id2scale %}
@@ -52,39 +50,8 @@
                 </div>
             </div>
             <div class="player" id="player-{{track.track_id}}"></div>
-        </div>
-
-        {% if question.track_modifications.playback_rate != 1 %}
-        <div class="track-modifications" id="track-modifications">Внимание, <b>скорость трека изменена</b>: {{question.track_modifications.playback_rate|round(2)}}x</div>
-        {% endif %}
-
-        {% if group %}
-        <div class="group-buttons hidden" id="show-answer">
-            {% for artist_id in group_variants %}
-            <button class="basic-button gradient-button" onclick="ShowAnswer({{(artist_id in track.artists)|tojson}})">{{artist_id2artist[artist_id].name}}</button>
-            {% endfor %}
-        </div>
-        {% else %}
-        <button class="basic-button gradient-button hidden" id="show-answer" onclick="ShowAnswer()">Показать ответ</button>
-        {%endif %}
-
-        <div class="answer-block hidden" id="answer">
-            <div class="answer"><b>Ответ:</b> {{question.answer}}</div>
-            <div class="description hidden"><b>Время ответа:</b> <span id="answer-time"></span></div>
-
-            <div class="answer-buttons">
-                <button class="basic-button green-button" id="answer-button-correct" onclick="SendAnswer(true)">{% if group %}Правильно!{% else %}Знаю{% endif %}</button>
-                <button class="basic-button red-button" id="answer-button-incorrect" onclick="SendAnswer(false)">{% if group %}Неправильно :С{% else %}Не знаю{% endif %}</button>
-            </div>
-
-            <h3>Исполнител{{ "и" if track.artists|length > 1 else "ь" }}:</h3>
-            <div id="artists"></div>
-
             {% if track.lyrics %}
-            <div id="lyrics-updater-{{track.track_id}}" data-lrc="{{track.lyrics.lrc|tojson}}">
-            <h3>Текст</h3>
-
-            <div class="lyrics-updater">
+            <div class="lyrics-updater lyrics-updater-disabled hidden" data-lrc="{{track.lyrics.lrc|tojson}}" id="lyrics-updater-{{track.track_id}}">
                 <div class="lyrics-lines">
                     {% set indices = track.lyrics.get_chorus_indices() %}
                     {% for line in track.lyrics.lines %}
@@ -94,18 +61,15 @@
                 </div>
             </div>
             {% endif %}
+        </div>
 
-            {% if artist_id2note %}
-            <div class="notes">
-                <h3>Личные заметки:</h3>
+        <div class="track-info">
+            <button class="basic-button gradient-button{% if not as_unknown %}hidden{%endif %}" id="show-info" onclick="ShowTrackInfo()">Показать информацию</button>
 
-                {% for artist_id in track.artists %}
-                {% if artist_id in artist_id2note %}
-                <div class="note"><b>{{artist_id2artist[artist_id].name}}</b>: {{artist_id2note[artist_id].text}}</div>
-                {% endif %}
-                {% endfor %}
+            <div {% if as_unknown %}class="hidden"{% endif %} id="track-info">
+                <h3>Исполнител{{ "и" if track.artists|length > 1 else "ь" }}:</h3>
+                <div id="artists"></div>
             </div>
-            {% endif %}
         </div>
     </div>
 
@@ -127,19 +91,17 @@
     <script src="/js/entities/track.js?v={{version}}"></script>
 
     <script src="/js/tracks/track.js?v={{version}}"></script>
-    <script src="/js/user/question.js?v={{version}}"></script>
     <script>
-        let answerTime = null
-        let players = new PlayerCollection({withIcons: false})
+        let players = new PlayerCollection()
         let infos = new InfoPanels()
 
-        const groupId = {% if group %}{{group.group_id}}{% else %}null{% endif %}
         const track = new Track({{jsonable_encoder(track)|tojson}})
         const artists = [{% for artist_id in track.artists %}{{jsonable_encoder(artist_id2artist[artist_id])|tojson}},{% endfor %}]
         const artistId2scale = {{artist_id2scale|tojson}}
 
-        let artistsBlock = document.getElementById("artists")
+        {% if not as_unknown %}ShowTrackInfo(){% endif %}
 
+        let artistsBlock = document.getElementById("artists")
         for (let artist of artists) {
             artist = new Artist(artist)
             artistsBlock.appendChild(artist.Build(artistId2scale))
@@ -147,7 +109,24 @@
         }
 
         infos.Add(track.BuildInfo(artists))
-        {% if settings.autoplay %}PlayTrack(track.trackId){% endif %}
+
+        {% if settings and settings.autoplay %}PlayTrack(track.trackId){% endif %}
+
+        function ShowTrackInfo() {
+            track.ReplaceUnknown(artists)
+
+            let button = document.getElementById("show-info")
+            button.classList.add("hidden")
+
+            let block = document.getElementById("track-info")
+            block.classList.remove("hidden")
+
+            let trackTitle = document.getElementById("track-title").innerText
+            let trackArtists = document.getElementById("track-artists").innerText
+            let trackYear = document.getElementById("track-year").innerText
+            let title = document.getElementsByTagName("title")[0]
+            title.innerText = `${trackArtists} – ${trackTitle} (${trackYear}) | Музыкальный квиз Плюшевой наковальни`
+        }
     </script>
     {% include "components/footer.html" %}
 </body>
