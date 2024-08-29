@@ -106,3 +106,72 @@
 .track-info {
     margin-top: 1em;
 }
+
+.track-question {
+    background-color: unset !important;
+    position: relative;
+}
+
+.track-question .track-main {
+    display: block;
+    text-align: center;
+}
+
+.track-question .track-image {
+    max-width: 200px;
+    margin: 0 auto 1em auto;
+    position: relative;
+}
+
+.track-question .track-artists {
+    margin-bottom: 1em;
+}
+
+.track-question .track-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.track-unknown .track-menu {
+    display: none;
+}
+
+.track-question .track-controls {
+    margin-bottom: 1em;
+}
+
+.track-tip {
+    display: none;
+}
+
+.track-unknown .track-tip {
+    background: #ffffffd0;
+    color: var(--main-color);
+
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    border-radius: 1.1em;
+    pointer-events: none;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.track-tip .track-tip-letter {
+    font-size: 600%;
+    font-weight: bold;
+}
+
+.track-tip .track-tip-letter-language {
+    font-size: 1.5em;
+}
+
+.track-unknown .track-tip ~ img {
+    filter: blur(6px);
+}

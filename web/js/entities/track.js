@@ -299,6 +299,9 @@ Track.prototype.UpdateNote = function(buttons, artistId) {
 }
 
 Track.prototype.ReplaceUnknown = function(artists) {
+    let trackBlock = document.getElementById(`track-${this.trackId}`)
+    trackBlock.classList.remove("track-unknown")
+
     let menu = document.getElementById("track-menu")
     menu.removeAttribute("disabled")
 
