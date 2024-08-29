@@ -37,6 +37,17 @@
                         <div class="track-tip-letter">{{name_len}}</div>
                         <div class="track-tip-letter-language">{{get_word_form(name_len, ['буква', 'буквы', 'букв'], True)}}</div>
                     </div>
+                    {% elif quiz_tour.quiz_tour_type == QuizTourType.LETTER and quiz_tour.question_ids.index(question_id) > 0 %}
+                    <div class="track-tip">
+                        <div class="track-tip-letter">{{artist_id2artist[track.artists[0]].name[0]}}</div>
+                        <div class="track-tip-letter-language">
+                        {% if artist_id2artist[track.artists[0]].name[0].upper() in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+                        латинская
+                        {% elif artist_id2artist[track.artists[0]].name[0].upper() in "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" %}
+                        русская
+                        {% endif %}
+                        </div>
+                    </div>
                     {% endif %}
                     {% endif %}
                     <img id="track-image" src="/images/tracks/default.png" onclick="PlayPauseTrack('{{track.track_id}}')">

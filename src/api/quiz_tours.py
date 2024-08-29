@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from src import database, music_database, questions_database, quiz_tours_database
 from src.api import send_error, templates
 from src.entities.user import User
-from src.enums.quiz_tour_type import QuizTourType
+from src.enums import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash, get_word_form

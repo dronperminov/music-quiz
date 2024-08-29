@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Set
 
-from src.enums.quiz_tour_type import QuizTourType
+from src.enums import QuizTourType
 
 
 @dataclass

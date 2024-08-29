@@ -43,7 +43,8 @@ QuizTour.prototype.Build = function() {
 QuizTour.prototype.QuizTourTypeToRus = function() {
     let type2rus = {
         "alphabet": "алфавит",
-        "stairs": "лесенка"
+        "stairs": "лесенка",
+        "letter": "на одну букву"
     }
 
     return type2rus[this.quizTourType]

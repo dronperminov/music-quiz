@@ -21,7 +21,7 @@ from src.entities.track import Track
 from src.entities.track_modification_settings import TrackModificationSettings
 from src.entities.user import User
 from src.enums import ArtistType, ArtistsCount, Genre, Language, QuestionType, UserRole
-from src.enums.quiz_tour_type import QuizTourType
+from src.enums import QuizTourType
 
 
 class TestSerialization(TestCase):
