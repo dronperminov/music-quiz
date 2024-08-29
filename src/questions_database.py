@@ -44,7 +44,7 @@ class QuestionsDatabase:
 
         if question := self.__get_user_question(username=settings.username, group_id=group_id):
             if question.is_valid({track["track_id"] for track in tracks}, settings.question_settings):
-                return self.__update_question(question, settings.question_settings)
+                return self.update_question(question, settings.question_settings)
 
             self.database.questions.delete_one({"username": settings.username, "correct": None, "group_id": group_id})
 
@@ -72,7 +72,7 @@ class QuestionsDatabase:
         question_weights = [1 - self.alpha ** (i + 1) for i in range(len(last_incorrect_questions))]
         question = random.choices(last_incorrect_questions, weights=question_weights, k=1)[0]
         question.remove_answer()
-        return self.__update_question(question, settings)
+        return self.update_question(question, settings)
 
     def sample_question_tracks(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, group_id: Optional[int], count: int) -> List[Track]:
         track_id2weight = dict()
@@ -236,7 +236,7 @@ class QuestionsDatabase:
         last_questions = self.database.questions.find(query).sort("timestamp", -1).limit(self.last_questions_count)
         return [Question.from_dict(question) for question in last_questions]
 
-    def __update_question(self, question: Question, settings: QuestionSettings) -> Question:
+    def update_question(self, question: Question, settings: QuestionSettings) -> Question:
         track = self.music_database.get_track(track_id=question.track_id)
         artist_id2artist = self.music_database.get_artists_by_ids(artist_ids=track.artists)
         return question.update(track=track, artist_id2artist=artist_id2artist, settings=settings)

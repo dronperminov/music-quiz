@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List
+from typing import List, Set
 
 from src.enums.quiz_tour_type import QuizTourType
 
@@ -40,3 +40,9 @@ class QuizTour:
             created_at=data["created_at"],
             created_by=data["created_by"]
         )
+
+    def remove_questions(self, question_ids: Set[int]) -> None:
+        self.question_ids = [question_id for question_id in self.question_ids if question_id not in question_ids]
+
+    def is_empty(self) -> bool:
+        return len(self.question_ids) == 0

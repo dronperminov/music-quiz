@@ -34,7 +34,9 @@ class QuizToursDatabase:
         if len(answers) == len(quiz_tour.question_ids):
             return None
 
-        return QuizTourQuestion.from_dict(self.database.quiz_tour_questions.find_one({"question_id": quiz_tour.question_ids[len(answers)]}))
+        question = QuizTourQuestion.from_dict(self.database.quiz_tour_questions.find_one({"question_id": quiz_tour.question_ids[len(answers)]}))
+        question.question = self.questions_database.update_question(question.question, QuestionSettings.default())
+        return question
 
     def have_question(self, question_id: int, username: str) -> bool:
         if self.database.quiz_tour_questions.find_one({"question_id": question_id}, {"question_id": 1}) is None:

@@ -13,6 +13,7 @@ from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, 
     EditTrackAction, RemoveArtistAction, RemoveArtistsGroupAction, RemoveTrackAction
 from src.entities.metadata import Metadata
 from src.entities.note import Note
+from src.entities.quiz_tour import QuizTour
 from src.entities.source import YandexSource
 from src.entities.track import Track
 from src.enums import ArtistsCount, Language
@@ -184,6 +185,19 @@ class MusicDatabase:
             note = Note.from_dict(note_dict)
             note.track_id2seek.pop(track_id)
             self.database.notes.update_one({"artist_id": note.artist_id, "username": note.username}, {"$set": note.to_dict()})
+
+        # удаляем все вопросы и ответы из туров, связанные с этим треком
+        tour_question_ids = [question["question_id"] for question in self.database.quiz_tour_questions.find({"question.track_id": track_id}, {"question_id": 1})]
+        self.database.quiz_tour_questions.delete_many({"question_id": {"$in": tour_question_ids}})
+        self.database.quiz_tour_answers.delete_many({"question_id": {"$in": tour_question_ids}})
+        for quiz_tour in self.database.quiz_tours.find({"question_ids": {"$in": tour_question_ids}}):
+            quiz_tour = QuizTour.from_dict(quiz_tour)
+            quiz_tour.remove_questions(set(tour_question_ids))
+
+            if quiz_tour.is_empty():
+                self.database.quiz_tours.delete_one({"quiz_tour_id": quiz_tour.quiz_tour_id})
+            else:
+                self.database.quiz_tours.update_one({"quiz_tour_id": quiz_tour.quiz_tour_id}, {"$set": quiz_tour.to_dict()})
 
         self.database.questions.delete_many({"track_id": track_id})
         self.database.tracks.delete_one({"track_id": track_id})
