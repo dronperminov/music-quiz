@@ -1,4 +1,7 @@
 import logging
+import random
+import re
+from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -8,7 +11,6 @@ from src.entities.question_settings import QuestionSettings
 from src.entities.quiz_tour import QuizTour
 from src.entities.quiz_tour_answer import QuizTourAnswer
 from src.entities.quiz_tour_question import QuizTourQuestion
-from src.entities.track import Track
 from src.enums.quiz_tour_type import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
 
@@ -76,6 +78,8 @@ class QuizToursDatabase:
             questions = self.__generate_regular_tour_questions(tracks=tracks, last_questions=last_questions, settings=settings, count=questions_count)
         elif quiz_tour_type == QuizTourType.ALPHABET:
             questions = self.__generate_alphabet_tour_questions(tracks=tracks, last_questions=last_questions, settings=settings, count=questions_count)
+        elif quiz_tour_type == QuizTourType.STAIRS:
+            questions = self.__generate_stairs_tour_questions(tracks=tracks, last_questions=last_questions, settings=settings, count=questions_count)
         else:
             raise ValueError(f'Invalid quiz tour type "{quiz_tour_type}"')
 
@@ -93,16 +97,19 @@ class QuizToursDatabase:
         return quiz_tour
 
     def __generate_regular_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
-        sampled_tracks = []
+        questions = []
         sampled_artists = set()
 
         for _ in range(count):
             track = self.questions_database.sample_question_tracks(tracks, last_questions, settings, None, 1)[0]
-            sampled_tracks.append(track)
+            question = self.questions_database.generate_question(track=track, username="", settings=settings, group_id=None)
+            questions.append(question)
+            last_questions.append(question)
+
             sampled_artists.update(track.artists)
             tracks = [track for track in tracks if not sampled_artists.intersection(track["artists"])]
 
-        return self.__tracks_to_questions(tracks=sampled_tracks, settings=settings)
+        return self.__convert_to_quiz_tour_questions(questions=questions)
 
     def __generate_alphabet_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
         track_ids = {track["track_id"] for track in tracks}
@@ -123,37 +130,54 @@ class QuizToursDatabase:
 
         tracks = [track for track in tracks if track_id2artist_letter[track["track_id"]] in letter2position]
 
-        sampled_tracks = []
+        questions = []
         sampled_letters = set()
 
         for _ in range(count):
             track = self.questions_database.sample_question_tracks(tracks, last_questions, settings, None, 1)[0]
+            question = self.questions_database.generate_question(track=track, username="", settings=settings, group_id=None)
+            questions.append(question)
+            last_questions.append(question)
+
             sampled_letters.add(track_id2artist_letter[track.track_id])
-            sampled_tracks.append(track)
             tracks = [track for track in tracks if track_id2artist_letter[track["track_id"]] not in sampled_letters]
 
-        sampled_tracks = sorted(sampled_tracks, key=lambda track: letter2position.get(track_id2artist_letter[track.track_id], 100))
-        return self.__tracks_to_questions(tracks=sampled_tracks, settings=settings)
+        questions = sorted(questions, key=lambda question: letter2position.get(track_id2artist_letter[question.track_id], 100))
+        return self.__convert_to_quiz_tour_questions(questions=questions)
+
+    def __generate_stairs_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
+        track_id2track = {track["track_id"]: track for track in tracks}
+        name_len2tracks = defaultdict(list)
+
+        for artist in self.database.artists.find({"tracks.track_id": {"$in": list(track_id2track)}}, {"tracks": 1, "name": 1}):
+            name_len = len(re.sub(r"\W", "", artist["name"]))
+            for track_position in artist["tracks"]:
+                if track_position["track_id"] in track_id2track:
+                    name_len2tracks[name_len].append(track_id2track[track_position["track_id"]])
+
+        questions = []
+        start_len = random.randint(2, 5)
+
+        for i in range(count):
+            track = self.questions_database.sample_question_tracks(name_len2tracks[start_len + i], last_questions, settings, None, 1)[0]
+            question = self.questions_database.generate_question(track=track, username="", settings=settings, group_id=None)
+            questions.append(question)
+            last_questions.append(question)
+
+        return self.__convert_to_quiz_tour_questions(questions=questions)
 
     def __get_last_questions(self, track_ids: List[int]) -> List[Question]:
         last_questions = self.database.quiz_tour_questions.find({"question.track_id": {"$in": track_ids}}).sort("question_id", -1).limit(self.last_questions_count)
         return [Question.from_dict(question["question"]) for question in last_questions]
 
-    def __tracks_to_questions(self, tracks: List[Track], settings: QuestionSettings, answer_time: float = 45) -> List[QuizTourQuestion]:
-        questions = []
-        artist_ids = set()
+    def __convert_to_quiz_tour_questions(self, questions: List[Question], answer_time: float = 45) -> List[QuizTourQuestion]:
+        quiz_tour_questions = []
 
-        for track in tracks:
-            # TODO: sample tracks accurate and remove this check
-            assert len(track.artists) == 1
-            assert track.artists[0] not in artist_ids
-            artist_ids.add(track.artists[0])
-
+        for question in questions:
             question_id = self.database.get_identifier("quiz_tour_questions")
-            question = self.questions_database.generate_question(track=track, username="", settings=settings, group_id=None)
             tour_question = QuizTourQuestion(question_id=question_id, question=question, answer_time=answer_time)
 
             self.database.quiz_tour_questions.insert_one(tour_question.to_dict())
-            questions.append(tour_question)
+            quiz_tour_questions.append(tour_question)
 
-        return questions
+        return quiz_tour_questions

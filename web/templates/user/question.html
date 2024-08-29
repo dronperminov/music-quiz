@@ -31,6 +31,12 @@
                         {% endif %}
                         </div>
                     </div>
+                    {% elif quiz_tour.quiz_tour_type == QuizTourType.STAIRS and quiz_tour.question_ids.index(question_id) > 0 %}
+                    {% set name_len = (sub("\W", "", artist_id2artist[track.artists[0]].name)|length) %}
+                    <div class="track-tip">
+                        <div class="track-tip-letter">{{name_len}}</div>
+                        <div class="track-tip-letter-language">{{get_word_form(name_len, ['буква', 'буквы', 'букв'], True)}}</div>
+                    </div>
                     {% endif %}
                     {% endif %}
                     <img id="track-image" src="/images/tracks/default.png" onclick="PlayPauseTrack('{{track.track_id}}')">
