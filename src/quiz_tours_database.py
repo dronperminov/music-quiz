@@ -66,7 +66,7 @@ class QuizToursDatabase:
 
         return quiz_tour_id2statuses
 
-    def generate_tour(self, name: str, description: str, quiz_tour_type: QuizTourType, settings: QuestionSettings, questions_count: int) -> Optional[QuizTour]:
+    def generate_tour(self, params: dict, quiz_tour_type: QuizTourType, settings: QuestionSettings, questions_count: int) -> Optional[QuizTour]:
         tracks = self.questions_database.get_question_tracks(settings)
 
         if len(tracks) < questions_count:
@@ -86,13 +86,15 @@ class QuizToursDatabase:
         quiz_tour = QuizTour(
             quiz_tour_id=self.database.get_identifier("quiz_tours"),
             quiz_tour_type=quiz_tour_type,
-            name=name,
-            description=description,
+            name=params["name"],
+            description=params["description"],
             question_ids=[question.question_id for question in questions],
-            image_url="/images/quiz_tours/default.png",
+            image_url=params.get("image_url", "/images/quiz_tours/default.png"),
             created_at=datetime.now(),
-            created_by="system"
+            created_by="system",
+            tags=params.get("tags", [])
         )
+
         self.database.quiz_tours.insert_one(quiz_tour.to_dict())
         return quiz_tour
 

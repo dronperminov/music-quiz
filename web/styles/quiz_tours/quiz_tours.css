@@ -83,6 +83,13 @@
     background-color: var(--lost-color);
 }
 
+.quiz-tour-tags {
+    font-size: 1.1em;
+    text-align: right;
+    margin-bottom: 0.8em;
+    color: var(--subtext-color);
+}
+
 .quiz-tour-type {
     font-size: 1.3em;
     color: var(--text-color);

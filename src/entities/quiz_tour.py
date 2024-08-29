@@ -15,6 +15,7 @@ class QuizTour:
     image_url: str
     created_at: datetime
     created_by: str
+    tags: List[str]
 
     def to_dict(self) -> dict:
         return {
@@ -25,7 +26,8 @@ class QuizTour:
             "question_ids": self.question_ids,
             "image_url": self.image_url,
             "created_at": self.created_at,
-            "created_by": self.created_by
+            "created_by": self.created_by,
+            "tags": self.tags
         }
 
     @classmethod
@@ -38,7 +40,8 @@ class QuizTour:
             question_ids=data["question_ids"],
             image_url=data["image_url"],
             created_at=data["created_at"],
-            created_by=data["created_by"]
+            created_by=data["created_by"],
+            tags=data["tags"]
         )
 
     def remove_questions(self, question_ids: Set[int]) -> None:

@@ -7,6 +7,7 @@ function QuizTour(data, statuses) {
     this.imageUrl = data.image_url
     this.createdAt = data.created_at
     this.createdBy = data.created_by
+    this.tags = data.tags
 
     this.status = this.quizTourId in statuses ? statuses[this.quizTourId] : null
 }
@@ -32,6 +33,7 @@ QuizTour.prototype.Build = function() {
         MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
 
     MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
+    MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
     MakeElement("quiz-tour-questions", quizTour, {innerHTML: `${GetWordForm(this.questionIds.length, ['вопрос', 'вопроса', 'вопросов'])}`})
     MakeElement("quiz-tour-date", quizTour, {innerHTML: `${ParseDateTime(this.createdAt).date}`})
 
@@ -45,6 +47,17 @@ QuizTour.prototype.QuizTourTypeToRus = function() {
     }
 
     return type2rus[this.quizTourType]
+}
+
+QuizTour.prototype.TagToRus = function(tag) {
+    let tag2rus = {
+        "foreign": "зарубежное",
+        "russian": "русское",
+        "rock": "рок",
+        "modern": "современное",
+    }
+
+    return tag2rus[tag]
 }
 
 QuizTour.prototype.BuildStatus = function(quizTour) {

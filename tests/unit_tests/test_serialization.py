@@ -247,7 +247,8 @@ class TestSerialization(TestCase):
             question_ids=[1, 5, 8],
             image_url="image url",
             created_at=datetime.now(),
-            created_by="user"
+            created_by="user",
+            tags=["foreign", "rock"]
         )
 
         quiz_tour_dict = quiz_tour.to_dict()
