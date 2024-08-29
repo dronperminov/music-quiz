@@ -1,10 +1,9 @@
 import re
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import Dict, List, Tuple, Union
 
 from src.enums import ArtistType, ArtistsCount, Genre, Language
-from src.utils.queries import interval_query
+from src.utils.queries import enum_query, interval_query
 
 
 @dataclass
@@ -29,10 +28,10 @@ class ArtistsSearch:
             **interval_query("listen_count", self.listen_count),
             **interval_query("tracks_count", self.tracks_count),
             **interval_query("added_tracks", self.added_tracks),
-            **self.__to_enum_query("genres", self.genres),
-            **self.__to_enum_query("artist_type", self.artist_type),
-            **self.__to_enum_query("artists_count", self.artists_count),
-            **self.__to_enum_query("language", self.language)
+            **enum_query("genres", self.genres),
+            **enum_query("artist_type", self.artist_type),
+            **enum_query("artists_count", self.artists_count),
+            **enum_query("language", self.language)
         }
 
         return query
@@ -54,19 +53,3 @@ class ArtistsSearch:
             return {}
 
         return {"name": {"$regex": re.escape(self.query), "$options": "i"}}
-
-    def __to_enum_query(self, name: str, values: Dict[Enum, bool]) -> dict:
-        if not values:
-            return {}
-
-        include_values = [enum.value for enum, need in values.items() if need]
-        exclude_values = [enum.value for enum, need in values.items() if not need]
-        query = {}
-
-        if include_values:
-            query["$in"] = include_values
-
-        if exclude_values:
-            query["$nin"] = exclude_values
-
-        return {name: query}

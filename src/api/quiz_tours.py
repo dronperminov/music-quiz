@@ -11,7 +11,7 @@ from src.api import send_error, templates
 from src.entities.user import User
 from src.enums import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
-from src.query_params.quiz_tours_search import QuizToursSearch
+from src.query_params.quiz_tours_search import QuizToursSearch, QuizToursSearchQuery
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash, get_word_form
 
@@ -19,12 +19,14 @@ router = APIRouter()
 
 
 @router.get("/quiz-tours")
-def get_quiz_tours(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+def get_quiz_tours(params: QuizToursSearchQuery = Depends(), user: Optional[User] = Depends(get_user)) -> HTMLResponse:
     template = templates.get_template("quiz_tours/quiz_tours.html")
     content = template.render(
         user=user,
         page="quiz_tours",
-        version=get_static_hash()
+        version=get_static_hash(),
+        search_params=params.to_params(user is not None),
+        QuizTourType=QuizTourType
     )
     return HTMLResponse(content=content)
 
@@ -79,7 +81,7 @@ def get_quiz_tour(quiz_tour_id: int, user: Optional[User] = Depends(get_user)) -
 
 @router.post("/quiz-tours")
 def search_quiz_tours(params: QuizToursSearch, user: Optional[User] = Depends(get_user)) -> JSONResponse:
-    total, quiz_tours = quiz_tours_database.get_quiz_tours(params)
+    total, quiz_tours = quiz_tours_database.get_quiz_tours(username=user.username if user else None, params=params)
     quiz_tour_id2statuses = quiz_tours_database.get_quiz_tours_statuses(username=user.username, quiz_tours=quiz_tours) if user else {}
     return JSONResponse({"status": "success", "total": total, "quiz_tours": jsonable_encoder(quiz_tours), "statuses": quiz_tour_id2statuses})
 

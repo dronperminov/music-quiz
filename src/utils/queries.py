@@ -1,4 +1,5 @@
-from typing import Iterable, Union
+from enum import Enum
+from typing import Dict, Iterable, Union
 
 
 def interval_query(name: str, interval: Iterable[Union[str, float, int]]) -> dict:
@@ -12,3 +13,20 @@ def interval_query(name: str, interval: Iterable[Union[str, float, int]]) -> dic
         query["$lte"] = value_to
 
     return {name: query} if query else {}
+
+
+def enum_query(name: str, values: Dict[Union[Enum, str], bool]) -> dict:
+    if not values:
+        return {}
+
+    include_values = [key.value if isinstance(key, Enum) else key for key, need in values.items() if need]
+    exclude_values = [key.value if isinstance(key, Enum) else key for key, need in values.items() if not need]
+    query = {}
+
+    if include_values:
+        query["$in"] = include_values
+
+    if exclude_values:
+        query["$nin"] = exclude_values
+
+    return {name: query}

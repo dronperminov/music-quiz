@@ -6,8 +6,10 @@ const INfINITE_SCROLL_ERROR_STATUS = "error"
 
 function InfiniteScroll(blockId, config) {
     let block = document.getElementById(blockId)
-    this.block = block.children[0]
-    this.loader = block.children[1]
+
+    this.results = block.children[0]
+    this.block = block.children[1]
+    this.loader = block.children[2]
 
     this.pageSize = config.pageSize || 10
     this.offset = config.offset || 100
@@ -26,6 +28,7 @@ InfiniteScroll.prototype.Reset = function() {
     this.status = INfINITE_SCROLL_INITIAL_STATUS
 
     this.block.innerHTML = ""
+    this.results.innerHTML = ""
     this.loader.classList.add("hidden")
 }
 
@@ -50,6 +53,11 @@ InfiniteScroll.prototype.LoadContent = function() {
         }
 
         this.loader.classList.add("hidden")
+
+        if (response.total > 0)
+            this.results.innerText = `${GetWordForm(response.total, ['результат нашёлся', 'результата нашлось', 'результатов нашлось'])} по запросу`
+        else
+            this.results.innerText = "К сожалению, по запросу ничего не нашлось"
 
         let count = this.onLoad(response, this.block)
         this.status = count == this.pageSize ? INfINITE_SCROLL_LOADED_STATUS : INfINITE_SCROLL_OUT_DATA_STATUS

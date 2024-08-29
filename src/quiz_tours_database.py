@@ -24,12 +24,22 @@ class QuizToursDatabase:
 
         self.last_questions_count = 1000
 
-    def get_quiz_tours(self, params: QuizToursSearch) -> Tuple[int, List[QuizTour]]:
+    def get_quiz_tours(self, username: Optional[str], params: QuizToursSearch) -> Tuple[int, List[QuizTour]]:
+        query = params.to_query()
+        quiz_tours = [QuizTour.from_dict(quiz_tour) for quiz_tour in self.database.quiz_tours.find(query)]
+
+        if params.completed_type != "all" and username is not None:
+            filtered_quiz_tours = []
+            for quiz_tour in quiz_tours:
+                answers = self.database.quiz_tour_answers.count_documents({"username": username, "question_id": {"$in": quiz_tour.question_ids}})
+
+                if params.check_complete(answers, len(quiz_tour.question_ids)):
+                    filtered_quiz_tours.append(quiz_tour)
+            quiz_tours = filtered_quiz_tours
+
+        quiz_tours = sorted(quiz_tours, key=lambda quiz_tour: quiz_tour.quiz_tour_id, reverse=True)
         skip = params.page * params.page_size
-        query = {}
-        quiz_tours = self.database.quiz_tours.find(query).sort("quiz_tour_id", -1).skip(skip).limit(params.page_size)
-        total = self.database.quiz_tours.count_documents(query)
-        return total, [QuizTour.from_dict(quiz_tour) for quiz_tour in quiz_tours]
+        return len(quiz_tours), quiz_tours[skip:skip + params.page_size]
 
     def get_quiz_tour(self, quiz_tour_id: int) -> Optional[QuizTour]:
         quiz_tour = self.database.quiz_tours.find_one({"quiz_tour_id": quiz_tour_id})
