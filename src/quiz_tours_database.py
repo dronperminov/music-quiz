@@ -3,7 +3,7 @@ import random
 import re
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from src import Database, QuestionsDatabase
 from src.entities.question import Question
@@ -13,6 +13,7 @@ from src.entities.quiz_tour_answer import QuizTourAnswer
 from src.entities.quiz_tour_question import QuizTourQuestion
 from src.enums import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
+from src.query_params.quiz_tours_search import QuizToursSearch
 
 
 class QuizToursDatabase:
@@ -23,8 +24,12 @@ class QuizToursDatabase:
 
         self.last_questions_count = 1000
 
-    def get_quiz_tours(self) -> List[QuizTour]:
-        return [QuizTour.from_dict(quiz_tour) for quiz_tour in self.database.quiz_tours.find({}).sort("quiz_tour_id", -1)]
+    def get_quiz_tours(self, params: QuizToursSearch) -> Tuple[int, List[QuizTour]]:
+        skip = params.page * params.page_size
+        query = {}
+        quiz_tours = self.database.quiz_tours.find(query).sort("quiz_tour_id", -1).skip(skip).limit(params.page_size)
+        total = self.database.quiz_tours.count_documents(query)
+        return total, [QuizTour.from_dict(quiz_tour) for quiz_tour in quiz_tours]
 
     def get_quiz_tour(self, quiz_tour_id: int) -> Optional[QuizTour]:
         quiz_tour = self.database.quiz_tours.find_one({"quiz_tour_id": quiz_tour_id})

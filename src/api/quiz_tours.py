@@ -11,6 +11,7 @@ from src.api import send_error, templates
 from src.entities.user import User
 from src.enums import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
+from src.query_params.quiz_tours_search import QuizToursSearch
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash, get_word_form
 
@@ -77,10 +78,10 @@ def get_quiz_tour(quiz_tour_id: int, user: Optional[User] = Depends(get_user)) -
 
 
 @router.post("/quiz-tours")
-def search_quiz_tours(user: Optional[User] = Depends(get_user)) -> JSONResponse:
-    quiz_tours = quiz_tours_database.get_quiz_tours()
+def search_quiz_tours(params: QuizToursSearch, user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    total, quiz_tours = quiz_tours_database.get_quiz_tours(params)
     quiz_tour_id2statuses = quiz_tours_database.get_quiz_tours_statuses(username=user.username, quiz_tours=quiz_tours) if user else {}
-    return JSONResponse({"status": "success", "quiz_tours": jsonable_encoder(quiz_tours), "statuses": quiz_tour_id2statuses})
+    return JSONResponse({"status": "success", "total": total, "quiz_tours": jsonable_encoder(quiz_tours), "statuses": quiz_tour_id2statuses})
 
 
 @router.post("/answer-quiz-tour-question")
