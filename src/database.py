@@ -77,6 +77,7 @@ class Database:
 
         self.quiz_tour_answers = database["quiz_tour_answers"]
         self.quiz_tour_answers.create_index(([("username", ASCENDING)]))
+        self.quiz_tour_answers.create_index(([("correct", ASCENDING)]))
 
     def get_settings(self, username: str) -> Settings:
         settings = self.settings.find_one_and_update({"username": username}, {"$setOnInsert": Settings.default(username).to_dict()}, upsert=True, return_document=True)

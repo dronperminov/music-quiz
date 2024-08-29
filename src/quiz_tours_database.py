@@ -24,6 +24,9 @@ class QuizToursDatabase:
 
         self.last_questions_count = 1000
 
+    def get_rating(self, username: str) -> int:
+        return self.database.quiz_tour_answers.count_documents({"username": username, "correct": True})
+
     def get_quiz_tours(self, username: Optional[str], params: QuizToursSearch) -> Tuple[int, List[QuizTour]]:
         query = params.to_query()
         quiz_tours = [QuizTour.from_dict(quiz_tour) for quiz_tour in self.database.quiz_tours.find(query)]

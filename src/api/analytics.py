@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
-from src import database, music_database, questions_database
+from src import database, music_database, questions_database, quiz_tours_database
 from src.api import templates
 from src.entities.user import User
 from src.utils.auth import get_user
@@ -26,6 +26,7 @@ def get_analytics(username: str = Query(""), user: Optional[User] = Depends(get_
         show_user = user
 
     analytics = questions_database.get_analytics(username=show_user.username)
+    rating = quiz_tours_database.get_rating(username=show_user.username)
     artist_id2artist = music_database.get_artists_by_ids(artist_ids=analytics.artists.get_artist_ids())
 
     template = templates.get_template("user/analytics.html")
@@ -34,6 +35,7 @@ def get_analytics(username: str = Query(""), user: Optional[User] = Depends(get_
         page="analytics",
         version=get_static_hash(),
         analytics=analytics,
+        rating=rating,
         artist_id2artist=artist_id2artist,
         show_user=show_user
     )

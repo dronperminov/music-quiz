@@ -1,6 +1,6 @@
 .profile {
     text-align: center;
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
 }
 
 .profile img {
@@ -8,6 +8,28 @@
     width: 100%;
     border-radius: 2em;
     vertical-align: top;
+}
+
+.profile-image {
+    display: inline-block;
+    position: relative;
+}
+
+.profile-rating {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    background-color: var(--background-color);
+    color: var(--main-color);
+    font-family: Montserrat;
+    font-size: 0.9em;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    font-weight: bold;
 }
 
 .profile-name {

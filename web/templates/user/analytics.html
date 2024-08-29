@@ -15,7 +15,10 @@
         <h1>Аналитика</h1>
 
         <div class="profile">
-            <img src="{{show_user.avatar_url}}">
+            <div class="profile-image">
+                <img src="{{show_user.avatar_url}}">
+                <div class="profile-rating">{{rating}}</div>
+            </div>
         </div>
 
         <div class="profile-name">{{show_user.full_name}}</div>
