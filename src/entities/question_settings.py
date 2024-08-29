@@ -113,9 +113,10 @@ class QuestionSettings:
     def to_tracks_query(self) -> dict:
         question_type_queries = [question_type.to_query() for question_type in self.question_types]
         years = [self.replace_years(start_year, end_year) for start_year, end_year in self.years]
+        genres = [genre.value for genre in self.genres]
 
         query = {
-            "genres": {"$in": [genre.value for genre in self.genres]},
+            "genres": {"$in": genres} if len(self.genres) > 1 else genres,
             "year": {"$in": self.__get_years_list(years)},
             "language": {"$in": [language.value for language in self.languages]},
             "artists_count": {"$in": [artists_count.value for artists_count in self.artists_count]}
