@@ -56,12 +56,15 @@ def get_group_question(group_id: int, user: Optional[User] = Depends(get_user)) 
     if not user:
         return RedirectResponse(url=f'/login?back_url={urllib.parse.quote(f"/question?group_id={group_id}", safe="")}')
 
-    settings = database.get_settings(username=user.username)
     group = music_database.get_artists_group(group_id=group_id)
+
+    if not group:
+        return send_error(user=user, title="Запрашиваемая группа не существует", text="Не удалось найти заданную группу, возможно, она была удалена или ещё не была создана.")
 
     if not group.artist_ids:
         return send_error(user=user, title=f'Группа "{group.name}" пустая', text="В этой группе пока нет исполнителей.")
 
+    settings = database.get_settings(username=user.username)
     question = questions_database.get_question(settings, group_id=group_id)
 
     if question is None:

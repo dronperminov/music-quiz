@@ -45,7 +45,8 @@ function ShowAnswer(correct = null) {
 }
 
 function SendAnswer(correct) {
-    let answer = {correct: correct, group_id: groupId}
+    let answer = questionId === null ? {correct: correct, group_id: groupId} : {correct: correct, question_id: questionId}
+    let url = questionId === null ? "/answer-question" : "/answer-quiz-tour-question"
 
     if (answerTime !== null)
         answer.answer_time = answerTime
@@ -58,7 +59,7 @@ function SendAnswer(correct) {
     for (let button of buttons)
         button.setAttribute("disabled", "")
 
-    SendRequest("/answer-question", answer).then(response => {
+    SendRequest(url, answer).then(response => {
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(response.message, "error-notification")
 

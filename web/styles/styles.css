@@ -25,6 +25,11 @@
     --info-color: #4480ae;
     --info-background: #cde8f5;
 
+    --unknown-color: #ffc154;
+    --correct-color: #47b39c;
+    --incorrect-color: #ec6b56;
+    --lost-color: #bbbbbb;
+
     /* buttons */
     --green-button-color: var(--success-color);
     --green-button-border: var(--success-color);

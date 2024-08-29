@@ -139,17 +139,17 @@ class TestSerialization(TestCase):
         artist_id2artist = {1: self.__get_artist(1), 3: self.__get_artist(3)}
         settings = self.__get_settings()
 
-        question = ArtistByTrackQuestion.generate(track=track, artist_id2artist=artist_id2artist, settings=settings, group_id=235)
+        question = ArtistByTrackQuestion.generate(track=track, artist_id2artist=artist_id2artist, username=settings.username, settings=settings.question_settings, group_id=25)
         question_dict = question.to_dict()
         question_from_dict = Question.from_dict(question_dict)
         self.assertEqual(question, question_from_dict)
 
-        question = ArtistByIntroQuestion.generate(track=track, artist_id2artist=artist_id2artist, settings=settings, group_id=235)
+        question = ArtistByIntroQuestion.generate(track=track, artist_id2artist=artist_id2artist, username=settings.username, settings=settings.question_settings, group_id=25)
         question_dict = question.to_dict()
         question_from_dict = Question.from_dict(question_dict)
         self.assertEqual(question, question_from_dict)
 
-        question = NameByTrackQuestion.generate(track=track, settings=settings, group_id=235)
+        question = NameByTrackQuestion.generate(track=track, username=settings.username, settings=settings.question_settings, group_id=235)
         question_dict = question.to_dict()
         question_from_dict = Question.from_dict(question_dict)
         self.assertEqual(question, question_from_dict)
@@ -258,7 +258,7 @@ class TestSerialization(TestCase):
         track = self.__get_track()
         artist_id2artist = {1: self.__get_artist(1), 3: self.__get_artist(3)}
         settings = self.__get_settings()
-        question = ArtistByTrackQuestion.generate(track=track, artist_id2artist=artist_id2artist, settings=settings, group_id=235)
+        question = ArtistByTrackQuestion.generate(track=track, artist_id2artist=artist_id2artist, username=settings.username, settings=settings.question_settings, group_id=35)
 
         quiz_tour_question = QuizTourQuestion(question_id=1, question=question, answer_time=25)
         quiz_tour_question_dict = quiz_tour_question.to_dict()

@@ -122,15 +122,15 @@
 }
 
 .unknown-background {
-   background-color: #ffc154;
+   background-color: var(--unknown-color);
 }
 
 .correct-background {
-    background-color: #47b39c;
+    background-color: var(--correct-color);
 }
 
 .incorrect-background {
-    background-color: #ec6b56;
+    background-color: var(--incorrect-color);
 }
 
 .other-background {

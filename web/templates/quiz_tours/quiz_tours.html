@@ -27,7 +27,7 @@
             }
 
             for (let quizTour of response.quiz_tours) {
-                quizTour = new QuizTour(quizTour)
+                quizTour = new QuizTour(quizTour, response.statuses)
                 quizToursBlock.appendChild(quizTour.Build())
             }
         })

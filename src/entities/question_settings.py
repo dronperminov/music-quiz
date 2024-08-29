@@ -105,6 +105,9 @@ class QuestionSettings:
         if self.black_list:
             query["artist_id"] = {"$nin": self.black_list}
 
+        if Language.RUSSIAN not in self.languages:
+            query["name"] = {"$not": {"$regex": "[а-яёА-Яё]", "$options": "i"}}
+
         return query
 
     def to_tracks_query(self) -> dict:

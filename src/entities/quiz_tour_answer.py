@@ -10,6 +10,9 @@ class QuizTourAnswer:
     timestamp: datetime
     answer_time: float
 
+    def __post_init__(self) -> None:
+        self.timestamp.replace(microsecond=0)
+
     def to_dict(self) -> dict:
         return {
             "question_id": self.question_id,
