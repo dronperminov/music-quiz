@@ -432,6 +432,10 @@ h2 + .description {
     color: var(--success-color);
 }
 
+.correct-color {
+    color: var(--correct-color);
+}
+
 .admin-buttons {
     margin-top: 1em;
     padding-top: 1em;

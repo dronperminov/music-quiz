@@ -34,7 +34,8 @@ QuizTour.prototype.Build = function() {
 
     MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
     MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
-    MakeElement("quiz-tour-questions", quizTour, {innerHTML: `${GetWordForm(this.questionIds.length, ['вопрос', 'вопроса', 'вопросов'])}`})
+    this.BuildQuestions(quizTour)
+
     MakeElement("quiz-tour-date", quizTour, {innerHTML: `${ParseDateTime(this.createdAt).date}`})
 
     return quizTour
@@ -61,8 +62,12 @@ QuizTour.prototype.TagToRus = function(tag) {
     return tag2rus[tag]
 }
 
+QuizTour.prototype.IsStarted = function() {
+    return this.status !== null && this.status.lost < this.questionIds.length
+}
+
 QuizTour.prototype.BuildStatus = function(quizTour) {
-    if (this.status === null || this.status.lost == this.questionIds.length)
+    if (!this.IsStarted())
         return
 
     let status = MakeElement("quiz-tour-status", quizTour)
@@ -75,4 +80,10 @@ QuizTour.prototype.BuildStatus = function(quizTour) {
 
     if (this.status.lost > 0)
         MakeElement("quiz-tour-status-bar quiz-tour-status-bar-lost", status, {style: `width: ${this.status.lost / this.questionIds.length * 100}%`})
+}
+
+QuizTour.prototype.BuildQuestions = function(quizTour) {
+    let rating = this.IsStarted() ? `<span class="correct-color">${GetWordForm(this.status.correct, ['балл', 'балла', 'баллов'])}</span>, ` : ""
+    let questions = GetWordForm(this.questionIds.length, ['вопрос', 'вопроса', 'вопросов'])
+    MakeElement("quiz-tour-questions", quizTour, {innerHTML: `${rating}${questions}`})
 }
