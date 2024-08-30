@@ -223,14 +223,18 @@ ul {
     font-size: 0.8em;
 }
 
+.description p {
+    margin-bottom: 0.5em;
+}
+
 h1 + .description {
     margin-top: -1.2em;
     margin-bottom: 1.2em;
 }
 
 h2 + .description {
-    margin-top: -0.8em;
-    margin-bottom: 0.8em;
+    margin-top: -0.6em;
+    margin-bottom: 0.6em;
 }
 
 .vertical-ham {

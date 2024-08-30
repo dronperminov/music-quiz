@@ -23,7 +23,7 @@
 .quiz-tour-tags {
     text-align: left;
     color: var(--text-color);
-    margin-bottom: 1.2em;
+    margin-bottom: 0.8em;
 }
 
 .quiz-tour-tracks {
@@ -32,4 +32,8 @@
     grid-gap: 1em;
     max-height: 22em;
     overflow-y: auto;
+}
+
+.back-link {
+    margin-bottom: 1.5em;
 }

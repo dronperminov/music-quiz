@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from src import database, music_database, yandex_music_parser
+from src import database, music_database, quiz_tours_database, yandex_music_parser
 from src.api import templates
 from src.entities.user import User
 from src.enums import UserRole
@@ -18,11 +18,14 @@ router = APIRouter()
 
 @router.get("/")
 def index(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+    top_players = quiz_tours_database.get_top_players()
+
     template = templates.get_template("index.html")
     content = template.render(
         user=user,
         page="index",
-        version=get_static_hash()
+        version=get_static_hash(),
+        top_players=top_players
     )
 
     return HTMLResponse(content=content)

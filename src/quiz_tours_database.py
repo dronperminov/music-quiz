@@ -11,6 +11,7 @@ from src.entities.question_settings import QuestionSettings
 from src.entities.quiz_tour import QuizTour
 from src.entities.quiz_tour_answer import QuizTourAnswer
 from src.entities.quiz_tour_question import QuizTourQuestion
+from src.entities.user import User
 from src.enums import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
 from src.query_params.quiz_tours_search import QuizToursSearch
@@ -24,8 +25,33 @@ class QuizToursDatabase:
 
         self.last_questions_count = 1000
 
-    def get_rating(self, username: str) -> int:
-        return self.database.quiz_tour_answers.count_documents({"username": username, "correct": True})
+    def get_rating(self, username: str) -> Optional[float]:
+        answers = self.database.quiz_tour_answers.find({"username": username})
+        question_id2correct = {answer["question_id"]: answer["correct"] for answer in answers}
+        corrects = []
+
+        for quiz_tour in self.database.quiz_tours.find({"question_ids": {"$in": list(question_id2correct)}}):
+            question_ids = quiz_tour["question_ids"]
+            scores = [question_id2correct[question_id] for question_id in question_ids if question_id in question_id2correct]
+
+            if len(scores) == len(question_ids):
+                corrects.append(sum(scores) / len(question_ids) * 100)
+
+        return round(sum(corrects) / len(corrects), 1) if corrects else None
+
+    def get_top_players(self) -> List[Tuple[User, float]]:
+        available_usernames = [settings["username"] for settings in self.database.settings.find({"show_progress": True}, {"username": 1})]
+        username2user = {user["username"]: User.from_dict(user) for user in self.database.users.find({"username": {"$in": available_usernames}})}
+        username2rating = defaultdict(int)
+
+        for username in available_usernames:
+            rating = self.get_rating(username=username)
+
+            if rating is not None:
+                username2rating[username] = rating
+
+        top_players = sorted([(rating, username) for username, rating in username2rating.items()], reverse=True)
+        return [(username2user[username], rating) for rating, username in top_players]
 
     def get_quiz_tours(self, username: Optional[str], params: QuizToursSearch) -> Tuple[int, List[QuizTour]]:
         query = params.to_query()
