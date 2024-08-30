@@ -222,11 +222,10 @@
             </div>
         </div>
 
-        <div class="search-results" id="search-results"></div>
-        <div class="artists" id="artists"></div>
-
-        <div class="loader hidden" id="loader">
-            <img src="/images/loader.svg">
+        <div id="artists">
+            <div class="search-results"></div>
+            <div class="artists"></div>
+            <div class="loader hidden"><img src="/images/loader.svg"></div>
         </div>
     </div>
 
@@ -239,6 +238,7 @@
     <script src="/js/utils/search.js?v={{version}}"></script>
     <script src="/js/utils/history.js?v={{version}}"></script>
     <script src="/js/utils/parse.js?v={{version}}"></script>
+    <script src="/js/utils/infinite_scroll.js?v={{version}}"></script>
 
     <script src="/js/inputs/multi_select.js?v={{version}}"></script>
     <script src="/js/inputs/interval_input.js?v={{version}}"></script>
@@ -253,8 +253,14 @@
 
     <script src="/js/artists/artists.js?v={{version}}"></script>
     <script>
-        let page = 0
-        let status = ""
+        let config = {
+            pageSize: 10,
+            url: "/artists",
+
+            getParams: GetSearchParams,
+            onLoad: LoadArtists
+        }
+
         let infos = new InfoPanels()
 
         let listenCountInput = new IntervalInput("listen-count-filter", true{% if search_params %}, {{search_params.listen_count|tojson}}{% endif %})
@@ -266,9 +272,8 @@
         let artistsCountInput = new MultiSelect("artists-count-filter"{% if search_params %}, {{search_params.artists_count|tojson}}{% endif %})
         let languageInput = new MultiSelect("language-filter"{% if search_params %}, {{search_params.language|tojson}}{% endif %})
 
-        let search = new Search("search", () => SearchArtists(), () => ClearSearchArtists())
-
-        window.addEventListener("scroll", e => ScrollArtists())
+        let search = new Search("search", () => SearchArtists(), () => ClearArtists())
+        let infiniteScroll = new InfiniteScroll("artists", config)
 
         {% if search_params %}
         document.getElementById("query").value = {{search_params.query|tojson}}

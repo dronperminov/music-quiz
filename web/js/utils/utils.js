@@ -79,3 +79,13 @@ function ParseDateTime(datetime) {
 
     return {date: `${groups.day}.${groups.month}.${groups.year}`, time: groups.time}
 }
+
+function ClearSearchParams(url) {
+    let keys = []
+
+    for (let [key, value] of url.searchParams.entries())
+        keys.push(key)
+
+    for (let key of keys)
+        url.searchParams.delete(key)
+}
