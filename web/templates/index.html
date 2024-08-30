@@ -24,11 +24,14 @@
         {% include "components/tags.html" %}
 
         <div class="top-players" id="top-players">
-            {% for user, rating in top_players[:10] %}
+            {% for user, rating, count in top_players[:10] %}
             <div class="top-player">
                 <div class="top-player-place">{{loop.index}}</div>
                 <div class="top-player-image"><a href="/analytics?username={{user.username}}"><img src="{{user.avatar_url}}"></a></div>
-                <div class="top-player-name">{{user.full_name}}</div>
+                <div class="top-player-name">
+                    {{user.full_name}}
+                    <div class="top-player-tours-count">{{get_word_form(count, ['мини-квиз', 'мини-квиза', 'мини-квизов'])}}</div>
+                </div>
                 <div>
                     <div class="top-player-rating">
                         <img src="/images/rating.svg?v={{version}}">

@@ -12,7 +12,7 @@ from src.query_params.artists_parse import ArtistsParse
 from src.query_params.history_query import HistoryQuery
 from src.query_params.top_players_query import TopPlayersQuery
 from src.utils.auth import get_user
-from src.utils.common import get_static_hash
+from src.utils.common import get_static_hash, get_word_form
 
 router = APIRouter()
 
@@ -26,7 +26,8 @@ def index(user: Optional[User] = Depends(get_user)) -> HTMLResponse:
         user=user,
         page="index",
         version=get_static_hash(),
-        top_players=top_players
+        top_players=top_players,
+        get_word_form=get_word_form
     )
 
     return HTMLResponse(content=content)

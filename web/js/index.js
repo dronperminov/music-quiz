@@ -16,7 +16,8 @@ function BuildTopPlayers(players, topCount = 10) {
         let link = MakeElement("", image, {href: `/analytics?username=${user.username}`}, "a")
         MakeElement("", link, {src: user.avatar_url}, "img")
 
-        MakeElement("top-player-name", topPlayer, {innerText: user.full_name})
+        let name = MakeElement("top-player-name", topPlayer, {innerText: user.full_name})
+        MakeElement("top-player-tours-count", name, {innerText: GetWordForm(players[i][2], ['мини-квиз', 'мини-квиза', 'мини-квизов'])})
 
         let rating = MakeElement("top-player-rating", topPlayer)
         MakeElement("", rating, {src: "/images/rating.svg"}, "img")

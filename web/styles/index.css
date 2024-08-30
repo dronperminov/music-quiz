@@ -97,3 +97,9 @@
     font-weight: bold;
     font-size: 1.3em;
 }
+
+.top-player-tours-count {
+    font-size: 0.75em;
+    color: var(--subtext-color);
+    margin-top: 0.2em;
+}

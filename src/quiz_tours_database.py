@@ -26,7 +26,7 @@ class QuizToursDatabase:
         self.last_questions_count = 1000
         self.rating_alpha = 0.99
 
-    def get_rating(self, username: str, query: dict) -> Optional[float]:
+    def get_rating(self, username: str, query: dict) -> Optional[Tuple[float, int]]:
         answers = self.database.quiz_tour_answers.find({"username": username})
         question_id2correct = {answer["question_id"]: answer["correct"] for answer in answers}
         corrects = []
@@ -45,9 +45,9 @@ class QuizToursDatabase:
             if len(scores) == len(question_ids):
                 corrects.append(sum(scores) / len(question_ids) * 100 * quiz_tour_id2scale[quiz_tour["quiz_tour_id"]])
 
-        return round(sum(corrects) / len(corrects), 1) if corrects else None
+        return (round(sum(corrects) / len(corrects), 1), len(corrects)) if corrects else None
 
-    def get_top_players(self, query: dict) -> List[Tuple[User, float]]:
+    def get_top_players(self, query: dict) -> List[Tuple[User, float, int]]:
         available_usernames = [settings["username"] for settings in self.database.settings.find({"show_progress": True}, {"username": 1})]
         username2user = {user["username"]: User.from_dict(user) for user in self.database.users.find({"username": {"$in": available_usernames}})}
         username2rating = defaultdict(int)
@@ -58,8 +58,8 @@ class QuizToursDatabase:
             if rating is not None:
                 username2rating[username] = rating
 
-        top_players = sorted([(rating, username) for username, rating in username2rating.items()], reverse=True)
-        return [(username2user[username], rating) for rating, username in top_players]
+        top_players = sorted([(rating, count, username) for username, (rating, count) in username2rating.items()], reverse=True)
+        return [(username2user[username], rating, count) for rating, count, username in top_players]
 
     def get_quiz_tours(self, username: Optional[str], params: QuizToursSearch) -> Tuple[int, List[QuizTour]]:
         query = params.to_query()
