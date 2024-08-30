@@ -94,6 +94,21 @@
                 <div class="search-filter-line"></div>
 
                 <div class="search-filter">
+                    <label onclick="yearsInput.Clear()">Годы выпуска треков</label>
+                    <div class="interval-input" id="years-filter">
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">от</span> <input class="basic-input" type="text">
+                        </div>
+                        <div class="interval-input-cell">
+                            <span class="interval-input-label">до</span> <input class="basic-input" type="text">
+                        </div>
+                    </div>
+                    <div class="error" id="years-filter-error"></div>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter">
                     <label onclick="tracksCountInput.Clear()">Количество треков (всего)</label>
                     <div class="interval-input" id="tracks-count-filter">
                         <div class="interval-input-cell">
@@ -242,9 +257,10 @@
         let status = ""
         let infos = new InfoPanels()
 
-        let listenCountInput = new IntervalInput("listen-count-filter"{% if search_params %}, {{search_params.listen_count|tojson}}{% endif %})
-        let tracksCountInput = new IntervalInput("tracks-count-filter"{% if search_params %}, {{search_params.tracks_count|tojson}}{% endif %})
-        let addedTracksInput = new IntervalInput("added-tracks-filter"{% if search_params %}, {{search_params.added_tracks|tojson}}{% endif %})
+        let listenCountInput = new IntervalInput("listen-count-filter", true{% if search_params %}, {{search_params.listen_count|tojson}}{% endif %})
+        let yearsInput = new IntervalInput("years-filter", false{% if search_params %}, {{search_params.years|tojson}}{% endif %})
+        let tracksCountInput = new IntervalInput("tracks-count-filter", true{% if search_params %}, {{search_params.tracks_count|tojson}}{% endif %})
+        let addedTracksInput = new IntervalInput("added-tracks-filter", true{% if search_params %}, {{search_params.added_tracks|tojson}}{% endif %})
         let genresInput = new MultiSelect("genres-filter"{% if search_params %}, {{search_params.genres|tojson}}{% endif %})
         let artistTypeInput = new MultiSelect("artist-type-filter"{% if search_params %}, {{search_params.artist_type|tojson}}{% endif %})
         let artistsCountInput = new MultiSelect("artists-count-filter"{% if search_params %}, {{search_params.artists_count|tojson}}{% endif %})

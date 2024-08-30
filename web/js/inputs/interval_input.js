@@ -1,7 +1,8 @@
-function IntervalInput(blockId, value = null, onChange = null) {
+function IntervalInput(blockId, prettify = true, value = null, onChange = null) {
     this.block = document.getElementById(blockId)
     this.error = document.getElementById(`${blockId}-error`)
     this.scale2number = {"": 1, "K": 1000, "M": 1000000}
+    this.prettify = prettify
 
     let inputs = this.block.getElementsByTagName("input")
     this.minInput = inputs[0]
@@ -58,6 +59,9 @@ IntervalInput.prototype.GetInputValue = function(input, message) {
 }
 
 IntervalInput.prototype.PrettifyInputValue = function(value) {
+    if (!this.prettify)
+        return value
+
     if (value.match(/^\d+[kKкКmMмМ]$/g))
         return value
 

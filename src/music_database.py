@@ -450,6 +450,14 @@ class MusicDatabase:
     def __get_noted_artist_ids(self, username: str) -> Set[int]:
         return {note["artist_id"] for note in self.database.notes.find({"username": username, "text": {"$ne": ""}})}
 
+    def __get_years_artist_ids(self, query: dict) -> Set[int]:
+        artist_ids = set()
+
+        for track in self.database.tracks.find({"year": query}, {"artists": 1}):
+            artist_ids.update(track["artists"])
+
+        return artist_ids
+
     def __get_artists_count_artist_ids(self, query: dict, params: ArtistsSearch) -> Tuple[Set[int], Set[int]]:
         artists_count2artist_ids = {enum.value: set() for enum in ArtistsCount}
 
@@ -503,6 +511,9 @@ class MusicDatabase:
             in_set, nin_set = self.__get_language_artist_ids(language_query, params)
             artist_ids["$in"].append(in_set)
             artist_ids["$nin"].append(nin_set)
+
+        if years_query := query.pop("year", {}):
+            artist_ids["$in"].append(self.__get_years_artist_ids(years_query))
 
         if artist_ids_query := self.__artist_ids_to_query(artist_ids):
             query["artist_id"] = artist_ids_query

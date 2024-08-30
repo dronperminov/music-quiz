@@ -13,6 +13,7 @@ class ArtistsSearch:
     order: str = "listen_count"
     order_type: int = -1
     listen_count: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
+    years: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
     tracks_count: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
     added_tracks: List[Union[str, float, int]] = field(default_factory=lambda: ["", ""])
     genres: Dict[Genre, bool] = field(default_factory=dict)
@@ -26,6 +27,7 @@ class ArtistsSearch:
         query = {
             **self.__to_name_query(),
             **interval_query("listen_count", self.listen_count),
+            **interval_query("year", self.years),
             **interval_query("tracks_count", self.tracks_count),
             **interval_query("added_tracks", self.added_tracks),
             **enum_query("genres", self.genres),
