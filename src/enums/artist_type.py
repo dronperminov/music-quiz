@@ -22,7 +22,7 @@ class ArtistType(Enum):
             ArtistType.SINGER_FEMALE: ["певица"],
             ArtistType.PERFORMER_MALE: ["исполнитель", "рэпер", "музыкант", "композитор"],
             ArtistType.PERFORMER_FEMALE: ["исполнительница", "рэперша"],
-            ArtistType.BAND: ["группа", "творческое объединение"],
+            ArtistType.BAND: ["группа", "творческое объединение", "бэнд", "band"],
             ArtistType.PROJECT: ["проект"],
             ArtistType.DUET: ["дуэт"],
             ArtistType.TRIO: ["трио"],
