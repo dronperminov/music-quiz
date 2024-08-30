@@ -2,7 +2,7 @@ import logging
 import random
 import re
 from collections import defaultdict
-from datetime import datetime
+from datetime import date, datetime
 from typing import Dict, List, Optional, Tuple
 
 from src import Database, QuestionsDatabase
@@ -24,18 +24,23 @@ class QuizToursDatabase:
         self.logger = logger
 
         self.last_questions_count = 1000
+        self.rating_alpha = 0.99
 
     def get_rating(self, username: str) -> Optional[float]:
         answers = self.database.quiz_tour_answers.find({"username": username})
         question_id2correct = {answer["question_id"]: answer["correct"] for answer in answers}
         corrects = []
 
+        quiz_tour_id2date = {quiz_tour["quiz_tour_id"]: quiz_tour["created_at"].date() for quiz_tour in self.database.quiz_tours.find({}).sort("created_at", -1)}
+        max_date = max(quiz_tour_id2date.values(), default=date.today())
+        quiz_tour_id2scale = {quiz_tour_id: self.rating_alpha ** (max_date - quiz_tour_date).days for quiz_tour_id, quiz_tour_date in quiz_tour_id2date.items()}
+
         for quiz_tour in self.database.quiz_tours.find({"question_ids": {"$in": list(question_id2correct)}}):
             question_ids = quiz_tour["question_ids"]
             scores = [question_id2correct[question_id] for question_id in question_ids if question_id in question_id2correct]
 
             if len(scores) == len(question_ids):
-                corrects.append(sum(scores) / len(question_ids) * 100)
+                corrects.append(sum(scores) / len(question_ids) * 100 * quiz_tour_id2scale[quiz_tour["quiz_tour_id"]])
 
         return round(sum(corrects) / len(corrects), 1) if corrects else None
 
