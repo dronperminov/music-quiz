@@ -54,6 +54,14 @@ MultiSelect.prototype.ClickOption = function(option) {
         this.onChange()
 }
 
+MultiSelect.prototype.Disable = function() {
+    this.block.classList.add("multi-select-disabled")
+}
+
+MultiSelect.prototype.Enable = function() {
+    this.block.classList.remove("multi-select-disabled")
+}
+
 MultiSelect.prototype.GetValue = function() {
     let value = {}
 

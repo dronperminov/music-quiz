@@ -74,10 +74,14 @@ QuizTour.prototype.TagToRus = function(tag) {
         "rock": "рок",
         "hip-hop": "рэп",
 
-        "zeroes": "нулевые",
+        "1990": "девяностые",
+        "2000": "нулевые",
+        "2010": "десятые",
         "modern": "современное",
+        "2020": "2020-ые",
 
-        "hits": "хиты"
+        "hits": "хиты",
+        "unhackneyed": "незаезженное"
     }
 
     return tag2rus[tag]

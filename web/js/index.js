@@ -26,8 +26,11 @@ function BuildTopPlayers(players, topCount = 10) {
 
 function ShowTopPlayers() {
     let tags = tagsInput.GetValue()
+    tagsInput.Disable()
 
     SendRequest("/get-top-players", {tags: tags}).then(response => {
+        tagsInput.Enable()
+
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(`Не удалось получить данные об игроках<br><b>Причина:</b> ${response.message}`, "error-notification", 3500)
             return

@@ -194,6 +194,10 @@ iniut[type="search"]::-webkit-search-decoration {
     margin-right: 0.5em;
 }
 
+.multi-select-disabled .multi-select-option {
+    pointer-events: none;
+}
+
 .multi-select-option-checked {
     background: var(--multi-select-checked-background);
     border-color: var(--multi-select-checked-border);

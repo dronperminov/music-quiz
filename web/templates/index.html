@@ -20,7 +20,7 @@
             <p>В случае, если игрок не хочет, чтобы остальные видели его рейтинг, он может отключить настройку "Показывать рейтинг" в <a class="link" href="/settings">настройках</a>.</p>
         </div>
 
-        <div class="top-players-tags" onclick="tagsInput.Clear()">Теги:</div>
+        <div class="top-players-tags" onclick="tagsInput.Clear(); ShowTopPlayers()">Теги:</div>
         {% include "components/tags.html" %}
 
         <div class="top-players" id="top-players">
