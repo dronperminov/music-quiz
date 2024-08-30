@@ -16,16 +16,6 @@ function LoadQuizTours(response, block) {
     return response.quiz_tours.length
 }
 
-function ClearSearchParams(url) {
-    let keys = []
-
-    for (let [key, value] of url.searchParams.entries())
-        keys.push(key)
-
-    for (let key of keys)
-        url.searchParams.delete(key)
-}
-
 function PushUrlParams(params = null) {
     let url = new URL(window.location.href)
 

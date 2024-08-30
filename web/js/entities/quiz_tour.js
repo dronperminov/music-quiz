@@ -57,6 +57,8 @@ QuizTour.prototype.TagToRus = function(tag) {
         "russian": "русское",
         "rock": "рок",
         "modern": "современное",
+        "hits": "хиты",
+        "zeroes": "нулевые"
     }
 
     return tag2rus[tag]
