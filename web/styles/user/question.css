@@ -1,3 +1,9 @@
+.quiz-tour-name {
+    margin-bottom: 1em;
+    font-size: 0.8em;
+    color: var(--subtext-color);
+}
+
 .question-title {
     font-size: 1.3em;
     font-weight: bold;
