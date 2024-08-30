@@ -24,7 +24,7 @@ QuizTour.prototype.Build = function() {
         MakeElement("quiz-tour-completed-text", quizTourImage, {innerText: "Пройден"})
     }
 
-    this.BuildStatus(quizTour)
+    this.BuildStatus(quizTour, true)
 
     let quizTourName = MakeElement("quiz-tour-name", quizTour)
     MakeElement("", quizTourName, {href: `/quiz-tours/${this.quizTourId}`, innerText: this.name}, "a")
@@ -41,6 +41,21 @@ QuizTour.prototype.Build = function() {
     return quizTour
 }
 
+QuizTour.prototype.BuildPage = function(blockId) {
+    let quizTour = document.getElementById(blockId)
+
+    let quizTourImage = MakeElement("quiz-tour-image", quizTour)
+    MakeElement("", quizTourImage, {src: this.imageUrl, loading: "lazy"}, "img")
+
+    MakeElement("quiz-tour-name", quizTour, {innerText: this.name}, "h1")
+    MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
+
+    if (this.quizTourType != "regular")
+        MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
+
+    MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
+}
+
 QuizTour.prototype.QuizTourTypeToRus = function() {
     let type2rus = {
         "alphabet": "алфавит",
@@ -55,10 +70,14 @@ QuizTour.prototype.TagToRus = function(tag) {
     let tag2rus = {
         "foreign": "зарубежное",
         "russian": "русское",
+
         "rock": "рок",
+        "hip-hop": "рэп",
+
+        "zeroes": "нулевые",
         "modern": "современное",
-        "hits": "хиты",
-        "zeroes": "нулевые"
+
+        "hits": "хиты"
     }
 
     return tag2rus[tag]
@@ -82,6 +101,8 @@ QuizTour.prototype.BuildStatus = function(quizTour) {
 
     if (this.status.lost > 0)
         MakeElement("quiz-tour-status-bar quiz-tour-status-bar-lost", status, {style: `width: ${this.status.lost / this.questionIds.length * 100}%`})
+
+    MakeElement("quiz-tour-time", quizTour, {innerHTML: `<b>время</b>: ${FormatTotalTime(this.status.time.total)}`})
 }
 
 QuizTour.prototype.BuildQuestions = function(quizTour) {

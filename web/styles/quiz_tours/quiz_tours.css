@@ -83,6 +83,12 @@
     background-color: var(--lost-color);
 }
 
+.quiz-tour-time {
+    text-align: right;
+    margin: -0.7em 0 0.7em 0;
+    color: var(--subtext-color);
+}
+
 .quiz-tour-tags {
     font-size: 1.1em;
     text-align: right;
@@ -127,6 +133,7 @@
     font-weight: bold;
     background-color: #ffffffea;
     color: #888888;
+    pointer-events: none;
 }
 
 .quiz-tour-completed .quiz-tour-name a,

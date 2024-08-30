@@ -89,3 +89,18 @@ function ClearSearchParams(url) {
     for (let key of keys)
         url.searchParams.delete(key)
 }
+
+function FormatTotalTime(total) {
+    if (total < 60)
+        return `${Math.round(total * 10) / 10} сек.`
+
+    let seconds = Math.round(total)
+    let minutes = `${Math.floor(seconds / 60) % 60}`.padStart(2, '0')
+    let hours = Math.floor(seconds / 3600)
+    seconds = `${seconds % 60}`.padStart(2, '0')
+
+    if (total < 3600)
+        return `${minutes} мин. ${seconds} сек.`
+
+    return `${hours} ч. ${minutes} мин.`
+}

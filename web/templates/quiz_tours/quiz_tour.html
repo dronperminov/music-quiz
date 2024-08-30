@@ -1,23 +1,75 @@
-{% set title = "%s | Музыкальный квиз Плюшевой наковальни" % artist.name %}
+{% set title = "%s | Музыкальный квиз Плюшевой наковальни" % quiz_tour.name %}
 {% include "components/header.html" %}
     <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/utils/lyrics_updater.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
     <link rel="stylesheet" type="text/css" href="/styles/utils/history.css?v={{version}}">
-    <link rel="stylesheet" type="text/css" href="/styles/artists/artist.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/user/analytics.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/quiz_tours/quiz_tours.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/quiz_tours/quiz_tour.css?v={{version}}">
 </head>
 <body ondragstart="return false">
     {% include "components/menu.html" %}
 
     <div class="content">
-        <div id="artist"></div>
+        <div id="quiz-tour"></div>
 
-        <div class="artist-line"></div>
+        <h2>Аналитика</h2>
 
-        <h3>Треки</h3>
+        {% set status = statuses[quiz_tour.quiz_tour_id] %}
+        <div class="analytics-block">
+            <div onclick="ToggleTotalTimeChart()">
+                <div class="analytics-total-value">{{format_time(status.time.total)}}</div>
+                <div class="analytics-description">Суммарное время, потребовавшееся на прохождение квиза (нажмите, чтобы увидеть подробности)</div>
+                <div class="analytics-bar analytics-bar-small" id="total-time-small-bar">
+                    {% if status.time.correct > 0 %}<div class="correct-background" style="width: {{status.time.correct / status.time.total * 100}}%"></div>{% endif %}
+                    {% if status.time.incorrect > 0 %}<div class="incorrect-background" style="width: {{status.time.incorrect / status.time.total * 100}}%"></div>{% endif %}
+                </div>
+            </div>
 
-        <div class="artist-tracks">
+            <div class="analytics-chart" id="total-time-block">
+                <div class="analytics-list">
+                    {% if status.time.correct > 0 %}
+                    <div class="analytics-time-label"><span class="circle correct-background"></span> Верно</div>
+                    <div class="analytics-time">{{format_time(status.time.correct)}}</div>
+                    {% endif %}
+
+                    {% if status.time.incorrect > 0 %}
+                    <div class="analytics-time-label"><span class="circle incorrect-background"></span> Неверно</div>
+                    <div class="analytics-time">{{format_time(status.time.incorrect)}}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-block" id="questions-block">
+            <div class="analytics-title analytics-title-interactive" onclick="ToggleQuestionsChart()">Ответы</div>
+            <div class="analytics-description">Нажмите на показатель, чтобы увидеть диаграмму.</div>
+            <div class="analytics-items">
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
+                    <div class="analytics-item-value">{{status.total}}</div>
+                    <div class="analytics-item-name"><b>всего</b></div>
+                </div>
+
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
+                    <div class="analytics-item-value">{{status.correct_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle correct-background"></span><b>верно</b>: {{status.correct}}</div>
+                </div>
+
+                <div class="analytics-item analytics-item-interactive" onclick="ShowQuestionsChart()">
+                    <div class="analytics-item-value">{{status.incorrect_percents|round(1)}}%</div>
+                    <div class="analytics-item-name"><span class="circle incorrect-background"></span><b>неверно</b>: {{status.incorrect}}</div>
+                </div>
+            </div>
+            <div class="analytics-chart" id="questions-chart-block">
+                <svg id="questions-chart"></svg>
+            </div>
+        </div>
+
+        <h2>Загаданные треки</h2>
+
+        <div class="quiz-tour-tracks">
             {% for track in tracks %}
             <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} {% if note and track.track_id in note.track_id2seek %}data-note-seek="{{note.track_id2seek[track.track_id]}}"{% endif %} preload="metadata"></audio>
 
@@ -32,8 +84,8 @@
                         <span class="circle" style="background-color: hsl({{track_id2scale[track.track_id].scale * 120}}, 70%, 50%)" onclick="ShowTrackNotification({{track.track_id}}, {{track_id2scale[track.track_id].correct}}, {{track_id2scale[track.track_id].incorrect}})"></span>{% endif %}<a href="/tracks/{{track.track_id}}">{{track.title}}</a></div>
                         <div class="track-artists">
                             {% for artist_id in track.artists %}{{", " if loop.index0 else ""}}
-                            {% if artist_id != artist.artist_id %}<a class="link" href="/artists/{{artist_id}}">{{artist2name[artist_id]}}</a>{% else %}<b>{{artist2name[artist_id]}}</b>{% endif %}{% endfor %}
-                            {% if track.year > 0 %}(<a class="link" href="https://www.google.com/search?q={{(artist.name + ' ' +track.title)|urlencode}} год выхода" target="_blank">{{track.year}}</a>){% endif %}
+                            <a class="link" href="/artists/{{artist_id}}">{{artist_id2artist[artist_id].name}}</a>{% endfor %}
+                            {% if track.year > 0 %}({{track.year}}</a>){% endif %}
                         </div>
                     </div>
                     <div class="track-controls">
@@ -88,30 +140,35 @@
     <script src="/js/utils/player_collection.js?v={{version}}"></script>
     <script src="/js/utils/history.js?v={{version}}"></script>
 
-    <script src="/js/inputs/note_input.js?v={{version}}"></script>
+    <script src="/js/charts/chart.js?v={{version}}"></script>
 
     <script src="/js/entities/genre.js?v={{version}}"></script>
-    <script src="/js/entities/artist_type.js?v={{version}}"></script>
     <script src="/js/entities/language.js?v={{version}}"></script>
     <script src="/js/entities/metadata.js?v={{version}}"></script>
     <script src="/js/entities/track.js?v={{version}}"></script>
-    <script src="/js/entities/artist.js?v={{version}}"></script>
+    <script src="/js/entities/quiz_tour.js?v={{version}}"></script>
 
     <script src="/js/tracks/track.js?v={{version}}"></script>
+    <script src="/js/user/analytics.js?v={{version}}"></script>
     <script>
         let infos = new InfoPanels()
         let players = new PlayerCollection()
 
-        const artistData = {{jsonable_encoder(artist)|tojson}}
         const tracks = {{jsonable_encoder(tracks)|tojson}}
+        const trackId2artists = {{jsonable_encoder(track_id2artists)|tojson}}
+
+        const questionsData = [
+            {value: {{status.correct}}, color: key2color.correct},
+            {value: {{status.incorrect}}, color: key2color.incorrect},
+        ]
 
         for (let track of tracks) {
             track = new Track(track)
-            infos.Add(track.BuildInfo([artistData]))
+            infos.Add(track.BuildInfo(trackId2artists[track.track_id]))
         }
 
-        let artist = new Artist(artistData)
-        artist.BuildPage({{jsonable_encoder(artist_id2scale)}}, {{jsonable_encoder(note)|tojson}})
+        let quizTour = new QuizTour({{jsonable_encoder(quiz_tour)}}, {{jsonable_encoder(statuses)}})
+        quizTour.BuildPage("quiz-tour")
     </script>
     {% include "components/footer.html" %}
 </body>

@@ -48,6 +48,13 @@ class QuizToursDatabase:
         quiz_tour = self.database.quiz_tours.find_one({"quiz_tour_id": quiz_tour_id})
         return QuizTour.from_dict(quiz_tour) if quiz_tour else None
 
+    def get_quiz_tour_track_ids(self, quiz_tour: QuizTour) -> List[int]:
+        questions = self.database.quiz_tour_questions.find({"question_id": {"$in": quiz_tour.question_ids}}, {"question": 1})
+        return list(question["question"]["track_id"] for question in questions)
+
+    def is_tour_ended(self, username: str, quiz_tour: QuizTour) -> bool:
+        return self.database.quiz_tour_answers.count_documents({"username": username, "question_id": {"$in": quiz_tour.question_ids}}) == len(quiz_tour.question_ids)
+
     def get_quiz_tour_question(self, username: str, quiz_tour: QuizTour) -> Optional[QuizTourQuestion]:
         answers = list(self.database.quiz_tour_answers.find({"username": username, "question_id": {"$in": quiz_tour.question_ids}}).sort("question_id", -1))
 
@@ -76,11 +83,25 @@ class QuizToursDatabase:
 
         for quiz_tour in quiz_tours:
             status = {True: 0, False: 0}
+            time = {True: 0, False: 0}
 
             for answer in self.database.quiz_tour_answers.find({"username": username, "question_id": {"$in": quiz_tour.question_ids}}):
                 status[answer["correct"]] += 1
+                time[answer["correct"]] += answer["answer_time"]
 
-            quiz_tour_id2statuses[quiz_tour.quiz_tour_id] = {"correct": status[True], "incorrect": status[False], "lost": len(quiz_tour.question_ids) - sum(status.values())}
+            quiz_tour_id2statuses[quiz_tour.quiz_tour_id] = {
+                "correct": status[True],
+                "incorrect": status[False],
+                "lost": len(quiz_tour.question_ids) - sum(status.values()),
+                "total": len(quiz_tour.question_ids),
+                "correct_percents": status[True] / len(quiz_tour.question_ids) * 100,
+                "incorrect_percents": status[False] / len(quiz_tour.question_ids) * 100,
+                "time": {
+                    "correct": time[True],
+                    "incorrect": time[False],
+                    "total": time[True] + time[False]
+                }
+            }
 
         return quiz_tour_id2statuses
 
