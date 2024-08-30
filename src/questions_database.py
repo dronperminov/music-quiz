@@ -61,10 +61,13 @@ class QuestionsDatabase:
         return question
 
     def generate_question(self, track: Track, username: str, settings: QuestionSettings, group_id: Optional[int]) -> Question:
-        implemented_question_types = {QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK, QuestionType.ARTIST_BY_INTRO}
-        question_types = list(set(settings.question_types).intersection(track.get_question_types()).intersection(implemented_question_types))
-        question_weights = [settings.question_types[question_type] for question_type in question_types]
-        question_type = random.choices(question_types, weights=question_weights, k=1)[0]
+        if group_id is None:
+            implemented_question_types = {QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK, QuestionType.ARTIST_BY_INTRO}
+            question_types = list(set(settings.question_types).intersection(track.get_question_types()).intersection(implemented_question_types))
+            question_weights = [settings.question_types[question_type] for question_type in question_types]
+            question_type = random.choices(question_types, weights=question_weights, k=1)[0]
+        else:
+            question_type = QuestionType.ARTIST_BY_TRACK
 
         return self.__generate_question_by_type(question_type, track, username, settings, group_id)
 
