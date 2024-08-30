@@ -16,11 +16,14 @@
 
         <h2>Топ игроков</h2>
         <div class="description">
-            <p>Проходя мини-квизы, игроки зарабатывают себе баллы <b>рейтинга</b> (1 балл = 1 правильный ответ). На основе набранных баллов формируется топ.</p>
+            <p>Проходя мини-квизы, игроки зарабатывают себе баллы <b>рейтинга</b>. За каждый мини-квиз игрок получает очки, равные количеству процентов правильных ответов, умноженному на коэффициент, учитывающий давность тура. Очки, полученные за все пройденные квизы усредняются и идут в итоговый рейтинг. На основе набранных очков формируется топ.</p>
             <p>В случае, если игрок не хочет, чтобы остальные видели его рейтинг, он может отключить настройку "Показывать рейтинг" в <a class="link" href="/settings">настройках</a>.</p>
         </div>
 
-        <div class="top-players">
+        <div class="top-players-tags" onclick="tagsInput.Clear()">Теги:</div>
+        {% include "components/tags.html" %}
+
+        <div class="top-players" id="top-players">
             {% for user, rating in top_players[:10] %}
             <div class="top-player">
                 <div class="top-player-place">{{loop.index}}</div>
@@ -54,6 +57,16 @@
             <a class="basic-button gradient-button" href="/quiz-tours">ВЫБРАТЬ МИНИ-КВИЗ</a>
         </div>
     </div>
+
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+
+    <script src="/js/inputs/multi_select.js?v={{version}}"></script>
+    <script src="/js/index.js?v={{version}}"></script>
+
+    <script>
+        let tagsInput = new MultiSelect("tags-filter", null, false, ShowTopPlayers)
+    </script>
 
     {% include "components/footer.html" %}
 </body>

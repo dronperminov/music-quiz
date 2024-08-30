@@ -91,3 +91,9 @@
     vertical-align: bottom;
     margin-top: -0.1em;
 }
+
+.top-players-tags {
+    margin-top: 1em;
+    font-weight: bold;
+    font-size: 1.3em;
+}

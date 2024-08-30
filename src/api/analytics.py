@@ -26,7 +26,7 @@ def get_analytics(username: str = Query(""), user: Optional[User] = Depends(get_
         show_user = user
 
     analytics = questions_database.get_analytics(username=show_user.username)
-    rating = quiz_tours_database.get_rating(username=show_user.username)
+    rating = quiz_tours_database.get_rating(username=show_user.username, query={})
     artist_id2artist = music_database.get_artists_by_ids(artist_ids=analytics.artists.get_artist_ids())
 
     template = templates.get_template("user/analytics.html")

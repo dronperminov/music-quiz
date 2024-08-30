@@ -1,7 +1,8 @@
-function MultiSelect(blockId, value = null, onlyCheck = false) {
+function MultiSelect(blockId, value = null, onlyCheck = false, onChange = null) {
     this.block = typeof blockId === "string" ? document.getElementById(blockId) : blockId
     this.options = {}
     this.onlyCheck = onlyCheck
+    this.onChange = onChange
 
     for (let option of this.block.children) {
         option.addEventListener("click", () => this.ClickOption(option))
@@ -37,10 +38,8 @@ MultiSelect.prototype.SetOptionValue = function(option, value) {
 MultiSelect.prototype.ClickOption = function(option) {
     if (this.onlyCheck) {
         option.classList.toggle("multi-select-option-checked")
-        return
     }
-
-    if (option.classList.contains("multi-select-option-checked")) {
+    else if (option.classList.contains("multi-select-option-checked")) {
         option.classList.remove("multi-select-option-checked")
         option.classList.add("multi-select-option-unchecked")
     }
@@ -50,6 +49,9 @@ MultiSelect.prototype.ClickOption = function(option) {
     else {
         option.classList.add("multi-select-option-checked")
     }
+
+    if (this.onChange !== null)
+        this.onChange()
 }
 
 MultiSelect.prototype.GetValue = function() {
