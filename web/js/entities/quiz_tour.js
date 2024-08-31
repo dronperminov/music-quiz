@@ -30,9 +30,7 @@ QuizTour.prototype.Build = function() {
     let quizTourName = MakeElement("quiz-tour-name", quizTour)
     MakeElement("", quizTourName, {href: `/quiz-tours/${this.quizTourId}`, innerText: this.name}, "a")
 
-    if (this.quizTourType != "regular")
-        MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
-
+    MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
     MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
     MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
     this.BuildQuestions(quizTour)
@@ -50,15 +48,14 @@ QuizTour.prototype.BuildPage = function(blockId) {
 
     MakeElement("quiz-tour-name", quizTour, {innerText: this.name}, "h1")
     MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
-
-    if (this.quizTourType != "regular")
-        MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
+    MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
 
     MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
 }
 
 QuizTour.prototype.QuizTourTypeToRus = function() {
     let type2rus = {
+        "regular": "классический",
         "alphabet": "алфавит",
         "stairs": "лесенка",
         "letter": "на одну букву",

@@ -160,9 +160,8 @@
 .top3-player .top-player-name {
     font-size: 0.8em;
     font-weight: bold;
-    width: 75%;
+    width: min-content;
     margin: 0 auto;
-    height: 32px;
 }
 
 .top3-player .top-player-tours-count {
