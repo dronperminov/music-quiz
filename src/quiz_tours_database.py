@@ -64,17 +64,24 @@ class QuizToursDatabase:
     def get_quiz_tours(self, username: Optional[str], params: QuizToursSearch) -> Tuple[int, List[QuizTour]]:
         query = params.to_query()
         quiz_tours = [QuizTour.from_dict(quiz_tour) for quiz_tour in self.database.quiz_tours.find(query)]
+        finished_quiz_tour_ids = set()
 
-        if params.completed_type != "all" and username is not None:
+        if username is not None:
             filtered_quiz_tours = []
             for quiz_tour in quiz_tours:
                 answers = self.database.quiz_tour_answers.count_documents({"username": username, "question_id": {"$in": quiz_tour.question_ids}})
 
-                if params.check_complete(answers, len(quiz_tour.question_ids)):
-                    filtered_quiz_tours.append(quiz_tour)
+                if not params.check_complete(answers, len(quiz_tour.question_ids)):
+                    continue
+
+                filtered_quiz_tours.append(quiz_tour)
+
+                if answers == len(quiz_tour.question_ids):
+                    finished_quiz_tour_ids.add(quiz_tour.quiz_tour_id)
+
             quiz_tours = filtered_quiz_tours
 
-        quiz_tours = sorted(quiz_tours, key=lambda quiz_tour: quiz_tour.quiz_tour_id, reverse=True)
+        quiz_tours = sorted(quiz_tours, key=lambda quiz_tour: (quiz_tour.quiz_tour_id not in finished_quiz_tour_ids, quiz_tour.quiz_tour_id), reverse=True)
         skip = params.page * params.page_size
         return len(quiz_tours), quiz_tours[skip:skip + params.page_size]
 
