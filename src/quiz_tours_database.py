@@ -120,31 +120,7 @@ class QuizToursDatabase:
         self.database.quiz_tour_answers.insert_one(answer.to_dict())
 
     def get_quiz_tours_statuses(self, username: str, quiz_tours: List[QuizTour]) -> Dict[int, dict]:
-        quiz_tour_id2statuses = {}
-
-        for quiz_tour in quiz_tours:
-            status = {True: 0, False: 0}
-            time = {True: 0, False: 0}
-
-            for answer in self.database.quiz_tour_answers.find({"username": username, "question_id": {"$in": quiz_tour.question_ids}}):
-                status[answer["correct"]] += 1
-                time[answer["correct"]] += answer["answer_time"]
-
-            quiz_tour_id2statuses[quiz_tour.quiz_tour_id] = {
-                "correct": status[True],
-                "incorrect": status[False],
-                "lost": len(quiz_tour.question_ids) - sum(status.values()),
-                "total": len(quiz_tour.question_ids),
-                "correct_percents": status[True] / len(quiz_tour.question_ids) * 100,
-                "incorrect_percents": status[False] / len(quiz_tour.question_ids) * 100,
-                "time": {
-                    "correct": time[True],
-                    "incorrect": time[False],
-                    "total": time[True] + time[False]
-                }
-            }
-
-        return quiz_tour_id2statuses
+        return {quiz_tour.quiz_tour_id: self.__get_quiz_tour_status(quiz_tour=quiz_tour, username=username) for quiz_tour in quiz_tours}
 
     def generate_tour(self, params: dict, quiz_tour_type: QuizTourType, settings: QuestionSettings, questions_count: int) -> Optional[QuizTour]:
         tracks = self.questions_database.get_question_tracks(settings)
@@ -327,3 +303,34 @@ class QuizToursDatabase:
             quiz_tour_questions.append(tour_question)
 
         return quiz_tour_questions
+
+    def __get_quiz_tour_status(self, quiz_tour: QuizTour, username: str) -> dict:
+        status = {True: 0, False: 0}
+        time = {True: 0, False: 0}
+
+        username2count = defaultdict(list)
+
+        for answer in self.database.quiz_tour_answers.find({"question_id": {"$in": quiz_tour.question_ids}}):
+            username2count[answer["username"]].append(answer["correct"])
+
+            if answer["username"] == username:
+                status[answer["correct"]] += 1
+                time[answer["correct"]] += answer["answer_time"]
+
+        username2score = {username: sum(answers) / len(answers) for username, answers in username2count.items() if len(answers) == len(quiz_tour.question_ids)}
+
+        return {
+            "correct": status[True],
+            "incorrect": status[False],
+            "lost": len(quiz_tour.question_ids) - sum(status.values()),
+            "total": len(quiz_tour.question_ids),
+            "correct_percents": status[True] / len(quiz_tour.question_ids) * 100,
+            "incorrect_percents": status[False] / len(quiz_tour.question_ids) * 100,
+            "time": {
+                "correct": time[True],
+                "incorrect": time[False],
+                "total": time[True] + time[False]
+            },
+            "finished_count": len(username2score),
+            "mean_score": sum(username2score.values()) / max(len(username2score), 1) * 100
+        }

@@ -24,7 +24,8 @@ QuizTour.prototype.Build = function() {
         MakeElement("quiz-tour-completed-text", quizTourImage, {innerText: "Пройден"})
     }
 
-    this.BuildStatus(quizTour, true)
+    this.BuildStatus(quizTour)
+    this.BuildAnalytics(quizTour)
 
     let quizTourName = MakeElement("quiz-tour-name", quizTour)
     MakeElement("", quizTourName, {href: `/quiz-tours/${this.quizTourId}`, innerText: this.name}, "a")
@@ -111,8 +112,21 @@ QuizTour.prototype.BuildStatus = function(quizTour) {
     MakeElement("quiz-tour-time", quizTour, {innerHTML: `<b>время</b>: ${FormatTotalTime(this.status.time.total)}`})
 }
 
+QuizTour.prototype.BuildAnalytics = function(quizTour) {
+    if (this.status === null)
+        return
+
+    if (this.status.finished_count > 0) {
+        let users = GetWordForm(this.status.finished_count, ["игрок", "игрока", "игроков"])
+        let color = `hsl(${this.status.mean_score * 1.2}, 70%, 50%)`
+        let circle = `<div class="circle" style="background-color: ${color}"></div>`
+        MakeElement("quiz-tour-time", quizTour, {innerHTML: `<b>средний балл:</b> ${circle}${Math.round(this.status.mean_score * 10) / 10}% (${users})`})
+    }
+}
+
 QuizTour.prototype.BuildQuestions = function(quizTour) {
-    let rating = this.IsStarted() ? `<span class="correct-color">${GetWordForm(this.status.correct, ['балл', 'балла', 'баллов'])}</span>, ` : ""
+    let percent = Math.round(this.status.correct / this.questionIds.length * 1000) / 10
+    let rating = this.IsStarted() ? ` (<span class="correct-color">${GetWordForm(this.status.correct, ['балл', 'балла', 'баллов'])}, ${percent}%</span>)` : ""
     let questions = GetWordForm(this.questionIds.length, ['вопрос', 'вопроса', 'вопросов'])
-    MakeElement("quiz-tour-questions", quizTour, {innerHTML: `${rating}${questions}`})
+    MakeElement("quiz-tour-questions", quizTour, {innerHTML: `${questions}${rating}`})
 }
