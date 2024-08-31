@@ -1,6 +1,5 @@
 function BuildTopPlayers(players, topCount = 10) {
     let topPlayers = document.getElementById("top-players")
-    topPlayers.innerHTML = ""
 
     if (players.length == 0)
         topPlayers.innerHTML = "Нет квизов, удовлетворяющих заданным параметрам"
@@ -26,11 +25,18 @@ function BuildTopPlayers(players, topCount = 10) {
 }
 
 function ShowTopPlayers() {
+    let loader = document.getElementById("loader")
+    loader.classList.remove("hidden")
+
     let tags = tagsInput.GetValue()
     tagsInput.Disable()
 
+    let topPlayers = document.getElementById("top-players")
+    topPlayers.innerHTML = ""
+
     SendRequest("/get-top-players", {tags: tags}).then(response => {
         tagsInput.Enable()
+        loader.classList.add("hidden")
 
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(`Не удалось получить данные об игроках<br><b>Причина:</b> ${response.message}`, "error-notification", 3500)
