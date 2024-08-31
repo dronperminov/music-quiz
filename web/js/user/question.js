@@ -22,6 +22,11 @@ function ShowAnswer(correct = null) {
     if (trackModifications !== null)
         trackModifications.classList.add("hidden")
 
+    let miraclesField = document.getElementById("miracles-field")
+    if (miraclesField !== null)
+        for (let div of miraclesField.getElementsByTagName("span"))
+            div.classList.remove("hidden")
+
     let showAnswerButton = document.getElementById("show-answer")
     showAnswerButton.classList.add("hidden")
 

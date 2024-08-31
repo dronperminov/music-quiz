@@ -155,6 +155,8 @@ class QuizToursDatabase:
             questions = self.__generate_stairs_tour_questions(tracks=tracks, last_questions=last_questions, settings=settings, count=questions_count)
         elif quiz_tour_type == QuizTourType.LETTER:
             questions = self.__generate_letter_tour_questions(tracks=tracks, last_questions=last_questions, settings=settings, count=questions_count)
+        elif quiz_tour_type == QuizTourType.MIRACLES_FIELD:
+            questions = self.__generate_miracles_field_tour_questions(tracks=tracks, last_questions=last_questions, settings=settings, count=questions_count)
         else:
             raise ValueError(f'Invalid quiz tour type "{quiz_tour_type}"')
 
@@ -275,6 +277,33 @@ class QuizToursDatabase:
             tracks = [track for track in tracks if not sampled_artists.intersection(track["artists"])]
 
         return self.__convert_to_quiz_tour_questions(questions=questions)
+
+    def __generate_miracles_field_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
+        tracks = self.__filter_miracles_field_tracks(tracks)
+        questions = []
+        sampled_artists = set()
+
+        for _ in range(count):
+            track = self.questions_database.sample_question_tracks(tracks, last_questions, settings, None, 1)[0]
+            question = self.questions_database.generate_question(track=track, username="", settings=settings, group_id=None)
+            questions.append(question)
+            last_questions.append(question)
+
+            sampled_artists.update(track.artists)
+            tracks = [track for track in tracks if not sampled_artists.intersection(track["artists"])]
+
+        return self.__convert_to_quiz_tour_questions(questions=questions)
+
+    def __filter_miracles_field_tracks(self, tracks: List[dict]) -> List[dict]:
+        track_id2track = {track["track_id"]: track for track in tracks}
+        available_tracks = []
+
+        for artist in self.database.artists.find({"tracks.track_id": {"$in": list(track_id2track)}}, {"tracks": 1, "name": 1}):
+            for track_position in artist["tracks"]:
+                if track_position["track_id"] in track_id2track and re.fullmatch(r"\w+", artist["name"]):
+                    available_tracks.append(track_id2track[track_position["track_id"]])
+
+        return available_tracks
 
     def __get_last_questions(self, track_ids: List[int]) -> List[Question]:
         last_questions = self.database.quiz_tour_questions.find({"question.track_id": {"$in": track_ids}}).sort("question_id", -1).limit(self.last_questions_count)

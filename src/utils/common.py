@@ -1,5 +1,6 @@
 import hashlib
 import os
+from collections import defaultdict
 from typing import List
 
 
@@ -51,3 +52,12 @@ def format_time(total: float) -> str:
         return f"{minutes:02} мин. {seconds:02} сек."
 
     return f"{hours} ч. {minutes:02} мин."
+
+
+def get_top_letter(word: str) -> str:
+    letter2count = defaultdict(int)
+
+    for letter in word.lower():
+        letter2count[letter] += 1
+
+    return max([(count, letter) for letter, count in letter2count.items()])[1]

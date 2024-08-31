@@ -30,7 +30,9 @@ def get_tags(args: Namespace) -> List[str]:
     if args.positions in ["hits", "unhackneyed"]:
         tags.append(args.positions)
 
-    tags.extend(args.years.split("-") if "-" in args.years else [args.years])
+    if args.years != "all":
+        tags.extend(args.years.split("-") if "-" in args.years else [args.years])
+
     return tags
 
 
@@ -40,11 +42,11 @@ def main() -> None:
     parser.add_argument("--description", help="Description of the quiz tour", type=str, required=True)
     parser.add_argument("--questions", help="Number of questions", type=int, required=True)
     parser.add_argument("--image", help="Path to dir with image", type=str, required=True)
-    parser.add_argument("--years", help="", choices=("1990-2000", "2000", "2000-2010", "modern", "2020"), required=True)
+    parser.add_argument("--years", help="", choices=("all", "1990-2000", "2000", "2000-2010", "modern", "2020"), required=True)
     parser.add_argument("--genres", help="", choices=("all", "rock", "hip-hop"), default="all")
     parser.add_argument("--languages", help="", choices=("all", "russian", "foreign"), default="all")
     parser.add_argument("--positions", help="", choices=("all", "hits", "normal", "unhackneyed"), default="normal")
-    parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter"), default="regular")
+    parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter", "miracles_field"), default="regular")
     parser.add_argument("--listen-count", help="Min border of artist listen count", type=int, default=100_000)
 
     args = parser.parse_args()
@@ -53,6 +55,7 @@ def main() -> None:
     database.connect()
 
     years = {
+        "all": {(1980, 1989): 1, (1990, 1999): 1, (2000, 2009): 1, (2010, 2014): 1, (2015, 2019): 1, (2020, ""): 1},
         "1990-2000": {(1990, 1999): 1, (2000, 2009): 1},
         "2000": {(2000, 2009): 1},
         "2000-2010": {(2000, 2009): 0.5, (2010, 2019): 0.5},
@@ -84,6 +87,7 @@ def main() -> None:
         "alphabet": QuizTourType.ALPHABET,
         "stairs": QuizTourType.STAIRS,
         "letter": QuizTourType.LETTER,
+        "miracles_field": QuizTourType.MIRACLES_FIELD
     }[args.mechanics]
 
     settings = QuestionSettings(
