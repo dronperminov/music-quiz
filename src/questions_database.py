@@ -51,7 +51,7 @@ class QuestionsDatabase:
         last_questions = self.__get_last_questions(username=settings.username, track_ids=[track["track_id"] for track in tracks], group_id=group_id)
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
-        if last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
+        if group_id is None and last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
             question = self.repeat_incorrect_question(last_incorrect_questions, settings.question_settings)
         else:
             track = self.sample_question_tracks(tracks=tracks, last_questions=last_questions, settings=settings.question_settings, group_id=group_id, count=1)[0]
