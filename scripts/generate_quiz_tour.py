@@ -43,7 +43,7 @@ def main() -> None:
     parser.add_argument("--questions", help="Number of questions", type=int, required=True)
     parser.add_argument("--image", help="Path to dir with image", type=str, required=True)
     parser.add_argument("--years", help="", choices=("all", "1990-2000", "2000", "2000-2010", "modern", "2020"), required=True)
-    parser.add_argument("--genres", help="", choices=("all", "rock", "hip-hop"), default="all")
+    parser.add_argument("--genres", help="", choices=("all", "rock", "hip-hop", "pop"), default="all")
     parser.add_argument("--languages", help="", choices=("all", "russian", "foreign"), default="all")
     parser.add_argument("--positions", help="", choices=("all", "hits", "normal", "unhackneyed"), default="normal")
     parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter", "miracles_field"), default="regular")
@@ -66,7 +66,8 @@ def main() -> None:
     genres = {
         "all": {genre: 1 / len(Genre) for genre in Genre},
         "rock": {Genre.ROCK: 1},
-        "hip-hop": {Genre.HIP_HOP: 1}
+        "hip-hop": {Genre.HIP_HOP: 1},
+        "pop": {Genre.POP: 1},
     }[args.genres]
 
     languages = {
@@ -93,7 +94,7 @@ def main() -> None:
     settings = QuestionSettings(
         answer_time=0,
         show_simple_artist_type=False,
-        start_from_chorus=False,
+        start_from_chorus=args.positions == "hits",
         genres=genres,
         years=years,
         languages=languages,
@@ -127,6 +128,7 @@ def main() -> None:
     print(f"- languages: {settings.languages}")
     print(f"- track position: {settings.track_position}")
     print(f"- listen count: {settings.listen_count}")
+    print(f"- start from chorus: {settings.start_from_chorus}")
 
     answer = input("Write yes for continue >")
 

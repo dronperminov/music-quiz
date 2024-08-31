@@ -74,6 +74,7 @@ QuizTour.prototype.TagToRus = function(tag) {
 
         "rock": "рок",
         "hip-hop": "рэп",
+        "pop": "попса",
 
         "1990": "девяностые",
         "2000": "нулевые",
