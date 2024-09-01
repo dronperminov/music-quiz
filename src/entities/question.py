@@ -105,7 +105,7 @@ class Question:
     def get_random_seek(track: Track, start_from_chorus: bool) -> float:
         if track.lyrics and track.lyrics.lrc:
             if start_from_chorus and track.lyrics.chorus:
-                start, end = random.choice(track.lyrics.chorus)
+                start, end = track.lyrics.chorus[0] if len(track.lyrics.chorus) == 1 else random.choice(track.lyrics.chorus[:-1])
                 return track.lyrics.lines[start].time
 
             line = random.choice(track.lyrics.lines[:len(track.lyrics) * 3 // 4])
