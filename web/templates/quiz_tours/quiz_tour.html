@@ -75,7 +75,7 @@
             {% for track in tracks %}
             <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} {% if note and track.track_id in note.track_id2seek %}data-note-seek="{{note.track_id2seek[track.track_id]}}"{% endif %} preload="metadata"></audio>
 
-            <div class="track" id="track-{{track.track_id}}">
+            <div class="track {% if track_id2correct[track.track_id] %}track-correct{% else %}track-incorrect{% endif %}" id="track-{{track.track_id}}">
                 <div class="track-main">
                     <div class="track-image">
                         <img src="{{track.image_url if track.image_url else '/images/tracks/default.png'}}" loading="lazy" onclick="PlayPauseTrack('{{track.track_id}}')">

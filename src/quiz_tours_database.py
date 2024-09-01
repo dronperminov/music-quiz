@@ -89,9 +89,11 @@ class QuizToursDatabase:
         quiz_tour = self.database.quiz_tours.find_one({"quiz_tour_id": quiz_tour_id})
         return QuizTour.from_dict(quiz_tour) if quiz_tour else None
 
-    def get_quiz_tour_track_ids(self, quiz_tour: QuizTour) -> List[int]:
-        questions = self.database.quiz_tour_questions.find({"question_id": {"$in": quiz_tour.question_ids}}, {"question": 1})
-        return list(question["question"]["track_id"] for question in questions)
+    def get_quiz_tour_track_results(self, username: str, quiz_tour: QuizTour) -> Dict[int, bool]:
+        questions = self.database.quiz_tour_questions.find({"question_id": {"$in": quiz_tour.question_ids}}, {"question.track_id": 1, "question_id": 1})
+        answers = self.database.quiz_tour_answers.find({"username": username, "question_id": {"$in": quiz_tour.question_ids}})
+        question_id2answer = {answer["question_id"]: answer["correct"] for answer in answers}
+        return {question["question"]["track_id"]: question_id2answer[question["question_id"]] for question in questions}
 
     def is_tour_ended(self, username: str, quiz_tour: QuizTour) -> bool:
         return self.database.quiz_tour_answers.count_documents({"username": username, "question_id": {"$in": quiz_tour.question_ids}}) == len(quiz_tour.question_ids)
