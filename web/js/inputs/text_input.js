@@ -14,8 +14,11 @@ function TextInput(inputId, pattern, errorMessage, multiline = false, value = nu
 }
 
 TextInput.prototype.SetValue = function(value) {
-    if (value !== null)
-        this.input.value = value
+    if (value === null)
+        return
+
+    this.input.value = value
+    this.Input()
 }
 
 TextInput.prototype.ValidateValue = function(value) {

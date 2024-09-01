@@ -32,6 +32,8 @@ function BalanceInput(blockId, errorMessage, value, onChange = null) {
 }
 
 BalanceInput.prototype.SetValue = function(value) {
+    this.error.innerText = ""
+
     for (let option of Object.values(this.options)) {
         option.input.value = 50
         option.value.innerText = "50"

@@ -111,6 +111,8 @@ IntervalInput.prototype.SetValue = function(value) {
     if (value === null)
         return
 
+    this.ClearErrorInput(this.minInput)
+    this.ClearErrorInput(this.maxInput)
     this.minInput.value = this.PrettifyInputValue(value[0].toString())
     this.maxInput.value = this.PrettifyInputValue(value[1].toString())
 }

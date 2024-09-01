@@ -14,8 +14,11 @@ function NumberInput(inputId, min, max, pattern, value = null, onChange = null) 
 }
 
 NumberInput.prototype.SetValue = function(value) {
-    if (value !== null)
-        this.input.value = value
+    if (value === null)
+        return
+
+    this.input.value = value
+    this.Input()
 }
 
 NumberInput.prototype.GetValue = function() {
