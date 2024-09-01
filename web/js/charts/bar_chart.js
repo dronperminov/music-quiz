@@ -93,11 +93,16 @@ BarChart.prototype.Map = function(x, xmin, xmax, min, max) {
     return (x - xmin) * (max - min) / (xmax - xmin) + min
 }
 
-BarChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0) {
+BarChart.prototype.Plot = function(svg, data, axisKey, labelKey, maxValue = null, startIndex = 0) {
     let width = svg.clientWidth
     let height = svg.clientHeight == 0 ? 300 : svg.clientHeight
     let rectWidth = width / (data.length - startIndex) - this.padding
     let limits = this.GetLimits(data, labelKey, startIndex)
+
+    if (maxValue !== null) {
+        limits.max = maxValue
+        limits.delta = limits.max - limits.min
+    }
 
     if (rectWidth < this.minRectWidth) {
         rectWidth = this.minRectWidth

@@ -118,6 +118,12 @@
     transition: all .2s linear;
 }
 
+.analytics-chart-checkbox {
+    text-align: left;
+    margin: 1em 0;
+    font-size: 0.9em;
+}
+
 #questions-chart {
     margin-top: 1.5em;
     height: 125px;
@@ -135,7 +141,7 @@
 }
 
 .analytics-chart-open {
-    max-height: 250px;
+    max-height: 270px;
     transition: all .2s linear;
 }
 

@@ -46,9 +46,19 @@ function ToggleTimesChart() {
         ShowTimesChart("total")
 }
 
-function ShowTimesChart(targetKey) {
+function ShowTimesChart(targetKey = null) {
     let chartBlock = document.getElementById("times-chart-block")
     chartBlock.classList.add("analytics-chart-open")
+
+    let oneScale = document.getElementById("times-scale").checked
+    let maxTime = 0
+
+    for (let key of ["total", "correct", "incorrect"]) {
+        maxTime = Math.max(maxTime, ...timesData[key].map(data => data.count))
+
+        if (targetKey === null && !document.getElementById(`times-${key}-chart`).classList.contains("hidden"))
+            targetKey = key
+    }
 
     for (let key of ["total", "correct", "incorrect"]) {
         let svg = document.getElementById(`times-${key}-chart`)
@@ -64,7 +74,7 @@ function ShowTimesChart(targetKey) {
         label.classList.add("analytics-label-selected")
 
         let chart = new BarChart({barColor: key2color[key], minRectWidth: 32, maxRectWidth: 45, bottomPadding: 12})
-        chart.Plot(svg, timesData[key], "label", "count")
+        chart.Plot(svg, timesData[key], "label", "count", oneScale ? maxTime : null)
     }
 
     let block = document.getElementById("times-block")

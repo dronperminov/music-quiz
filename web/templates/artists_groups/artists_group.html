@@ -77,6 +77,14 @@
                 </div>
             </div>
             <div class="analytics-chart" id="times-chart-block">
+                <div class="analytics-chart-checkbox">
+                    <label class="switch-checkbox">
+                        <input type="checkbox" id="times-scale" onchange="ShowTimesChart()" checked>
+                        <span class="switch-checkbox-slider"></span>
+                    </label>
+                    <label for="times-scale">В одном масштабе</label>
+                </div>
+
                 <svg id="times-total-chart"></svg>
                 <svg class="hidden" id="times-correct-chart"></svg>
                 <svg class="hidden" id="times-incorrect-chart"></svg>
