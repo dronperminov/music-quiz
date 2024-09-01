@@ -6,6 +6,9 @@ const key2color = {
 }
 
 function ToggleQuestionsChart() {
+    if (Math.max(...questionsData.map(data => data.value)) == 0)
+        return
+
     let chartBlock = document.getElementById("questions-chart-block")
     chartBlock.classList.toggle("analytics-chart-open")
 
@@ -14,6 +17,9 @@ function ToggleQuestionsChart() {
 }
 
 function ShowQuestionsChart() {
+    if (Math.max(...questionsData.map(data => data.value)) == 0)
+        return
+
     let chartBlock = document.getElementById("questions-chart-block")
     chartBlock.classList.add("analytics-chart-open")
 
@@ -34,6 +40,9 @@ function ToggleTotalTimeChart() {
 }
 
 function ToggleTimesChart() {
+    if (timesData.total.reduce((sum, value) => sum + value.count, 0) == 0)
+        return
+
     let block = document.getElementById("times-chart-block")
     block.classList.toggle("analytics-chart-open")
 
@@ -47,6 +56,9 @@ function ToggleTimesChart() {
 }
 
 function ShowTimesChart(targetKey = null) {
+    if (timesData.total.reduce((sum, value) => sum + value.count, 0) == 0)
+        return
+
     let chartBlock = document.getElementById("times-chart-block")
     chartBlock.classList.add("analytics-chart-open")
 

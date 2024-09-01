@@ -25,6 +25,7 @@
 
         <h3>Общая статистика</h3>
 
+        {% if main.time.total > 0 %}
         <div class="analytics-block">
             <div onclick="ToggleTotalTimeChart()">
                 <div class="analytics-total-value">{{main.time.format_total(main.time.total)}}</div>
@@ -107,9 +108,15 @@
                 <svg class="hidden" id="times-incorrect-chart"></svg>
             </div>
         </div>
+        {% else %}
+        <div class="analytics-block">
+            <div class="analytics-no-info">Пока что нет информации</div>
+        </div>
+        {% endif %}
 
         <h3>Исполнители</h3>
 
+        {% if analytics.artists.correct and analytics.artists.incorrect %}
         <div class="analytics-block" id="correct-artists-block">
             <div class="analytics-title{% if analytics.artists.correct %} analytics-title-interactive{% endif %}" onclick="ToggleTable('correct-artists')">Топ угадываемых</div>
             <div class="analytics-description">Исполнители, которые были верно угаданы наибольшее количество раз (без учёта групп, как минимум трижды).</div>
@@ -167,18 +174,23 @@
             <div class="analytics-no-info">Пока что нет информации</div>
             {% endif %}
         </div>
+        {% else %}
+        <div class="analytics-block">
+            <div class="analytics-no-info">Пока что нет информации</div>
+        </div>
+        {% endif %}
 
         <h3>Треки</h3>
 
         <div class="analytics-block">
+            {% if analytics.tracks.genres.values()|sum %}
             <div class="analytics-title">Жанры</div>
-            {% if analytics.tracks.genres.values()|sum == 0 %}
-            <div class="analytics-no-info">Пока что нет информации</div>
-            {% else %}
             <div class="analytics-description">Показаны жанры, доля которых выше 2%.</div>
             <div class="analytics-chart analytics-chart-open">
                 <svg id="genres-chart"></svg>
             </div>
+            {% else %}
+            <div class="analytics-no-info">Пока что нет информации</div>
             {% endif %}
         </div>
     </div>
