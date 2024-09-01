@@ -118,26 +118,32 @@
     margin-top: 1em;
 }
 
+.top3-players + .top-players {
+    padding-top: 4.5em;
+}
+
 .top3-player {
     text-align: center;
+    position: relative;
 }
 
 .top3-player .top-player-image {
     width: 70%;
     margin: 0 auto 0.5em auto;
     position: relative;
+    z-index: 1;
+    border-radius: 100%;
+    padding: 3px;
+    background: radial-gradient(#ffb73a, #fced76 95%);
+    box-shadow: 0px 10px 13px -8px #999;
 }
 
-.top3-player .top-player-image img {
-    border: 3px solid #ffd700;
+.top3-player:first-child .top-player-image {
+    background: radial-gradient(#c7c7c7, #e6e6e6 95%);
 }
 
-.top3-player:first-child .top-player-image img {
-    border-color: #d0d0d0;
-}
-
-.top3-player:last-child .top-player-image img {
-    border-color: #ec8c2d;
+.top3-player:last-child .top-player-image {
+    background: radial-gradient(#d77223, #f9aa69 95%);
 }
 
 .top3-player:first-child, .top3-player:last-child {
@@ -148,7 +154,7 @@
     position: absolute;
     top: -4px;
     left: -4px;
-    background: linear-gradient(107deg, #FF9800 0%, #E91E63 100%);
+    background: linear-gradient(107deg, #ff9800 0%, #e91e63 100%);
     border-radius: 100%;
     width: 2.2em;
     height: 2.2em;
@@ -171,5 +177,36 @@
 
 .top3-player .top-player-rating {
     display: inline-block;
-    font-size: 0.8em;
+    font-size: 0.75em;
+}
+
+.top-player-flag {
+    background: linear-gradient(180deg, #fced76 0%, #ffb73a 100%);
+    width: 60%;
+    margin: -2em auto -4em auto;
+    padding-top: 2em;
+    padding-bottom: 2.5em;
+    clip-path: polygon(0% 0%, 0% 100%, 50% 80%, 100% 100%, 100% 0%);
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 0;
+}
+
+.top3-player:first-child .top-player-flag {
+    background: linear-gradient(180deg, #e6e6e6 0%, #c7c7c7 100%);
+}
+
+.top3-player:last-child .top-player-flag {
+    background: linear-gradient(180deg, #f9aa69 0%, #d77223 100%);
+}
+
+@media (max-width: 767px) {
+    .top3-players {
+        grid-gap: 0.8em;
+    }
+
+    .top3-player .top-player-rating img {
+        width: 1.2em;
+    }
 }

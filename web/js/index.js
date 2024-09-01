@@ -21,7 +21,8 @@ function BuildTopPlayers(players, topCount = 10) {
             MakeElement("", link, {src: user.avatar_url}, "img")
             MakeElement("top-player-place", image, {innerText: i + 1})
 
-            let rating = MakeElement("top-player-rating", topPlayer)
+            let flag = MakeElement("top-player-flag", topPlayer)
+            let rating = MakeElement("top-player-rating", flag)
             MakeElement("", rating, {src: "/images/rating.svg"}, "img")
             MakeElement("", rating, {innerText: ` ${players[i][1]}`}, "span")
         }
