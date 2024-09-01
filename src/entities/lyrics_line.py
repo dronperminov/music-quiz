@@ -22,6 +22,9 @@ class LyricsLine:
         text, minute, second = match.group("text").strip(), float(match.group("minute")), float(match.group("second"))
         return LyricsLine(time=round(minute * 60 + second, 2), text=text)
 
+    def is_russian(self) -> bool:
+        return len(re.findall(r"[а-яА-ЯёЁ]", self.text)) > len(re.findall(r"\w", self.text)) * 0.5
+
     def is_parenthesis(self) -> bool:
         return re.fullmatch(r"\([^)]+\)", self.text) is not None
 

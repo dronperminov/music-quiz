@@ -49,7 +49,8 @@ class Lyrics:
     def get_language(self) -> Language:
         text = self.get_text()
 
-        if len(re.findall(r"[а-яА-ЯёЁ]", text)) > 10:
+        russian_lines = sum(1 for line in self.lines if line.is_russian())
+        if russian_lines > len(self.lines) * 0.15:
             return Language.RUSSIAN
 
         if len(re.findall(r"[a-zA-Z]", text)) > len(text) * 0.4:
