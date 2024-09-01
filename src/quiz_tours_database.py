@@ -145,12 +145,13 @@ class QuizToursDatabase:
         else:
             raise ValueError(f'Invalid quiz tour type "{quiz_tour_type}"')
 
+        quiz_tour_questions = self.__convert_to_quiz_tour_questions(questions=questions)
         quiz_tour = QuizTour(
             quiz_tour_id=self.database.get_identifier("quiz_tours"),
             quiz_tour_type=quiz_tour_type,
             name=params["name"],
             description=params["description"],
-            question_ids=[question.question_id for question in questions],
+            question_ids=[question.question_id for question in quiz_tour_questions],
             image_url=params.get("image_url", "/images/quiz_tours/default.png"),
             created_at=datetime.now(),
             created_by="system",
@@ -160,7 +161,7 @@ class QuizToursDatabase:
         self.database.quiz_tours.insert_one(quiz_tour.to_dict())
         return quiz_tour
 
-    def __generate_regular_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
+    def __generate_regular_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[Question]:
         questions = []
         sampled_artists = set()
 
@@ -173,9 +174,9 @@ class QuizToursDatabase:
             sampled_artists.update(track.artists)
             tracks = [track for track in tracks if not sampled_artists.intersection(track["artists"])]
 
-        return self.__convert_to_quiz_tour_questions(questions=questions)
+        return questions
 
-    def __generate_alphabet_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
+    def __generate_alphabet_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[Question]:
         track_ids = {track["track_id"] for track in tracks}
         artists = self.database.artists.find({"tracks.track_id": {"$in": list(track_ids)}}, {"tracks": 1, "name": 1})
         track_id2artist_letter = {}
@@ -206,12 +207,11 @@ class QuizToursDatabase:
             sampled_letters.add(track_id2artist_letter[track.track_id])
             tracks = [track for track in tracks if track_id2artist_letter[track["track_id"]] not in sampled_letters]
 
-        questions = sorted(questions, key=lambda question: letter2position.get(track_id2artist_letter[question.track_id], 100))
-        return self.__convert_to_quiz_tour_questions(questions=questions)
+        return sorted(questions, key=lambda question: letter2position.get(track_id2artist_letter[question.track_id], 100))
 
-    def __generate_stairs_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
+    def __generate_stairs_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[Question]:
         track_id2track = {track["track_id"]: track for track in tracks}
-        name_len2tracks = defaultdict(list)
+        name_len2tracks: Dict[int, list] = defaultdict(list)
 
         for artist in self.database.artists.find({"tracks.track_id": {"$in": list(track_id2track)}}, {"tracks": 1, "name": 1}):
             name_len = len(re.sub(r"\W", "", artist["name"]))
@@ -228,9 +228,9 @@ class QuizToursDatabase:
             questions.append(question)
             last_questions.append(question)
 
-        return self.__convert_to_quiz_tour_questions(questions=questions)
+        return questions
 
-    def __generate_letter_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
+    def __generate_letter_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[Question]:
         track_id2tracks = {track["track_id"]: track for track in tracks}
         artists = self.database.artists.find({"tracks.track_id": {"$in": list(track_id2tracks)}}, {"tracks": 1, "name": 1})
         letter2tracks = defaultdict(list)
@@ -261,9 +261,9 @@ class QuizToursDatabase:
             sampled_artists.update(track.artists)
             tracks = [track for track in tracks if not sampled_artists.intersection(track["artists"])]
 
-        return self.__convert_to_quiz_tour_questions(questions=questions)
+        return questions
 
-    def __generate_miracles_field_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[QuizTourQuestion]:
+    def __generate_miracles_field_tour_questions(self, tracks: List[dict], last_questions: List[Question], settings: QuestionSettings, count: int) -> List[Question]:
         tracks = self.__filter_miracles_field_tracks(tracks)
         questions = []
         sampled_artists = set()
@@ -277,7 +277,7 @@ class QuizToursDatabase:
             sampled_artists.update(track.artists)
             tracks = [track for track in tracks if not sampled_artists.intersection(track["artists"])]
 
-        return self.__convert_to_quiz_tour_questions(questions=questions)
+        return questions
 
     def __filter_miracles_field_tracks(self, tracks: List[dict]) -> List[dict]:
         track_id2track = {track["track_id"]: track for track in tracks}
