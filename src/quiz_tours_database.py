@@ -285,7 +285,7 @@ class QuizToursDatabase:
 
         for artist in self.database.artists.find({"tracks.track_id": {"$in": list(track_id2track)}}, {"tracks": 1, "name": 1}):
             for track_position in artist["tracks"]:
-                if track_position["track_id"] in track_id2track and re.fullmatch(r"\w+", artist["name"]):
+                if track_position["track_id"] in track_id2track and re.fullmatch(r"\w\w\w\w+", artist["name"]):
                     available_tracks.append(track_id2track[track_position["track_id"]])
 
         return available_tracks
