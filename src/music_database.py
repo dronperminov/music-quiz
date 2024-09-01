@@ -222,7 +222,11 @@ class MusicDatabase:
 
     def download_tracks_image(self, output_path: str, username: str) -> None:
         for track in self.database.tracks.find({"image_url": {"$ne": None, "$not": {"$regex": "^/images/tracks/.*"}}}, {"track_id": 1, "image_url": 1}):
-            wget.download(track["image_url"], os.path.join(output_path, f'{track["track_id"]}.png'))
+            track_image_path = os.path.join(output_path, f'{track["track_id"]}.png')
+            if os.path.exists(track_image_path):
+                os.remove(track_image_path)
+
+            wget.download(track["image_url"], track_image_path)
             diff = {"image_url": {"prev": track["image_url"], "new": f'/images/tracks/{track["track_id"]}.png'}}
             self.update_track(track_id=track["track_id"], diff=diff, username=username)
 
@@ -233,7 +237,11 @@ class MusicDatabase:
             image_urls = []
 
             for i, image_url in enumerate(artist["image_urls"]):
-                wget.download(image_url, os.path.join(artist_dir, f"{i}.png"))
+                artist_image_path = os.path.join(artist_dir, f"{i}.png")
+                if os.path.exists(artist_image_path):
+                    os.remove(artist_image_path)
+
+                wget.download(image_url, artist_image_path)
                 image_urls.append(f'/images/artists/{artist["artist_id"]}/{i}.png')
 
             diff = {"image_urls": {"prev": artist["image_urls"], "new": image_urls}}
