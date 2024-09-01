@@ -21,8 +21,20 @@
         {% set top_letter = get_top_letter(artist_id2artist[track.artists[0]].name).upper() %}
         <div class="miracles-field" id="miracles-field">
             {% for letter in artist_id2artist[track.artists[0]].name.upper() %}
+            {% if letter not in " -+!.#$/" %}
             <div><span{% if letter != top_letter %} class="hidden"{% endif %}>{{letter}}</span></div>
+            {% else %}
+            <div class="space"><span>{{letter}}</span></div>
+            {% endif %}
             {% endfor %}
+        </div>
+
+        <div class="miracles-field-language">
+            {% if top_letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+            латинская
+            {% elif top_letter in "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" %}
+            русская
+            {% endif %}
         </div>
         {% endif %}
 

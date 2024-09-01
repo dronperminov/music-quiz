@@ -34,6 +34,17 @@
     font-weight: bold;
 }
 
+.miracles-field .space {
+    background: #fff;
+    color: #291c86;
+}
+
+.miracles-field-language {
+    text-align: center;
+    font-size: 0.9em;
+    margin: -0.9em 0 0.9em 0;
+}
+
 .question-title {
     font-size: 1.3em;
     font-weight: bold;
