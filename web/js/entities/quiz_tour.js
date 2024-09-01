@@ -31,7 +31,7 @@ QuizTour.prototype.Build = function() {
     MakeElement("", quizTourName, {href: `/quiz-tours/${this.quizTourId}`, innerText: this.name}, "a")
 
     MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
-    MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
+    MakeElement("quiz-tour-description", quizTour, {innerHTML: this.description})
     MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
     this.BuildQuestions(quizTour)
 
@@ -47,7 +47,7 @@ QuizTour.prototype.BuildPage = function(blockId) {
     MakeElement("", quizTourImage, {src: this.imageUrl, loading: "lazy"}, "img")
 
     MakeElement("quiz-tour-name", quizTour, {innerText: this.name}, "h1")
-    MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
+    MakeElement("quiz-tour-description", quizTour, {innerHTML: this.description})
 
     this.BuildAnalytics(quizTour, true)
 
