@@ -89,6 +89,12 @@
     color: var(--subtext-color);
 }
 
+.quiz-tour-analytics {
+    text-align: right;
+    margin: -0.5em 0 0.9em 0;
+    color: var(--subtext-color);
+}
+
 .quiz-tour-tags {
     font-size: 1.1em;
     text-align: right;

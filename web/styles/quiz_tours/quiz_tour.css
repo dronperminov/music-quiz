@@ -16,6 +16,13 @@
     margin-bottom: 0.5em;
 }
 
+.quiz-tour-analytics {
+    font-size: 1.1em;
+    color: var(--text-color);
+    margin: 0 0 0.5em 0;
+    text-align: left;
+}
+
 .quiz-tour-type {
     font-size: 1.1em;
 }

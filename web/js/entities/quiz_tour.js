@@ -25,7 +25,7 @@ QuizTour.prototype.Build = function() {
     }
 
     this.BuildStatus(quizTour)
-    this.BuildAnalytics(quizTour)
+    this.BuildAnalytics(quizTour, false)
 
     let quizTourName = MakeElement("quiz-tour-name", quizTour)
     MakeElement("", quizTourName, {href: `/quiz-tours/${this.quizTourId}`, innerText: this.name}, "a")
@@ -48,8 +48,10 @@ QuizTour.prototype.BuildPage = function(blockId) {
 
     MakeElement("quiz-tour-name", quizTour, {innerText: this.name}, "h1")
     MakeElement("quiz-tour-description", quizTour, {innerText: this.description})
-    MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
 
+    this.BuildAnalytics(quizTour, true)
+
+    MakeElement("quiz-tour-type", quizTour, {innerHTML: `<b>Механика</b>: ${this.QuizTourTypeToRus()}`})
     MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
 }
 
@@ -109,7 +111,7 @@ QuizTour.prototype.BuildStatus = function(quizTour) {
     MakeElement("quiz-tour-time", quizTour, {innerHTML: `<b>время</b>: ${FormatTotalTime(this.status.time.total)}`})
 }
 
-QuizTour.prototype.BuildAnalytics = function(quizTour) {
+QuizTour.prototype.BuildAnalytics = function(quizTour, titleCase) {
     if (this.status === null)
         return
 
@@ -117,7 +119,8 @@ QuizTour.prototype.BuildAnalytics = function(quizTour) {
         let users = GetWordForm(this.status.finished_count, ["игрок", "игрока", "игроков"])
         let color = `hsl(${this.status.mean_score * 1.2}, 70%, 50%)`
         let circle = `<div class="circle" style="background-color: ${color}"></div>`
-        MakeElement("quiz-tour-time", quizTour, {innerHTML: `<b>средний балл:</b> ${circle}${Math.round(this.status.mean_score * 10) / 10}% (${users})`})
+        let label = titleCase ? "Cредний балл" : "средний балл"
+        MakeElement("quiz-tour-analytics", quizTour, {innerHTML: `<b>${label}:</b> ${circle}${Math.round(this.status.mean_score * 10) / 10}% (${users})`})
     }
 }
 
