@@ -55,7 +55,7 @@ class QuizToursDatabase:
         for username in available_usernames:
             rating = self.get_rating(username=username, query=query)
 
-            if rating is not None:
+            if rating is not None and rating[1] > 3:
                 username2rating[username] = rating
 
         top_players = sorted([(rating, count, username) for username, (rating, count) in username2rating.items()], reverse=True)
