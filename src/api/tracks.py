@@ -1,9 +1,10 @@
 import random
+import urllib.parse
 from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, Query
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import database, music_database, questions_database
 from src.api import send_error, templates
@@ -18,9 +19,6 @@ router = APIRouter()
 
 @router.get("/tracks/{track_id}")
 def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(False), user: Optional[User] = Depends(get_user)) -> HTMLResponse:
-    if track_id == 0:
-        track_id = random.choice([track["track_id"] for track in database.tracks.find({"lyrics": {"$ne": None}, "lyrics.validated": False}, {"track_id": 1})])
-
     track = music_database.get_track(track_id=track_id)
 
     if not track:
@@ -49,6 +47,40 @@ def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(Fa
         artist_id2artist=artist_id2artist,
         track_id2scale=track_id2scale,
         artist_id2scale=artist_id2scale,
+        jsonable_encoder=jsonable_encoder
+    )
+    return HTMLResponse(content=content)
+
+
+@router.get("/markup-track")
+def get_markup(track_id: int = Query(0), language: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
+    if not user:
+        back_url = urllib.parse.quote(f"/markup_track/{track_id}", safe="")
+        return RedirectResponse(url=f"/login?back_url={back_url}")
+
+    if track_id == 0:
+        query = {"lyrics": {"$ne": None}, "lyrics.validated": False, "artists.1": {"$exists": False}}
+        if language != "":
+            query["language"] = language
+
+        track_id = random.choice([track["track_id"] for track in database.tracks.find(query, {"track_id": 1})])
+
+    track = music_database.get_track(track_id=track_id)
+
+    if not track:
+        return send_error(title="Трек не найден", text="Не удалось найти запрашиваемый трек. Возможно, он был удалён", user=user)
+
+    artist_id2name = music_database.get_artist_names_by_ids(artist_ids=track.artists)
+    settings = database.get_settings(username=user.username)
+
+    template = templates.get_template("tracks/markup.html")
+    content = template.render(
+        user=user,
+        page="markup-track",
+        version=get_static_hash(),
+        settings=settings,
+        track=track,
+        artist_id2name=artist_id2name,
         jsonable_encoder=jsonable_encoder
     )
     return HTMLResponse(content=content)

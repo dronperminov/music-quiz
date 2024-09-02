@@ -1,0 +1,81 @@
+{% set title = "%s | Музыкальный квиз Плюшевой наковальни" % track.title %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/lyrics_updater.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} preload="metadata"></audio>
+
+        <div class="track track-question" id="track-{{track.track_id}}">
+            <div class="track-main">
+                <div class="track-image">
+                    <img id="track-image" src="/images/tracks/default.png" onclick="PlayPauseTrack('{{track.track_id}}')">
+                </div>
+                <div>
+                    <div class="track-title">{{track.title}}</div>
+                    <div class="track-artists" id="track-artists">{% for artist_id in track.artists %}{% if loop.index0 %}, {% endif %}<a class="link" href="/artists/{{artist_id}}">{{artist_id2name[artist_id]}}</a>{% endfor %} ({{track.year}})</div>
+                </div>
+                <div class="track-controls">
+                    <div class="loader hidden" id="loader-{{track.track_id}}">
+                        <img src="/images/loader.svg">
+                    </div>
+
+                    <svg id="player-{{track.track_id}}-load" id="player-{{track.track_id}}-play" onclick="PlayTrack('{{track.track_id}}')" width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.495,2.573 L1.501,0.142 C0.832,-0.265 0,0.25 0,1.069 L0,5.931 C0,6.751 0.832,7.264 1.501,6.858 L5.495,4.428 C6.168,4.018 6.168,2.983 5.495,2.573" />
+                    </svg>
+
+                    <svg id="player-{{track.track_id}}-play" class="hidden" width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.495,2.573 L1.501,0.142 C0.832,-0.265 0,0.25 0,1.069 L0,5.931 C0,6.751 0.832,7.264 1.501,6.858 L5.495,4.428 C6.168,4.018 6.168,2.983 5.495,2.573" />
+                    </svg>
+
+                    <svg id="player-{{track.track_id}}-pause" class="hidden" width="1.25em" height="1.25em" viewBox="-0.7 -0.05 8.1 8.1" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1,0 C0.448,0 0,0.448 0,1 L0,7 C0,7.552 0.448,8 1,8 C1.552,8 2,7.552 2,7 L2,1 C2,0.448 1.552,0 1,0 M6,1 L6,7 C6,7.552 5.552,8 5,8 C4.448,8 4,7.552 4,7 L4,1 C4,0.448 4.448,0 5,0 C5.552,0 6,0.448 6,1" />
+                    </svg>
+                </div>
+                <div class="track-menu"></div>
+            </div>
+            <div class="player" id="player-{{track.track_id}}"></div>
+            {% if track.lyrics %}
+            <div class="lyrics-updater lyrics-updater-disabled hidden" data-lrc="{{track.lyrics.lrc|tojson}}" id="lyrics-updater-{{track.track_id}}">
+                <div class="lyrics-lines">
+                    {% set indices = track.lyrics.get_chorus_indices() %}
+                    {% for line in track.lyrics.lines %}
+                    <div class="lyrics-line{% if loop.index0 in indices %} lyrics-line-chorus{% endif %}" data-time="{{line.time}}">{{line.text}}</div>
+                    {% if indices.get(loop.index0, -1) != indices.get(loop.index, -1) %}<br>{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="markup-lyrics" id="lyrics"></div>
+        <button class="basic-button gradient-button" onclick="location.reload()">Следующий</button>
+    </div>
+
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/lyrics_updater.js?v={{version}}"></script>
+    <script src="/js/utils/player.js?v={{version}}"></script>
+    <script src="/js/utils/player_collection.js?v={{version}}"></script>
+
+    <script src="/js/entities/genre.js?v={{version}}"></script>
+    <script src="/js/entities/language.js?v={{version}}"></script>
+    <script src="/js/entities/metadata.js?v={{version}}"></script>
+    <script src="/js/entities/track.js?v={{version}}"></script>
+
+    <script src="/js/tracks/track.js?v={{version}}"></script>
+    <script>
+        let players = new PlayerCollection()
+
+        let track = new Track({{jsonable_encoder(track)|tojson}})
+        track.BuildLyricsText(document.getElementById("lyrics"))
+
+        {% if settings and settings.autoplay %}PlayTrack(track.trackId){% endif %}
+    </script>
+    {% include "components/footer.html" %}
+</body>
+</html>

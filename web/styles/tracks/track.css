@@ -191,3 +191,11 @@
 .track-unknown .track-tip ~ img {
     filter: blur(6px);
 }
+
+.markup-lyrics {
+    margin-top: 1em;
+}
+
+.markup-lyrics .admin-block {
+    margin-bottom: 1em;
+}
