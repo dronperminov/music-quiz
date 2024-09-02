@@ -32,7 +32,7 @@ class TestMusicDatabaseReal(AbstractTestMusicDatabase):
     def test_1_insert_artist_sole(self) -> None:
         self.add_from_yandex("real/artist_sole.json")
         self.assertEqual(self.music_database.get_artists_count(), 1)
-        self.assertEqual(self.music_database.get_tracks_count(), 8)
+        self.assertEqual(self.music_database.get_tracks_count(), 4)
 
         artist = self.music_database.get_artist(artist_id=1)
         self.assertEqual(artist.name, "Noize MC")
@@ -46,36 +46,36 @@ class TestMusicDatabaseReal(AbstractTestMusicDatabase):
 
         self.add_from_yandex("real/artist_all.json")
         self.assertEqual(self.music_database.get_tracks_count(), 10)
-        self.assertEqual(self.music_database.get_artists_count(), 4)
+        self.assertEqual(self.music_database.get_artists_count(), 8)
 
         artist = self.music_database.get_artist(artist_id=1)
         self.assertEqual(artist.name, "Noize MC")
 
         artist = self.music_database.get_artist(artist_id=3)
-        self.assertEqual(artist.name, "Монеточка")
-        self.assertEqual(artist.tracks[9], 6)
+        self.assertEqual(artist.name, "Карандаш")
+        self.assertEqual(artist.tracks[6], 42)
         self.assertTrue(artist.metadata.is_initial())
 
     def test_3_insert_playlist(self) -> None:
         self.add_from_yandex("real/playlist.json")
         self.assertEqual(self.music_database.get_tracks_count(), 14)
-        self.assertEqual(self.music_database.get_artists_count(), 5)
+        self.assertEqual(self.music_database.get_artists_count(), 8)
 
-        artist = self.music_database.get_artist(artist_id=5)
+        artist = self.music_database.get_artist(artist_id=2)
         self.assertEqual(artist.name, "Каста")
-        self.assertEqual(len(artist.tracks), 4)
+        self.assertEqual(len(artist.tracks), 5)
 
     def test_4_insert_tracks(self) -> None:
         self.add_from_yandex("real/tracks.json")
         self.assertEqual(self.music_database.get_tracks_count(), 17)
 
-        artist = self.music_database.get_artist(artist_id=8)
+        artist = self.music_database.get_artist(artist_id=11)
         self.assertEqual(artist.name, "Заточка")
         self.assertEqual(len(artist.tracks), 1)
 
         track = self.music_database.get_track(track_id=16)
         self.assertEqual(track.title, "Юра, прости")
-        self.assertEqual(track.artists, [7])
+        self.assertEqual(track.artists, [10])
 
     def test_5_insert_chart(self) -> None:
         self.add_from_yandex("real/chart.json")
@@ -95,7 +95,7 @@ class TestMusicDatabaseReal(AbstractTestMusicDatabase):
         self.music_database.remove_track(track_id=10, username="user")
         self.music_database.validate()
         self.assertEqual(self.music_database.get_tracks_count(), 115)
-        self.assertIsNone(self.music_database.get_artist(artist_id=4))
+        self.assertIsNone(self.music_database.get_artist(artist_id=8))
 
         artist = self.music_database.get_artist(artist_id=1)
         self.assertIsNotNone(artist)
@@ -107,4 +107,4 @@ class TestMusicDatabaseReal(AbstractTestMusicDatabase):
         self.music_database.validate()
         self.assertEqual(self.music_database.get_tracks_count(), 107)
         self.assertIsNone(self.music_database.get_artist(artist_id=1))
-        self.assertIsNone(self.music_database.get_artist(artist_id=2))
+        self.assertIsNone(self.music_database.get_artist(artist_id=3))
