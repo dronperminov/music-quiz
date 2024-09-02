@@ -1,3 +1,4 @@
+import random
 from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, Query
@@ -17,6 +18,9 @@ router = APIRouter()
 
 @router.get("/tracks/{track_id}")
 def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(False), user: Optional[User] = Depends(get_user)) -> HTMLResponse:
+    if track_id == 0:
+        track_id = random.choice([track["track_id"] for track in database.tracks.find({"lyrics": {"$ne": None}, "lyrics.validated": False}, {"track_id": 1})])
+
     track = music_database.get_track(track_id=track_id)
 
     if not track:

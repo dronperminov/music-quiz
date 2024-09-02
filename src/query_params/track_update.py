@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 from src.entities.lyrics import Lyrics
 from src.enums import Language
@@ -11,6 +11,7 @@ class TrackUpdate:
     language: Optional[Language] = None
     year: Optional[int] = None
     validated: Optional[bool] = None
+    chorus: Optional[List[List[int]]] = None
 
     def to_data(self, lyrics: Optional[Lyrics]) -> dict:
         data = {}
@@ -21,8 +22,13 @@ class TrackUpdate:
         if self.year:
             data["year"] = self.year
 
-        if self.validated is not None and lyrics:
+        if lyrics:
             data["lyrics"] = lyrics.to_dict()
+
+        if self.validated is not None:
             data["lyrics"]["validated"] = self.validated
+
+        if self.chorus is not None:
+            data["lyrics"]["chorus"] = self.chorus
 
         return data

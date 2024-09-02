@@ -107,6 +107,14 @@
     color: var(--main-color);
 }
 
+.track-lyrics-line-start-chorus {
+    margin-top: 1.5em;
+}
+
+.track-lyrics-line-end-chorus {
+    margin-bottom: 1.5em;
+}
+
 .track .lyrics-updater {
     margin-top: 1em;
 }

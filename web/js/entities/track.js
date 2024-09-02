@@ -142,7 +142,11 @@ Track.prototype.BuildLyrics = function(block) {
 
     let detailsContent = MakeElement("details-content", details)
 
-    let adminBlock = MakeElement("admin-block", detailsContent)
+    this.BuildLyricsText(detailsContent)
+}
+
+Track.prototype.BuildLyricsText = function(block) {
+    let adminBlock = MakeElement("admin-block", block)
     let validatedBlock = MakeElement("info-checkbox-line", adminBlock)
     let validatedInput = MakeCheckbox(validatedBlock, `lyrics-validated-${this.trackId}`, this.lyrics.validated)
     let validatedLabel = MakeElement("", validatedBlock, {innerText: "Текст и припев проверены", "for": `lyrics-validated-${this.trackId}`}, "label")
@@ -158,20 +162,28 @@ Track.prototype.BuildLyrics = function(block) {
         })
     })
 
-    let lyrics = MakeElement("track-lyrics", detailsContent)
-    let indices = this.GetChorusIndices()
+    let lyrics = MakeElement("track-lyrics", block)
+    let chorusIndices = this.GetChorusIndices()
+    let chorusStartEnd = new Set(this.lyrics.chorus.flat())
+    let chorusStart = new Set(this.lyrics.chorus.map(chorus => chorus[0]))
+    let chorusEnd = new Set(this.lyrics.chorus.map(chorus => chorus[1]))
 
     for (let i = 0; i < this.lyrics.lines.length; i++) {
-        let line = MakeElement("track-lyrics-line", lyrics, {innerText: this.lyrics.lines[i].text})
+        let line = MakeElement("track-lyrics-line", lyrics, {id: `track-${this.trackId}-lyrics-line-${i}`, "data-time": this.lyrics.lines[i].time})
 
-        if (i in indices)
+        if (i in chorusIndices)
             line.classList.add("track-lyrics-line-chorus")
 
-        let index1 = `${i}` in indices ? indices[`${i}`] : -1
-        let index2 = `${i + 1}` in indices ? indices[`${i + 1}`] : -1
+        if (chorusStart.has(i))
+            line.classList.add("track-lyrics-line-start-chorus")
 
-        if (index1 != index2)
-            MakeElement("", lyrics, {}, "br")
+        if (chorusEnd.has(i))
+            line.classList.add("track-lyrics-line-end-chorus")
+
+        let adminSpan = MakeElement("admin-block", line, null, "span")
+        let checkbox = MakeCheckbox(adminSpan, `track-${this.trackId}-chorus-${i}`, chorusStartEnd.has(i))
+        checkbox.addEventListener("change", () => this.UpdateChorus())
+        MakeElement("", line, {innerText: ` ${this.lyrics.lines[i].text}`}, "span")
     }
 }
 
@@ -313,6 +325,64 @@ Track.prototype.UpdateNote = function(buttons, artistId) {
         else
             audio.setAttribute("data-note-seek", seek)
     })
+}
+
+Track.prototype.UpdateChorus = function() {
+    let chorus = []
+
+    for (let i = 0; i < this.lyrics.lines.length; i++) {
+        let line = document.getElementById(`track-${this.trackId}-lyrics-line-${i}`)
+        let checked = document.getElementById(`track-${this.trackId}-chorus-${i}`).checked
+
+        if (!checked)
+            continue
+
+        if (chorus.length == 0 || chorus[chorus.length - 1].length == 2)
+            chorus.push([i])
+        else
+            chorus[chorus.length - 1].push(i)
+    }
+
+    if (chorus.length && chorus[chorus.length - 1].length != 2)
+        return
+
+    SendRequest("/update-track", {track_id: this.trackId, chorus: chorus}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            ShowNotification(`Не удалось обновить припев<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+        }
+        else {
+            this.lyrics.chorus = chorus
+        }
+
+        this.ShowChorus()
+    })
+}
+
+Track.prototype.ShowChorus = function() {
+    for (let i = 0; i < this.lyrics.lines.length; i++) {
+        document.getElementById(`track-${this.trackId}-chorus-${i}`).checked = false
+
+        let line = document.getElementById(`track-${this.trackId}-lyrics-line-${i}`)
+        line.classList.remove("track-lyrics-line-chorus")
+        line.classList.remove("track-lyrics-line-end-chorus")
+        line.classList.remove("track-lyrics-line-start-chorus")
+    }
+
+    for (let [start, end] of this.lyrics.chorus) {
+        document.getElementById(`track-${this.trackId}-chorus-${start}`).checked = true
+        document.getElementById(`track-${this.trackId}-chorus-${end}`).checked = true
+
+        for (let i = start; i <= end; i++) {
+            let line = document.getElementById(`track-${this.trackId}-lyrics-line-${i}`)
+            line.classList.add("track-lyrics-line-chorus")
+
+            if (i == start)
+                line.classList.add("track-lyrics-line-start-chorus")
+
+            if (i == end)
+                line.classList.add("track-lyrics-line-end-chorus")
+        }
+    }
 }
 
 Track.prototype.ReplaceUnknown = function(artists) {
