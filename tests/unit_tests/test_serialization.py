@@ -34,7 +34,8 @@ class TestSerialization(TestCase):
                 LyricsLine(time=6.8, text="line 4"),
             ],
             chorus=[],
-            lrc=True
+            lrc=True,
+            validated=True
         )
 
         return Track(

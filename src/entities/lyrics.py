@@ -12,6 +12,7 @@ class Lyrics:
     lines: List[LyricsLine]
     chorus: List[Tuple[int, int]]
     lrc: bool
+    validated: bool
 
     @classmethod
     def from_lrc(cls: "Lyrics", lyrics_str: str) -> "Lyrics":
@@ -21,18 +22,19 @@ class Lyrics:
             if (lyrics_line := LyricsLine.from_lrc(lrc_line=line)).text:
                 lines.append(lyrics_line)
 
-        return Lyrics(lines=lines, chorus=ChorusDetector().detect(lines), lrc=True)
+        return Lyrics(lines=lines, chorus=ChorusDetector().detect(lines), lrc=True, validated=False)
 
     @classmethod
     def from_text(cls: "Lyrics", text: str) -> "Lyrics":
         lines = [LyricsLine(time=0, text=line.strip()) for line in text.split("\n") if line.strip()]
-        return Lyrics(lines=lines, chorus=ChorusDetector().detect(lines), lrc=False)
+        return Lyrics(lines=lines, chorus=ChorusDetector().detect(lines), lrc=False, validated=False)
 
     def to_dict(self) -> dict:
         return {
             "lines": [line.to_dict() for line in self.lines],
             "chorus": [[start, end] for start, end in self.chorus],
-            "lrc": self.lrc
+            "lrc": self.lrc,
+            "validated": self.validated
         }
 
     @classmethod
@@ -40,7 +42,8 @@ class Lyrics:
         return cls(
             lines=[LyricsLine.from_dict(line) for line in data["lines"]],
             chorus=[(start, end) for start, end in data["chorus"]],
-            lrc=data["lrc"]
+            lrc=data["lrc"],
+            validated=data["validated"]
         )
 
     def get_text(self) -> str:
