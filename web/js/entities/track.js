@@ -133,7 +133,7 @@ Track.prototype.BuildLyrics = function(block) {
         return
 
     let detailsBlock = MakeElement("info-line", block)
-    let details = MakeElement("details", detailsBlock)
+    let details = MakeElement("details details-open", detailsBlock)
     let detailsHeader = MakeElement("details-header", details)
     detailsHeader.addEventListener("click", () => details.classList.toggle('details-open'))
 
@@ -141,6 +141,23 @@ Track.prototype.BuildLyrics = function(block) {
     MakeElement("", detailsHeader, {innerText: " Текст"}, "span")
 
     let detailsContent = MakeElement("details-content", details)
+
+    let adminBlock = MakeElement("admin-block", detailsContent)
+    let validatedBlock = MakeElement("info-checkbox-line", adminBlock)
+    let validatedInput = MakeCheckbox(validatedBlock, `lyrics-validated-${this.trackId}`, this.lyrics.validated)
+    let validatedLabel = MakeElement("", validatedBlock, {innerText: "Текст и припев проверены", "for": `lyrics-validated-${this.trackId}`}, "label")
+    validatedInput.addEventListener("change", () => {
+        SendRequest("/update-track", {track_id: this.trackId, validated: validatedInput.checked}).then(response => {
+            if (response.status != SUCCESS_STATUS) {
+                ShowNotification(`Не удалось обновить флаг проверки<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+                validatedInput.checked = this.lyrics.validated
+                return
+            }
+
+            this.lyrics.validated = validatedInput.checked
+        })
+    })
+
     let lyrics = MakeElement("track-lyrics", detailsContent)
     let indices = this.GetChorusIndices()
 

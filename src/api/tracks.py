@@ -68,7 +68,7 @@ def update_track(params: TrackUpdate, user: Optional[User] = Depends(get_user)) 
     if track is None:
         return JSONResponse({"status": "error", "message": f"Не удалось найти трек с track_id = {params.track_id} в базе"})
 
-    music_database.update_track(track_id=params.track_id, diff=track.get_diff(params.to_data()), username=user.username)
+    music_database.update_track(track_id=params.track_id, diff=track.get_diff(params.to_data(track.lyrics)), username=user.username)
     return JSONResponse({"status": "success"})
 
 
