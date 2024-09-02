@@ -72,7 +72,20 @@
         let players = new PlayerCollection()
 
         let track = new Track({{jsonable_encoder(track)|tojson}})
-        track.BuildLyricsText(document.getElementById("lyrics"))
+        track.BuildLyricsText(document.getElementById("lyrics"), false)
+        track.ShowChorus()
+
+        for (let line of document.getElementsByClassName("track-lyrics-line")) {
+            let seek = +line.getAttribute("data-time")
+
+            if (seek === 0)
+                continue
+
+            line.children[1].addEventListener("click", (e) => {
+                let player = players.GetPlayer()
+                player.Seek(seek)
+            })
+        }
 
         {% if settings and settings.autoplay %}PlayTrack(track.trackId){% endif %}
     </script>

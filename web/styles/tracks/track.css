@@ -115,6 +115,14 @@
     margin-bottom: 1.5em;
 }
 
+.track-lyrics-line-maybe-start-chorus {
+    background: #fff7b5;
+}
+
+.track-lyrics-line-maybe-end-chorus {
+    background: #ffe5b5;
+}
+
 .track .lyrics-updater {
     margin-top: 1em;
 }
@@ -197,5 +205,5 @@
 }
 
 .markup-lyrics .admin-block {
-    margin-bottom: 1em;
+    margin: 1.3em 0;
 }

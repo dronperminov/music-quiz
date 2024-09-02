@@ -145,8 +145,8 @@ Track.prototype.BuildLyrics = function(block) {
     this.BuildLyricsText(detailsContent)
 }
 
-Track.prototype.BuildLyricsText = function(block) {
-    let adminBlock = MakeElement("admin-block", block)
+Track.prototype.BuildLyricsText = function(block, checkboxFirst = true) {
+    let adminBlock = MakeElement("admin-block", checkboxFirst ? block : null)
     let validatedBlock = MakeElement("info-checkbox-line", adminBlock)
     let validatedInput = MakeCheckbox(validatedBlock, `lyrics-validated-${this.trackId}`, this.lyrics.validated)
     let validatedLabel = MakeElement("", validatedBlock, {innerText: "Текст и припев проверены", "for": `lyrics-validated-${this.trackId}`}, "label")
@@ -185,6 +185,9 @@ Track.prototype.BuildLyricsText = function(block) {
         checkbox.addEventListener("change", () => this.UpdateChorus())
         MakeElement("", line, {innerText: ` ${this.lyrics.lines[i].text}`}, "span")
     }
+
+    if (!checkboxFirst)
+        block.appendChild(adminBlock)
 }
 
 Track.prototype.BuildNote = function(block, artistId) {
@@ -366,7 +369,12 @@ Track.prototype.ShowChorus = function() {
         line.classList.remove("track-lyrics-line-chorus")
         line.classList.remove("track-lyrics-line-end-chorus")
         line.classList.remove("track-lyrics-line-start-chorus")
+        line.classList.remove("track-lyrics-line-maybe-start-chorus")
+        line.classList.remove("track-lyrics-line-maybe-end-chorus")
     }
+
+    let chorusStartTexts = new Set()
+    let chorusEndTexts = new Set()
 
     for (let [start, end] of this.lyrics.chorus) {
         document.getElementById(`track-${this.trackId}-chorus-${start}`).checked = true
@@ -382,7 +390,26 @@ Track.prototype.ShowChorus = function() {
             if (i == end)
                 line.classList.add("track-lyrics-line-end-chorus")
         }
+
+        chorusStartTexts.add(this.PreprocessLine(this.lyrics.lines[start].text))
+        chorusEndTexts.add(this.PreprocessLine(this.lyrics.lines[end].text))
     }
+
+    for (let i = 0; i < this.lyrics.lines.length; i++) {
+        let line = document.getElementById(`track-${this.trackId}-lyrics-line-${i}`)
+
+        for (let text of chorusStartTexts)
+            if (Ratio(this.PreprocessLine(this.lyrics.lines[i].text), text) > 0.95)
+                line.classList.add("track-lyrics-line-maybe-start-chorus")
+
+        for (let text of chorusEndTexts)
+            if (Ratio(this.PreprocessLine(this.lyrics.lines[i].text), text) > 0.95)
+                line.classList.add("track-lyrics-line-maybe-end-chorus")
+    }
+}
+
+Track.prototype.PreprocessLine = function(text) {
+    return text.replace(/\([^)]+\)|^\s+|\s+$/gi, "")
 }
 
 Track.prototype.ReplaceUnknown = function(artists) {

@@ -55,11 +55,11 @@ def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(Fa
 @router.get("/markup-track")
 def get_markup(track_id: int = Query(0), language: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        back_url = urllib.parse.quote(f"/markup_track/{track_id}", safe="")
+        back_url = urllib.parse.quote(f"/markup-track?track_id={track_id}", safe="")
         return RedirectResponse(url=f"/login?back_url={back_url}")
 
     if track_id == 0:
-        query = {"lyrics": {"$ne": None}, "lyrics.validated": False, "artists.1": {"$exists": False}}
+        query = {"lyrics": {"$ne": None}, "lyrics.lrc": True, "lyrics.validated": False, "artists.1": {"$exists": False}}
         if language != "":
             query["language"] = language
 
