@@ -9,4 +9,9 @@
 .action {
     max-width: 100%;
     overflow: auto;
+    padding: 2px 0;
+}
+
+.action ul {
+    margin-left: 16px;
 }

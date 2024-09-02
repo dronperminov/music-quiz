@@ -23,6 +23,28 @@ function GetActionDiffTracks(diff) {
     return `<b>треки</b>: ${html.join(", ")}`
 }
 
+function GetActionDiffLyrics(diff) {
+    let html = []
+
+    let prevLines = JSON.stringify(diff.prev.lines, null, 1).replace("\n", "")
+    let newLines = JSON.stringify(diff.new.lines, null, 1).replace("\n", "")
+    if (prevLines != newLines)
+        html.push(`<li><b>строки</b>: <s class="error-color">${prevLines}</s> &rarr; <span class="success-color">${newLines}</span></li>`)
+
+    let prevChorus = JSON.stringify(diff.prev.chorus, null, 1).replace("\n", "")
+    let newChorus = JSON.stringify(diff.new.chorus, null, 1).replace("\n", "")
+    if (prevChorus != newChorus)
+        html.push(`<li><b>припев</b>: <s class="error-color">${prevChorus}</s> &rarr; <span class="success-color">${newChorus}</span></li>`)
+
+    if (diff.prev.lrc != diff.new.lrc)
+        html.push(`<li><b>синхронный</b>: <s class="error-color">${diff.prev.lrc}</s> &rarr; <span class="success-color">${diff.new.lrc}</span></li>`)
+
+    if (diff.prev.validated != diff.new.validated)
+        html.push(`<li><b>проверен</b>: <s class="error-color">${diff.prev.validated}</s> &rarr; <span class="success-color">${diff.new.validated}</span></li>`)
+
+    return `<b>текст песни</b>: <ul class="action-diff">${html.join(", ")}</li>`
+}
+
 function GetActionDiffKeyValue(key, value) {
     if (key == "artist_type")
         return new ArtistType(value).ToRus()
@@ -33,8 +55,7 @@ function GetActionDiffKeyValue(key, value) {
     if (key == "language")
         return new Language(value).ToRus()
 
-
-    return JSON.stringify(value)
+    return JSON.stringify(value, null, 1).replace("\n", "")
 }
 
 function GetActionDiff(key, diff) {
@@ -63,6 +84,9 @@ function GetActionDiff(key, diff) {
 
     if (key == "tracks")
         return GetActionDiffTracks(diff)
+
+    if (key == "lyrics")
+        return GetActionDiffLyrics(diff)
 
     let prevValue = `<span class="error-color"><s>${GetActionDiffKeyValue(key, diff.prev)}</s></span>`
     let newValue = `<span class="success-color">${GetActionDiffKeyValue(key, diff.new)}</span>`
