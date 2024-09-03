@@ -58,7 +58,12 @@ class Artist:
         artist_data = self.to_dict()
         diff = {}
 
-        for field in ["name", "description", "image_urls", "listen_count", "tracks_count", "genres"]:
+        fields = ["name", "description", "image_urls", "listen_count", "tracks_count"]
+
+        if not from_yandex:
+            fields.append("genres")
+
+        for field in fields:
             if field in data and artist_data[field] != data[field]:
                 diff[field] = {"prev": artist_data[field], "new": data[field]}
 

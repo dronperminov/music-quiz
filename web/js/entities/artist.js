@@ -137,7 +137,24 @@ Artist.prototype.BuildArtistType = function(block) {
 }
 
 Artist.prototype.BuildGenres = function(block) {
-    MakeElement("", block, {innerHTML: `<b>Жанры:</b> ${this.genres.ToRus()}`}, "span")
+    let input = this.genres.Build(block)
+
+    input.onChange = () => {
+        let genres = input.GetSelected()
+
+        if (genres.length == 0)
+            return
+
+        SendRequest("/update-artist", {artist_id: this.artistId, genres: genres, update_tracks: true}).then(response => {
+            if (response.status != SUCCESS_STATUS) {
+                ShowNotification(`Не удалось обновить жанры<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
+                input.SetSelected(this.genres.Get())
+                return
+            }
+
+            this.genres.Set(genres)
+        })
+    }
 }
 
 Artist.prototype.BuildPageAbout = function(block) {
@@ -204,6 +221,7 @@ Artist.prototype.GetStats = function() {
     if (!this.artistType.IsUnknown())
         stats.push(this.artistType.ToRus())
 
+    stats.push(this.genres.ToRus())
     return stats.join(" | ")
 }
 

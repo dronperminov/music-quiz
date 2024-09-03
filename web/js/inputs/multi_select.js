@@ -85,6 +85,23 @@ MultiSelect.prototype.SetValue = function(value) {
         this.SetOptionValue(this.options[name], nameValue)
 }
 
+MultiSelect.prototype.GetSelected = function() {
+    let selected = []
+
+    for (let [name, option] of Object.entries(this.options))
+        if (this.GetOptionValue(option))
+            selected.push(name)
+
+    return selected
+}
+
+MultiSelect.prototype.SetSelected = function(selected) {
+    this.SetValue({})
+
+    for (let value of selected)
+        this.options[value].classList.add("multi-select-option-checked")
+}
+
 MultiSelect.prototype.Clear = function() {
     for (let option of Object.values(this.options)) {
         option.classList.remove("multi-select-option-checked")

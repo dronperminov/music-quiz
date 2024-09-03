@@ -26,6 +26,14 @@ function GenreList(genres) {
     }
 }
 
+GenreList.prototype.Set = function(genres) {
+    this.genres = genres.map(genre => new Genre(genre))
+}
+
+GenreList.prototype.Get = function() {
+    return this.genres.map(genre => genre.value)
+}
+
 GenreList.prototype.ToRus = function() {
     if (this.IsEmpty())
         return "неизвестны"
@@ -35,4 +43,23 @@ GenreList.prototype.ToRus = function() {
 
 GenreList.prototype.IsEmpty = function() {
     return this.genres.length == 0
+}
+
+GenreList.prototype.Build = function(parent) {
+    let label = MakeElement("", parent, {innerHTML: `<b>Жанры:</b> `}, "span")
+    let span = MakeElement("", parent, {innerText: this.ToRus()}, "span")
+
+    let select = MakeMultiSelect(parent, this.options, [])
+    let input = new MultiSelect(select, null, true)
+
+    select.classList.add("hidden")
+
+    label.addEventListener("click", () => {
+        select.classList.toggle("hidden")
+        input.SetSelected(this.genres.map(genre => genre.value))
+        span.classList.toggle("hidden")
+        span.innerText = this.ToRus()
+    })
+
+    return input
 }

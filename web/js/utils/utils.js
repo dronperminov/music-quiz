@@ -35,6 +35,19 @@ function MakeCheckbox(parent, id, checked = false) {
     return input
 }
 
+function MakeMultiSelect(parent, values, selected) {
+    let select = MakeElement("multi-select", parent)
+
+    for (let [name, text] of Object.entries(values)) {
+        let option = MakeElement("multi-select-option", select, {"data-name": name, innerText: text})
+
+        if (selected.indexOf(name) > -1)
+            option.classList.add("multi-select-option-checked")
+    }
+
+    return select
+}
+
 function MakeDetails(parent, header, className = "details") {
     let details = MakeElement(className, parent)
     let detailsHeader = MakeElement("details-header", details)

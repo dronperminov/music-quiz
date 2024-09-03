@@ -114,7 +114,13 @@ def update_artist(params: ArtistUpdate, user: Optional[User] = Depends(get_user)
     if artist is None:
         return JSONResponse({"status": "error", "message": f"Не удалось найти исполнителя с artist_id = {params.artist_id} в базе"})
 
-    music_database.update_artist(artist_id=params.artist_id, diff=artist.get_diff(params.to_data()), username=user.username)
+    data = params.to_data()
+    music_database.update_artist(artist_id=params.artist_id, diff=artist.get_diff(data), username=user.username)
+
+    if params.update_tracks and params.genres:
+        for track in music_database.get_tracks_by_ids(track_ids=list(artist.tracks)):
+            music_database.update_track(track_id=track.track_id, diff=track.get_diff({"genres": data["genres"]}), username=user.username)
+
     return JSONResponse({"status": "success"})
 
 
