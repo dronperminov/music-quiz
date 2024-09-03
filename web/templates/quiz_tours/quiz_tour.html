@@ -117,6 +117,11 @@
                 </div>
                 <div class="player" id="player-{{track.track_id}}"></div>
                 <div class="error" id="error-{{track.track_id}}"></div>
+                <div class="question-status">
+                    {% set track_status = track_id2status[track.track_id] %}
+                    {% set track_scale = (track_status|sum * 100) / (track_status|length) %}
+                    <b>средний балл</b>: <div class="circle" style="background-color: hsl({{track_scale * 1.2}}, 70%, 50%);"></div>{{track_scale|round(1)}}% ({{get_word_form(track_status|sum, ['игрок', 'игрока', 'игроков'])}})
+                </div>
                 {% if track.lyrics %}
                 <div class="lyrics-updater lyrics-updater-disabled hidden" data-lrc="{{track.lyrics.lrc|tojson}}" id="lyrics-updater-{{track.track_id}}">
                     <div class="lyrics-lines">

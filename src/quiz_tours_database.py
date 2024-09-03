@@ -124,6 +124,15 @@ class QuizToursDatabase:
     def get_quiz_tours_statuses(self, username: str, quiz_tours: List[QuizTour]) -> Dict[int, dict]:
         return {quiz_tour.quiz_tour_id: self.__get_quiz_tour_status(quiz_tour=quiz_tour, username=username) for quiz_tour in quiz_tours}
 
+    def get_quiz_tour_tracks_statuses(self, quiz_tour: QuizTour) -> Dict[int, list]:
+        track_id2answers = defaultdict(list)
+        questions = self.database.quiz_tour_questions.find({"question_id": {"$in": quiz_tour.question_ids}}, {"question.track_id": 1, "question_id": 1})
+        question_id2track_id = {question["question_id"]: question["question"]["track_id"] for question in questions}
+
+        for answer in self.database.quiz_tour_answers.find({"question_id": {"$in": quiz_tour.question_ids}}):
+            track_id2answers[question_id2track_id[answer["question_id"]]].append(answer["correct"])
+        return track_id2answers
+
     def generate_tour(self, params: dict, quiz_tour_type: QuizTourType, settings: QuestionSettings, questions_count: int) -> Optional[QuizTour]:
         tracks = self.questions_database.get_question_tracks(settings)
 

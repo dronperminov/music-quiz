@@ -46,6 +46,7 @@ def get_quiz_tour(quiz_tour_id: int, user: Optional[User] = Depends(get_user)) -
 
     settings = database.get_settings(username=user.username)
     statuses = quiz_tours_database.get_quiz_tours_statuses(username=user.username, quiz_tours=[quiz_tour])
+    track_id2status = quiz_tours_database.get_quiz_tour_tracks_statuses(quiz_tour=quiz_tour)
     track_id2correct = quiz_tours_database.get_quiz_tour_track_results(username=user.username, quiz_tour=quiz_tour)
     tracks = music_database.get_tracks_by_ids(list(track_id2correct))
     artist_id2artist = music_database.get_artists_by_ids(list({artist_id for track in tracks for artist_id in track.artists}))
@@ -59,6 +60,7 @@ def get_quiz_tour(quiz_tour_id: int, user: Optional[User] = Depends(get_user)) -
         version=get_static_hash(),
         quiz_tour=quiz_tour,
         statuses=statuses,
+        track_id2status=track_id2status,
         tracks=tracks,
         track_id2correct=track_id2correct,
         artist_id2artist=artist_id2artist,
