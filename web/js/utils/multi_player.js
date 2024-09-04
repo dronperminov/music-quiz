@@ -11,6 +11,9 @@ function MultiPlayer() {
     this.sessionInfo = document.getElementById("session-info")
     this.usersCountSpan = document.getElementById("connected-users-count")
     this.usersBlock = document.getElementById("connected-users")
+    this.historyBlock = document.getElementById("session-history")
+    this.historyActionsBlock = document.getElementById("session-history-actions")
+    this.username2avatar = {}
 
     this.disconnectButton = document.getElementById("disconnect-button")
 }
@@ -32,6 +35,8 @@ MultiPlayer.prototype.Open = function() {
 
     this.managerBlock.classList.add("hidden")
     this.disconnectButton.classList.remove("hidden")
+    this.historyBlock.classList.remove("hidden")
+    this.historyActionsBlock.innerHTML = ""
     localStorage.setItem("sessionId", this.sessionId)
 }
 
@@ -58,6 +63,7 @@ MultiPlayer.prototype.Disconnect = function() {
     this.ws.close()
 
     this.managerBlock.classList.remove("hidden")
+    this.historyBlock.classList.add("hidden")
     this.disconnectButton.classList.add("hidden")
     this.sessionInfo.classList.add("hidden")
     this.ClearQuestion()
@@ -111,6 +117,7 @@ MultiPlayer.prototype.UpdateSessionInfo = function(session) {
         this.sessionInfo.classList.add("hidden")
 
     this.ShowConnectedUsers(session)
+    this.AppendHistory(session)
 }
 
 MultiPlayer.prototype.ShowConnectedUsers = function(session) {
@@ -122,6 +129,8 @@ MultiPlayer.prototype.ShowConnectedUsers = function(session) {
 }
 
 MultiPlayer.prototype.BuildConnectedUser = function(user, answers) {
+    this.username2avatar[user.username] = user.avatar_url
+
     let block = MakeElement("connected-user", this.usersBlock)
     MakeElement("", block, {src: user.avatar_url}, "img")
 
@@ -154,4 +163,35 @@ MultiPlayer.prototype.ClearQuestion = function() {
 
     players.Clear()
     infos.Clear()
+}
+
+MultiPlayer.prototype.AppendHistory = function(session) {
+    if (["connect", "disconnect", "answer"].indexOf(session.action) == -1)
+        return
+
+    let date = new Date()
+    let hours = `${date.getHours()}`.padStart(2, '0')
+    let minutes = `${date.getMinutes()}`.padStart(2, '0')
+    let seconds = `${date.getSeconds()}`.padStart(2, '0')
+
+    let text = null
+
+    if (session.action == "connect") {
+        text = `@${session.username} подключился`
+    }
+    else if (session.action == "disconnect") {
+        text = `@${session.username} отключился`
+    }
+    else if (session.action == "answer") {
+        let correct = session.answers[session.username].correct ? '<span class="correct">знаю</span>' : '<span class="incorrect">не знаю</span>'
+        let time = FormatTime(session.answers[session.username].answer_time)
+        text = `@${session.username} ответил ${correct} (${time})`
+    }
+
+    let action = MakeElement("session-history-action", null)
+    let user = MakeElement("session-history-action-user", action)
+    MakeElement("", user, {src: this.username2avatar[session.username]}, "img")
+    MakeElement("", action, {innerHTML: `${hours}:${minutes}:${seconds}: ${text}`})
+
+    this.historyActionsBlock.prepend(action)
 }

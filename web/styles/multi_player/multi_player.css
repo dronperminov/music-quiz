@@ -63,3 +63,47 @@
 .answered-incorrect-user img {
     border-color: var(--incorrect-color);
 }
+
+.session-history {
+    margin-top: 1em;
+    background-color: var(--block-background);
+    padding: 0.5em;
+    border-radius: 1em;
+}
+
+.session-history-header {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+.session-history-actions {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 0.5em;
+}
+
+.session-history-action {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    align-items: center;
+    grid-gap: 0.3em;
+    color: var(--subtext-color);
+    font-size: 0.8em;
+}
+
+.session-history-action-user img {
+    border-radius: 100%;
+    width: 100%;
+    vertical-align: middle;
+    border: 1px solid var(--text-color);
+}
+
+.session-history-action .correct {
+    font-weight: bold;
+    color: var(--correct-color);
+}
+
+.session-history-action .incorrect {
+    font-weight: bold;
+    color: var(--incorrect-color);
+}
