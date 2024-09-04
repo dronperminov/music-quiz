@@ -45,7 +45,7 @@ def main() -> None:
     parser.add_argument("--years", help="", choices=("all", "1990", "1990-2000", "2000", "2000-2010", "modern", "2020"), required=True)
     parser.add_argument("--genres", help="", choices=("all", "rock", "hip-hop", "pop"), default="all")
     parser.add_argument("--languages", help="", choices=("all", "russian", "foreign"), default="all")
-    parser.add_argument("--positions", help="", choices=("all", "hits", "normal", "unhackneyed"), default="normal")
+    parser.add_argument("--positions", help="", choices=("all", "top3", "hits", "normal", "unhackneyed"), default="normal")
     parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter", "miracles_field"), default="regular")
     parser.add_argument("--listen-count", help="Min border of artist listen count", type=int, default=100_000)
 
@@ -79,6 +79,7 @@ def main() -> None:
 
     track_position = {
         "all": ("", ""),
+        "top3": ("", 3),
         "hits": ("", 5),
         "normal": ("", 10),
         "unhackneyed": (11, "")
