@@ -1,0 +1,81 @@
+{% set title = "Мультиплеерная тренировка | Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/lyrics_updater.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/history.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/artists/artists.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/user/question.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/multi_player/multi_player.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <div id="page-header">
+            <h1>Мультиплеерная тренировка</h1>
+            <p>Играй с друзьями в режиме реального времени! Создай сессию, поделись ссылкой и вперёд!</p>
+        </div>
+
+        <div class="hidden" id="question"></div>
+
+        <div class="multi-player" id="multi-player-manager">
+            <label for="session-id">Идентификатор сессии:</label>
+            <input class="basic-input" id="session-id" type="text" placeholder="введите название сессии" oninput="InputSessionId()" value="">
+
+            <div class="multi-player-buttons">
+                <button class="basic-button gradient-button" id="create-button" onclick="CreateSession()">Создать</button>
+                <button class="basic-button gradient-button" id="connect-button" onclick="ConnectSession()">Подключиться</button>
+            </div>
+        </div>
+
+        <div class="session-info hidden" id="session-info">
+            <div class="connected-users-count">Подключенные пользователи: <span id="connected-users-count">0</span></div>
+            <div class="connected-users" id="connected-users"></div>
+            <div>
+                <button class="basic-button gradient-button" id="disconnect-button" onclick="multiPlayer.Disconnect()">Отключиться</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/multi_player.js?v={{version}}"></script>
+    <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
+    <script src="/js/utils/info_panels.js?v={{version}}"></script>
+    <script src="/js/utils/lyrics_updater.js?v={{version}}"></script>
+    <script src="/js/utils/player.js?v={{version}}"></script>
+    <script src="/js/utils/parse.js?v={{version}}"></script>
+    <script src="/js/utils/history.js?v={{version}}"></script>
+    <script src="/js/utils/player_collection.js?v={{version}}"></script>
+
+    <script src="/js/entities/genre.js?v={{version}}"></script>
+    <script src="/js/entities/artist_type.js?v={{version}}"></script>
+    <script src="/js/entities/language.js?v={{version}}"></script>
+    <script src="/js/entities/metadata.js?v={{version}}"></script>
+    <script src="/js/entities/artist.js?v={{version}}"></script>
+    <script src="/js/entities/track.js?v={{version}}"></script>
+    <script src="/js/entities/question.js?v={{version}}"></script>
+
+    <script src="/js/inputs/multi_select.js?v={{version}}"></script>
+
+    <script src="/js/tracks/track.js?v={{version}}"></script>
+    <script src="/js/user/question.js?v={{version}}"></script>
+    <script src="/js/multi_player/multi_player.js?v={{version}}"></script>
+    <script>
+        let answerTime = null
+        let players = new PlayerCollection({withIcons: false})
+        let infos = new InfoPanels()
+
+        let track = null
+        let artists = null
+        let artistId2scale = null
+
+        let multiPlayer = new MultiPlayer("connected-users")
+
+        document.addEventListener("DOMContentLoaded", () => Load())
+    </script>
+    {% include "components/footer.html" %}
+</body>
+</html>

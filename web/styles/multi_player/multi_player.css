@@ -1,0 +1,65 @@
+.multi-player {
+    padding: 1em;
+    border-radius: 1em;
+    background-color: var(--block-background);
+    margin: 1em 0;
+}
+
+.multi-player label {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.multi-player input {
+    margin-bottom: 1em;
+}
+
+.multi-player-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1em
+}
+
+.session-info {
+    margin: 1em 0;
+    padding: 0.5em;
+    background-color: var(--block-background);
+    border-radius: 0.5em;
+}
+
+.connected-users-count {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.connected-users-count span {
+    font-weight: normal;
+}
+
+.connected-users {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    max-width: 100%;
+    overflow-x: auto;
+    grid-gap: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.connected-user {
+    max-width: 35px;
+}
+
+.connected-user img {
+    width: 100%;
+    border-radius: 100%;
+    border: 2px solid var(--text-color);
+}
+
+.answered-correct-user img {
+    border-color: var(--correct-color);
+}
+
+.answered-incorrect-user img {
+    border-color: var(--incorrect-color);
+}

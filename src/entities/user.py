@@ -29,3 +29,10 @@ class User:
             role=UserRole(data["role"]),
             avatar_url=data["avatar_url"]
         )
+
+    def to_session(self) -> dict:
+        return {
+            "username": self.username,
+            "full_name": self.full_name,
+            "avatar_url": self.avatar_url
+        }

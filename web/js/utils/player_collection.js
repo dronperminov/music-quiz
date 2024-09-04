@@ -21,3 +21,10 @@ PlayerCollection.prototype.GetPlayer = function() {
 
     return this.players[this.players.length - 1]
 }
+
+PlayerCollection.prototype.Clear = function() {
+    for (let player of this.players)
+        player.Pause()
+
+    this.players = []
+}

@@ -10,6 +10,10 @@ function InfoPanels() {
     body.appendChild(this.blocks)
 }
 
+InfoPanels.prototype.Clear = function() {
+    this.blocks.innerHTML = ""
+}
+
 InfoPanels.prototype.Add = function(block) {
     this.blocks.appendChild(block)
 

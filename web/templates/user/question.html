@@ -84,7 +84,7 @@
                         <img src="/images/loader.svg">
                     </div>
 
-                    <svg id="player-{{track.track_id}}-load" id="player-{{track.track_id}}-play" onclick="PlayTrack('{{track.track_id}}')" width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
+                    <svg id="player-{{track.track_id}}-load" onclick="PlayTrack('{{track.track_id}}')" width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5.495,2.573 L1.501,0.142 C0.832,-0.265 0,0.25 0,1.069 L0,5.931 C0,6.751 0.832,7.264 1.501,6.858 L5.495,4.428 C6.168,4.018 6.168,2.983 5.495,2.573" />
                     </svg>
 
@@ -179,6 +179,8 @@
     <script src="/js/entities/metadata.js?v={{version}}"></script>
     <script src="/js/entities/artist.js?v={{version}}"></script>
     <script src="/js/entities/track.js?v={{version}}"></script>
+
+    <script src="/js/inputs/multi_select.js?v={{version}}"></script>
 
     <script src="/js/tracks/track.js?v={{version}}"></script>
     <script src="/js/user/question.js?v={{version}}"></script>

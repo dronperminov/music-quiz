@@ -3,6 +3,7 @@ from typing import Optional
 
 from pymongo import ASCENDING, MongoClient
 
+from src.entities.session import Session
 from src.entities.settings import Settings
 from src.entities.user import User
 
@@ -21,6 +22,7 @@ class Database:
     quiz_tours = None
     quiz_tour_questions = None
     quiz_tour_answers = None
+    sessions = None
 
     def __init__(self, mongo_url: str, database_name: str) -> None:
         self.mongo_url = mongo_url
@@ -79,6 +81,9 @@ class Database:
         self.quiz_tour_answers.create_index(([("username", ASCENDING)]))
         self.quiz_tour_answers.create_index(([("correct", ASCENDING)]))
 
+        self.sessions = database["sessions"]
+        self.sessions.create_index([("session_id", ASCENDING)], unique=True)
+
     def get_settings(self, username: str) -> Settings:
         settings = self.settings.find_one_and_update({"username": username}, {"$setOnInsert": Settings.default(username).to_dict()}, upsert=True, return_document=True)
         return Settings.from_dict(settings)
@@ -90,8 +95,12 @@ class Database:
         if not username:
             return None
 
-        user = self.users.find_one({"username": {"$regex": f"^{re.escape(username)}$", "$options": "i"}})
+        user: dict = self.users.find_one({"username": {"$regex": f"^{re.escape(username)}$", "$options": "i"}})
         return User.from_dict(user) if user else None
+
+    def get_session(self, session_id: str) -> Optional[Session]:
+        session: dict = self.sessions.find_one({"session_id": session_id})
+        return Session.from_dict(session) if session else None
 
     def get_identifier(self, collection_name: str) -> int:
         identifier = self.identifiers.find_one_and_update({"_id": collection_name}, {"$inc": {"value": 1}}, return_document=True)
