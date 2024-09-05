@@ -11,11 +11,14 @@ function MultiPlayer() {
     this.sessionInfo = document.getElementById("session-info")
     this.usersCountSpan = document.getElementById("connected-users-count")
     this.usersBlock = document.getElementById("connected-users")
+    this.statisticsBlock = document.getElementById("session-statistics")
+    this.statisticsItems = document.getElementById("session-statistics-items")
     this.historyBlock = document.getElementById("session-history")
     this.historyActionsBlock = document.getElementById("session-history-actions")
     this.username2avatar = {}
 
-    this.disconnectButton = document.getElementById("disconnect-button")
+    this.connectionBlock = document.getElementById("connection-block")
+    this.removeSessionButton = document.getElementById("remove-session-button")
 
     this.reactionBlock = document.getElementById("reactions")
     this.reactions = ["poo", "heart", "angry", "crying", "happy", "monkey"]
@@ -32,14 +35,14 @@ MultiPlayer.prototype.Connect = function(sessionId, username) {
 }
 
 MultiPlayer.prototype.Open = function() {
-    console.log(`Connected to the session ${this.sessionId}`)
-    ShowNotification(`Connected to the session ${this.sessionId}`, "success-notification", 1500)
+    ShowNotification(`Подключение к сессии ${this.sessionId} установлено`, "success-notification", 1500)
 
     this.managerBlock.classList.add("hidden")
     this.historyBlock.classList.remove("hidden")
     this.historyActionsBlock.innerHTML = ""
+    this.statisticsBlock.classList.remove("hidden")
     this.reactionBlock.classList.remove("hidden")
-    this.disconnectButton.classList.remove("hidden")
+    this.connectionBlock.classList.remove("hidden")
     localStorage.setItem("sessionId", this.sessionId)
 }
 
@@ -47,13 +50,11 @@ MultiPlayer.prototype.Close = function() {
     this.ws = null
 
     if (this.sessionId === null) {
-        console.log("Disconnected from the session")
-        ShowNotification("Disconnected from the session", "success-notification", 1500)
+        ShowNotification("Подключение к сессии разорвано", "success-notification", 1500)
         return
     }
 
-    console.log(`Disconnected from the session ${this.sessionId}, try to reconnct`)
-    ShowNotification(`Disconnected from the session ${this.sessionId}, try to reconnct`, "error-notification", 1500)
+    ShowNotification(`Подключение к сессии ${this.sessionId} неожиданно разорвано, пробую переподключиться`, "error-notification", 1500)
     setTimeout(() => this.Connect(this.sessionId, this.username), 1000)
 }
 
@@ -68,7 +69,7 @@ MultiPlayer.prototype.Disconnect = function() {
     this.managerBlock.classList.remove("hidden")
     this.historyBlock.classList.add("hidden")
     this.reactionBlock.classList.add("hidden")
-    this.disconnectButton.classList.add("hidden")
+    this.connectionBlock.classList.add("hidden")
     this.sessionInfo.classList.add("hidden")
     this.ClearQuestion()
 
@@ -91,9 +92,12 @@ MultiPlayer.prototype.IsAllAnswered = function(session) {
 }
 
 MultiPlayer.prototype.HandleMessage = function(session) {
-    console.log(session.players, session.action)
-
     this.UpdateSessionInfo(session)
+
+    if (session.action == "remove") {
+        this.Disconnect()
+        return
+    }
 
     if (session.action == "disconnect" && session.username == session.created_by) {
         this.Disconnect()
@@ -121,6 +125,7 @@ MultiPlayer.prototype.UpdateSessionInfo = function(session) {
         this.sessionInfo.classList.add("hidden")
 
     this.ShowConnectedUsers(session)
+    this.ShowStatistics(session)
     this.AppendHistory(session)
 }
 
@@ -128,8 +133,25 @@ MultiPlayer.prototype.ShowConnectedUsers = function(session) {
     this.usersCountSpan.innerText = session.players.length
     this.usersBlock.innerHTML = ""
 
+    if (session.created_by == this.username)
+        this.removeSessionButton.classList.remove("hidden")
+    else
+        this.removeSessionButton.classList.add("hidden")
+
     for (let user of session.players)
         this.BuildConnectedUser(user, session.answers)
+}
+
+MultiPlayer.prototype.ShowStatistics = function(session) {
+    this.statisticsItems.innerHTML = ""
+
+    for (let [username, answers] of Object.entries(session.statistics))
+        this.BuildUserStatistics(username, answers)
+
+    if (this.statisticsItems.children.length > 0)
+        this.statisticsBlock.classList.remove("hidden")
+    else
+        this.statisticsBlock.classList.add("hidden")
 }
 
 MultiPlayer.prototype.BuildConnectedUser = function(user, answers) {
@@ -145,6 +167,32 @@ MultiPlayer.prototype.BuildConnectedUser = function(user, answers) {
         block.classList.add("answered-correct-user")
     else
         block.classList.add("answered-incorrect-user")
+}
+
+MultiPlayer.prototype.BuildUserStatistics = function(username, answers) {
+    if (answers.length == 0 || !(username in this.username2avatar))
+        return
+
+    let correct = 0
+    let incorrect = 0
+    let time = 0
+
+    for (let answer of answers) {
+        if (answer.correct)
+            correct += 1
+        else
+            incorrect += 1
+
+        time += answer.answer_time
+    }
+
+    let meanTime = FormatTime(time / answers.length)
+    let correctText = `<span class="correct-color">${GetWordForm(correct, ['верный', 'верных', 'верных'])}</span>`
+    let incorrectText = `<span class="incorrect-color">${GetWordForm(incorrect, ['неверный', 'неверных', 'неверных'])}</span>`
+
+    let block = MakeElement("session-statistics-item", this.statisticsItems)
+    MakeElement("", block, {src: this.username2avatar[username]}, "img")
+    MakeElement("", block, {innerHTML: `@${username}: ${correctText}, ${incorrectText} (${meanTime})`})
 }
 
 MultiPlayer.prototype.InitQuestion = function(session) {
@@ -174,7 +222,7 @@ MultiPlayer.prototype.ClearQuestion = function() {
 }
 
 MultiPlayer.prototype.AppendHistory = function(session) {
-    if (["connect", "disconnect", "answer", ...this.reactions].indexOf(session.action) == -1)
+    if (["connect", "disconnect", "remove", "answer", ...this.reactions].indexOf(session.action) == -1)
         return
 
     let date = new Date()
@@ -190,6 +238,10 @@ MultiPlayer.prototype.AppendHistory = function(session) {
     else if (session.action == "disconnect") {
         text = `@${session.username} отключился`
     }
+    else if (session.action == "remove" && session.username == session.created_by) {
+        text = `@${session.username} удалил сессию`
+        ShowNotification(`@${session.username} удалил сессию`, "error-notification", 4000)
+    }
     else if (session.action == "answer") {
         let correct = session.answers[session.username].correct ? '<span class="correct">знаю</span>' : '<span class="incorrect">не знаю</span>'
         let time = FormatTime(session.answers[session.username].answer_time)
@@ -197,9 +249,7 @@ MultiPlayer.prototype.AppendHistory = function(session) {
     }
     else if (this.reactions.indexOf(session.action) > -1) {
         text = `@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`
-
-        if (session.username != this.username)
-            ShowNotification(`@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`, "info-notification", 1800)
+        ShowNotification(`@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`, "info-notification", 1800)
     }
 
     let action = MakeElement("session-history-action", null)

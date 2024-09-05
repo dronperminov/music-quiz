@@ -14,16 +14,18 @@ class Session:
     created_at: datetime
     created_by: str
     question: Optional[Question]
+    statistics: Dict[str, List[QuestionAnswer]]
 
     @classmethod
     def from_dict(cls: "Session", data: dict) -> "Session":
         return cls(
             session_id=data["session_id"],
             players=data["players"],
-            answers={username: QuestionAnswer(correct=answer["correct"], answer_time=answer["answer_time"]) for username, answer in data["answers"].items()},
+            answers={username: QuestionAnswer.from_dict(answer) for username, answer in data["answers"].items()},
             created_at=data["created_at"],
             created_by=data["created_by"],
-            question=Question.from_dict(data["question"]) if data["question"] else None
+            question=Question.from_dict(data["question"]) if data["question"] else None,
+            statistics={username: [QuestionAnswer.from_dict(answer) for answer in answers] for username, answers in data["statistics"].items()}
         )
 
     @classmethod
@@ -34,17 +36,19 @@ class Session:
             answers={},
             created_at=datetime.now(),
             created_by=username,
-            question=None
+            question=None,
+            statistics={}
         )
 
     def to_dict(self) -> dict:
         return {
             "session_id": self.session_id,
             "players": self.players,
-            "answers": {username: {"correct": answer.correct, "answer_time": answer.answer_time} for username, answer in self.answers.items()},
+            "answers": {username: answer.to_dict() for username, answer in self.answers.items()},
             "created_at": self.created_at,
             "created_by": self.created_by,
-            "question": self.question.to_dict() if self.question else None
+            "question": self.question.to_dict() if self.question else None,
+            "statistics": {username: [answer.to_dict() for answer in answers] for username, answers in self.statistics.items()}
         }
 
     def set_question(self, question: Question) -> None:
@@ -57,3 +61,16 @@ class Session:
                 return False
 
         return True
+
+    def add_answer(self, username: str, answer: QuestionAnswer) -> None:
+        if username in self.answers:
+            return
+
+        if username not in self.statistics:
+            self.statistics[username] = []
+
+        self.statistics[username].append(answer)
+        self.answers[username] = answer
+
+    def clear_statistics(self) -> None:
+        self.statistics = {}

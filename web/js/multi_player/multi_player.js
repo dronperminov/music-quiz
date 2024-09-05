@@ -52,7 +52,9 @@ function ConnectSession() {
     if (sessionId === null)
         return
 
-    SendRequest("/check-multiplayer-session", {session_id: sessionId}).then(response => {
+    let removeStatistics = document.getElementById("remove-statistics-on-connect").checked
+
+    SendRequest("/check-multiplayer-session", {session_id: sessionId, remove_statistics: removeStatistics}).then(response => {
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(`Не удалось подключиться к сессии с идентификатором "${sessionId}"<br><b>Причина</b>: ${response.message}`)
             localStorage.removeItem("sessionId")
@@ -60,6 +62,24 @@ function ConnectSession() {
         }
 
         multiPlayer.Connect(sessionId, response.username)
+    })
+}
+
+function RemoveSession() {
+    if (multiPlayer.sessionId === null)
+        return
+
+    if (!confirm("Вы уверены, что хотите удалить сессию?"))
+        return
+
+    SendRequest("/remove-multiplayer-session", {session_id: multiPlayer.sessionId}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            ShowNotification(`Не удалось удалить сессию с идентификатором "${multiPlayer.sessionId}"<br><b>Причина</b>: ${response.message}`)
+            localStorage.removeItem("sessionId")
+            return
+        }
+
+        multiPlayer.Disconnect()
     })
 }
 

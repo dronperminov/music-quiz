@@ -240,16 +240,3 @@ Question.prototype.ShowAnswer = function(correct = null) {
         player.ShowIcons()
     })
 }
-
-//     {% if artist_id2note %}
-//     <div class="notes">
-//         <h3>Личные заметки:</h3>
-
-//         {% for artist_id in track.artists %}
-//         {% if artist_id in artist_id2note %}
-//         <div class="note"><b>{{artist_id2artist[artist_id].name}}</b>: {{artist_id2note[artist_id].text}}</div>
-//         {% endif %}
-//         {% endfor %}
-//     </div>
-//     {% endif %}
-// </div>

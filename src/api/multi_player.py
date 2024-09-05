@@ -32,7 +32,7 @@ async def create_multiplayer_session(session_id: str = Body(..., embed=True), us
 
 
 @router.post("/check-multiplayer-session")
-async def check_multiplayer_session(session_id: str = Body(..., embed=True), user: User = Depends(get_user)) -> JSONResponse:
+async def check_multiplayer_session(session_id: str = Body(..., embed=True), remove_statistics: bool = Body(..., embed=True), user: User = Depends(get_user)) -> JSONResponse:
     if not user:
         return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
 
@@ -43,7 +43,28 @@ async def check_multiplayer_session(session_id: str = Body(..., embed=True), use
     if session.created_by not in session.players and user.username != session.created_by:
         return JSONResponse({"status": "error", "message": "Автор сессии не подключен"})
 
+    if session.created_by == user.username and remove_statistics:
+        session.clear_statistics()
+        database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
+
     return JSONResponse({"status": "success", "username": user.username})
+
+
+@router.post("/remove-multiplayer-session")
+async def remove_multiplayer_session(session_id: str = Body(..., embed=True), user: User = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    session = database.get_session(session_id=session_id)
+    if not session:
+        return JSONResponse({"status": "error", "message": "Сессия не существует"})
+
+    if user.username != session.created_by:
+        return JSONResponse({"status": "error", "message": "Только создатель сессии может удалить эту сессию"})
+
+    await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "remove"))
+    database.sessions.delete_one({"session_id": session.session_id})
+    return JSONResponse({"status": "success"})
 
 
 def get_session_message(session_id: str, username: str, action: str) -> dict:
@@ -58,7 +79,8 @@ def get_session_message(session_id: str, username: str, action: str) -> dict:
         "created_by": session.created_by,
         "players": [username2user[username] for username in session.players],
         "answers": {username: {"correct": answer.correct, "answer_time": answer.answer_time} for username, answer in session.answers.items()},
-        "question": None
+        "question": None,
+        "statistics": {username: [answer.to_dict() for answer in answers] for username, answers in session.statistics.items()}
     }
 
     if not session.question:
@@ -103,8 +125,10 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
             await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, message))
     except (WebSocketDisconnect, OSError):
         connection_manager.disconnect(websocket, session_id=session_id)
-        database.sessions.update_one({"session_id": session_id}, {"$pull": {"players": user.username}})  # TODO: подумать, как сделать правильно
-        await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "disconnect"))
+
+        if database.sessions.find_one({"session_id": session_id}):
+            database.sessions.update_one({"session_id": session_id}, {"$pull": {"players": user.username}})  # TODO: подумать, как сделать правильно
+            await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "disconnect"))
 
 
 @router.get("/multi-player")
@@ -144,7 +168,7 @@ async def answer_multi_player_question(answer: MultiPlayerQuestionAnswer, user: 
     if not session:
         return JSONResponse({"status": "error", "message": f'Не удалось найти сессию с идентификатором "{answer.session_id}"'})
 
-    session.answers[user.username] = QuestionAnswer(correct=answer.correct, answer_time=answer.answer_time)
+    session.add_answer(username=user.username, answer=QuestionAnswer(correct=answer.correct, answer_time=answer.answer_time))
 
     if session.all_answered():
         question = session.question

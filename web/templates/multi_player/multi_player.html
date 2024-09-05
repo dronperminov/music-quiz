@@ -33,6 +33,15 @@
             <label for="session-id">Идентификатор сессии:</label>
             <input class="basic-input" id="session-id" type="text" placeholder="введите название сессии" oninput="InputSessionId()" value="">
 
+            <div class="multi-player-options">
+                <label class="switch-checkbox">
+                    <input type="checkbox" id="remove-statistics-on-connect">
+                    <span class="switch-checkbox-slider"></span>
+                </label>
+                <label for="remove-statistics-on-connect">Сбрасывать статистику</label>
+                <div class="description">при подключении автора к сессии</div>
+            </div>
+
             <div class="multi-player-buttons">
                 <button class="basic-button gradient-button" id="create-button" onclick="CreateSession()">Создать</button>
                 <button class="basic-button gradient-button" id="connect-button" onclick="ConnectSession()">Подключиться</button>
@@ -42,13 +51,19 @@
         <div class="session-info hidden" id="session-info">
             <div class="connected-users-count">Подключенные пользователи: <span id="connected-users-count">0</span></div>
             <div class="connected-users" id="connected-users"></div>
-            <div>
+            <div class="session-info-buttons" id="connection-block">
                 <button class="basic-button gradient-button" id="disconnect-button" onclick="multiPlayer.Disconnect()">Отключиться</button>
+                <button class="basic-button gradient-button hidden" id="remove-session-button" onclick="RemoveSession()">Удалить сессию</button>
             </div>
         </div>
 
+        <div class="session-statistics hidden" id="session-statistics">
+            <div class="session-header">Статистика:</div>
+            <div class="session-statistics-items" id="session-statistics-items"></div>
+        </div>
+
         <div class="session-history hidden" id="session-history">
-            <div class="session-history-header">Последние действия:</div>
+            <div class="session-header">Последние действия:</div>
             <div class="session-history-actions" id="session-history-actions"></div>
         </div>
     </div>

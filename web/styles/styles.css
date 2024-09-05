@@ -421,6 +421,7 @@ h2 + .description {
     border-color: var(--warning-color) !important;
     color: var(--warning-color) !important;
 }
+
 .info-notification {
     background-color: var(--info-background) !important;
     border-color: var(--info-color) !important;
@@ -447,6 +448,10 @@ h2 + .description {
 
 .correct-color {
     color: var(--correct-color);
+}
+
+.incorrect-color {
+    color: var(--incorrect-color);
 }
 
 .admin-buttons {
@@ -480,7 +485,7 @@ h2 + .description {
         border-radius: 0;
     }
 
-    .notification {
+    #notifications {
         margin: 0 10px;
         bottom: 10px;
     }

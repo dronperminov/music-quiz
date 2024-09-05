@@ -17,7 +17,12 @@
 .multi-player-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-gap: 1em
+    grid-gap: 0.7em;
+}
+
+.multi-player-options {
+    margin-bottom: 1em;
+    font-size: 0.9em;
 }
 
 .session-info {
@@ -34,6 +39,13 @@
 
 .connected-users-count span {
     font-weight: normal;
+}
+
+.session-info-buttons {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 0.7em;
+    grid-auto-columns: 1fr;
 }
 
 .connected-users {
@@ -64,16 +76,47 @@
     border-color: var(--incorrect-color);
 }
 
-.session-history {
+.session-header {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+.session-statistics {
     margin-top: 1em;
     background-color: var(--block-background);
     padding: 0.5em;
     border-radius: 1em;
 }
 
-.session-history-header {
-    margin-bottom: 0.5em;
-    font-weight: bold;
+.session-statistics-items {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 0.5em;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.session-statistics-item {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    align-items: center;
+    grid-gap: 0.7em;
+    color: var(--subtext-color);
+    font-size: 0.9em;
+}
+
+.session-statistics-item img {
+    border-radius: 100%;
+    width: 100%;
+    vertical-align: middle;
+    border: 1px solid var(--text-color);
+}
+
+.session-history {
+    margin-top: 1em;
+    background-color: var(--block-background);
+    padding: 0.5em;
+    border-radius: 1em;
 }
 
 .session-history-actions {
