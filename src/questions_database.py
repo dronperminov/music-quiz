@@ -208,8 +208,12 @@ class QuestionsDatabase:
         tracks = list(self.database.tracks.find({"track_id": {"$in": track_ids}}))
         return Analytics.evaluate(questions, tracks)
 
-    def get_group_analytics(self, username: str, group: ArtistsGroup) -> GroupAnalytics:
-        questions = list(self.database.questions.find({"username": username, "correct": {"$ne": None}, "group_id": group.group_id}))
+    def get_group_analytics(self, username: str, group: ArtistsGroup, period: Optional[Tuple[datetime, datetime]]) -> GroupAnalytics:
+        query = {"username": username, "correct": {"$ne": None}, "group_id": group.group_id}
+        if period:
+            query["timestamp"] = {"$gte": period[0], "$lte": period[1]}
+
+        questions = list(self.database.questions.find(query))
         tracks = self.get_group_question_tracks(group_id=group.group_id)
         return GroupAnalytics.evaluate(artist_ids=group.artist_ids, questions=questions, tracks=tracks)
 

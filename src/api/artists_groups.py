@@ -11,6 +11,7 @@ from src.enums import UserRole
 from src.query_params.artists_groups_search import ArtistsGroupsSearch
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash, get_word_form
+from src.utils.date_utils import parse_dates
 
 router = APIRouter()
 
@@ -27,10 +28,10 @@ def get_artists_groups(user: Optional[User] = Depends(get_user)) -> HTMLResponse
 
 
 @router.get("/artists-groups/{group_id}")
-def get_artists_group(group_id: int, username: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
+def get_artists_group(group_id: int, username: str = Query(""), period: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
     show_user = database.get_user(username=username)
     if username and (not user or username.lower() == user.username.lower() or not show_user):
-        return RedirectResponse(url=f"/artists-groups/{group_id}")
+        return RedirectResponse(url=f"/artists-groups/{group_id}?period={period}")
 
     if not show_user:
         show_user = user
@@ -41,7 +42,8 @@ def get_artists_group(group_id: int, username: str = Query(""), user: Optional[U
         return send_error(title="Группа не найдена", text="Не удалось найти запрашиваемую группу схожих исполнителей. Возможно, она был удалена.", user=user)
 
     artist_id2artists = music_database.get_artists_by_ids(artist_ids=artists_group.artist_ids)
-    group_analytics = questions_database.get_group_analytics(username=show_user.username, group=artists_group) if user else None
+    period = parse_dates(period)
+    group_analytics = questions_database.get_group_analytics(username=show_user.username, group=artists_group, period=period) if user else None
 
     template = templates.get_template("artists_groups/artists_group.html")
     content = template.render(
@@ -52,7 +54,8 @@ def get_artists_group(group_id: int, username: str = Query(""), user: Optional[U
         show_user=show_user,
         artist_id2artists=artist_id2artists,
         group_analytics=group_analytics,
-        get_word_form=get_word_form
+        get_word_form=get_word_form,
+        period=period
     )
 
     return HTMLResponse(content=content)

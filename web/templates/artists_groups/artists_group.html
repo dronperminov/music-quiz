@@ -25,9 +25,31 @@
 
         <div class="action">Проверь свои знания! Переходи к <a class="link" href="/group-question/{{artists_group.group_id}}">вопросам</a>!</div>
 
-        {% if group_analytics and group_analytics.main.questions.total > 0 %}
-        {% set main = group_analytics.main %}
+        {% if group_analytics %}
         <h2>Аналитика</h2>
+
+        <div class="description">
+            Показана информация
+            {% if not period %}за всё время
+            {% elif period[0].date() == period[1].date() %}за {{period[0].strftime("%d.%m.%Y")}}
+            {% else %}с {{period[0].strftime("%d.%m.%Y")}} по {{period[1].strftime("%d.%m.%Y")}}
+            {% endif %}
+        </div>
+        <div class="analytics-period">
+            Показать за
+            <a class="link" href="/artists-groups/{{artists_group.group_id}}?username={{show_user.username}}&period=today">сегодня</a>,
+            <a class="link" href="/artists-groups/{{artists_group.group_id}}?username={{show_user.username}}&period=curr-month">текущий&nbsp;месяц</a>,
+            <a class="link" href="/artists-groups/{{artists_group.group_id}}?username={{show_user.username}}&period=last-month">прошлый&nbsp;месяц</a>,
+            <a class="link" href="/artists-groups/{{artists_group.group_id}}?username={{show_user.username}}&period=curr-year">текущий&nbsp;год</a>,
+            <a class="link" href="/artists-groups/{{artists_group.group_id}}?username={{show_user.username}}">всё&nbsp;время</a>
+        </div>
+
+        {% if group_analytics.main.questions.total == 0 %}
+        <div class="analytics-block">
+            <div class="analytics-no-info">Нет информации за указанный промежуток</div>
+        </div>
+        {% else %}
+        {% set main = group_analytics.main %}
 
         {% if show_user != user %}
         <div class="description">Показана информация пользователя <img class="avatar-circle" src="{{show_user.avatar_url}}"> {{show_user.full_name}}</div>
@@ -147,6 +169,7 @@
                 {% endif %}
             {% endfor %}
         </div>
+        {% endif %}
         {% endif %}
     </div>
 
