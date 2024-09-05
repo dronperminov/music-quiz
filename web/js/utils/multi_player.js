@@ -7,6 +7,7 @@ function MultiPlayer() {
     this.pageHeaderBlock = document.getElementById("page-header")
     this.questionBlock = document.getElementById("question")
     this.managerBlock = document.getElementById("multi-player-manager")
+    this.menu = document.querySelector("header")
 
     this.sessionInfo = document.getElementById("session-info")
     this.usersCountSpan = document.getElementById("connected-users-count")
@@ -35,15 +36,17 @@ MultiPlayer.prototype.Connect = function(sessionId, username) {
 }
 
 MultiPlayer.prototype.Open = function() {
-    ShowNotification(`Подключение к сессии ${this.sessionId} установлено`, "success-notification", 1500)
-
     this.managerBlock.classList.add("hidden")
     this.historyBlock.classList.remove("hidden")
     this.historyActionsBlock.innerHTML = ""
     this.statisticsBlock.classList.remove("hidden")
     this.reactionBlock.classList.remove("hidden")
     this.connectionBlock.classList.remove("hidden")
+    this.menu.classList.add("hidden")
+
     localStorage.setItem("sessionId", this.sessionId)
+
+    ShowNotification(`Подключение к сессии ${this.sessionId} установлено<br>Меню будет скрыто на время игры`, "success-notification", 2500)
 }
 
 MultiPlayer.prototype.Close = function() {
@@ -71,6 +74,8 @@ MultiPlayer.prototype.Disconnect = function() {
     this.reactionBlock.classList.add("hidden")
     this.connectionBlock.classList.add("hidden")
     this.sessionInfo.classList.add("hidden")
+    this.menu.classList.remove("hidden")
+
     this.ClearQuestion()
 
     localStorage.removeItem("sessionId")
