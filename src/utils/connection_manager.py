@@ -17,7 +17,10 @@ class ConnectionManager:
         self.active_connections[session_id].append(websocket)
 
     def disconnect(self, websocket: WebSocket, session_id: str) -> None:
-        self.active_connections[session_id].remove(websocket)
+        if session_id not in self.active_connections:
+            return
+
+        self.active_connections[session_id] = [connection for connection in self.active_connections[session_id] if connection != websocket]
 
         if not self.active_connections[session_id]:
             del self.active_connections[session_id]

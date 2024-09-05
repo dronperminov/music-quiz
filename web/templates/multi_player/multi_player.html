@@ -20,6 +20,15 @@
 
         <div class="hidden" id="question"></div>
 
+        <div class="reactions hidden" id="reactions">
+            <div class="reaction" onclick="multiPlayer.SendReaction('poo')"><img src="/images/reactions/poo.svg"></div>
+            <div class="reaction" onclick="multiPlayer.SendReaction('heart')"><img src="/images/reactions/heart.svg"></div>
+            <div class="reaction" onclick="multiPlayer.SendReaction('angry')"><img src="/images/reactions/angry.svg"></div>
+            <div class="reaction" onclick="multiPlayer.SendReaction('crying')"><img src="/images/reactions/crying.svg"></div>
+            <div class="reaction" onclick="multiPlayer.SendReaction('happy')"><img src="/images/reactions/happy.svg"></div>
+            <div class="reaction" onclick="multiPlayer.SendReaction('monkey')"><img src="/images/reactions/monkey.svg"></div>
+        </div>
+
         <div class="multi-player" id="multi-player-manager">
             <label for="session-id">Идентификатор сессии:</label>
             <input class="basic-input" id="session-id" type="text" placeholder="введите название сессии" oninput="InputSessionId()" value="">

@@ -16,6 +16,9 @@ function MultiPlayer() {
     this.username2avatar = {}
 
     this.disconnectButton = document.getElementById("disconnect-button")
+
+    this.reactionBlock = document.getElementById("reactions")
+    this.reactions = ["poo", "heart", "angry", "crying", "happy", "monkey"]
 }
 
 MultiPlayer.prototype.Connect = function(sessionId, username) {
@@ -26,7 +29,6 @@ MultiPlayer.prototype.Connect = function(sessionId, username) {
     this.ws.addEventListener("open", () => this.Open())
     this.ws.addEventListener("message", (e) => this.HandleMessage(JSON.parse(e.data)))
     this.ws.addEventListener("close", () => this.Close())
-    this.ws.addEventListener("error", () => this.Disconnect())
 }
 
 MultiPlayer.prototype.Open = function() {
@@ -34,9 +36,10 @@ MultiPlayer.prototype.Open = function() {
     ShowNotification(`Connected to the session ${this.sessionId}`, "success-notification", 1500)
 
     this.managerBlock.classList.add("hidden")
-    this.disconnectButton.classList.remove("hidden")
     this.historyBlock.classList.remove("hidden")
     this.historyActionsBlock.innerHTML = ""
+    this.reactionBlock.classList.remove("hidden")
+    this.disconnectButton.classList.remove("hidden")
     localStorage.setItem("sessionId", this.sessionId)
 }
 
@@ -64,6 +67,7 @@ MultiPlayer.prototype.Disconnect = function() {
 
     this.managerBlock.classList.remove("hidden")
     this.historyBlock.classList.add("hidden")
+    this.reactionBlock.classList.add("hidden")
     this.disconnectButton.classList.add("hidden")
     this.sessionInfo.classList.add("hidden")
     this.ClearQuestion()
@@ -149,15 +153,19 @@ MultiPlayer.prototype.InitQuestion = function(session) {
     this.pageHeaderBlock.classList.add("hidden")
     this.question = new Question(session.question, (correct, answerTime) => SendMultiplayerAnswer(correct, answerTime))
     this.question.Build(this.questionBlock, session)
+    this.reactionBlock.classList.remove("hidden")
 
-    if (this.username in session.answers)
+    if (this.username in session.answers) {
+        this.question.answerTime = session.answers[this.username].answer_time
         this.question.ShowAnswer(session.answers[this.username].correct)
+    }
 
     PlayTrack(this.question.trackId)
 }
 
 MultiPlayer.prototype.ClearQuestion = function() {
     this.pageHeaderBlock.classList.remove("hidden")
+    this.reactionBlock.classList.add("hidden")
     this.questionBlock.innerHTML = ""
     this.question = null
 
@@ -166,7 +174,7 @@ MultiPlayer.prototype.ClearQuestion = function() {
 }
 
 MultiPlayer.prototype.AppendHistory = function(session) {
-    if (["connect", "disconnect", "answer"].indexOf(session.action) == -1)
+    if (["connect", "disconnect", "answer", ...this.reactions].indexOf(session.action) == -1)
         return
 
     let date = new Date()
@@ -187,6 +195,12 @@ MultiPlayer.prototype.AppendHistory = function(session) {
         let time = FormatTime(session.answers[session.username].answer_time)
         text = `@${session.username} ответил ${correct} (${time})`
     }
+    else if (this.reactions.indexOf(session.action) > -1) {
+        text = `@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`
+
+        if (session.username != this.username)
+            ShowNotification(`@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`, "info-notification", 1800)
+    }
 
     let action = MakeElement("session-history-action", null)
     let user = MakeElement("session-history-action-user", action)
@@ -194,4 +208,8 @@ MultiPlayer.prototype.AppendHistory = function(session) {
     MakeElement("", action, {innerHTML: `${hours}:${minutes}:${seconds}: ${text}`})
 
     this.historyActionsBlock.prepend(action)
+}
+
+MultiPlayer.prototype.SendReaction = function(reaction) {
+    this.ws.send(reaction)
 }

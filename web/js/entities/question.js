@@ -174,7 +174,7 @@ Question.prototype.BuildLyrics = function(parent, params) {
     if (params.track.lyrics === null)
         return
 
-    let block = MakeElement("", parent, {id: `lyrics-updater-${this.trackId}`, "data-lrc": params.track.lyrics.lrc})
+    let block = MakeElement("hidden", parent, {id: `lyrics-updater-${this.trackId}`, "data-lrc": params.track.lyrics.lrc})
     MakeElement("", block, {innerText: "Текст"}, "h3")
 
     let updater = MakeElement("lyrics-updater", block)
@@ -204,7 +204,6 @@ Question.prototype.InitQuestion = function() {
 }
 
 Question.prototype.ShowAnswer = function(correct = null) {
-    console.log(correct)
     if (this.answerTime !== null) {
         this.answerTime = (performance.now() - this.answerTime) / 1000
         let answerTimeSpan = document.getElementById("answer-time")
