@@ -14,6 +14,22 @@
     <div class="content">
         <h1>Аналитика</h1>
 
+        <div class="description">
+            Показана информация
+            {% if not period %}за всё время
+            {% elif period[0].date() == period[1].date() %}за {{period[0].strftime("%d.%m.%Y")}}
+            {% else %}с {{period[0].strftime("%d.%m.%Y")}} по {{period[1].strftime("%d.%m.%Y")}}
+            {% endif %}
+        </div>
+        <div class="analytics-period">
+            Показать за
+            <a class="link" href="/analytics?username={{show_user.username}}&period=today">сегодня</a>,
+            <a class="link" href="/analytics?username={{show_user.username}}&period=curr-month">текущий&nbsp;месяц</a>,
+            <a class="link" href="/analytics?username={{show_user.username}}&period=last-month">прошлый&nbsp;месяц</a>,
+            <a class="link" href="/analytics?username={{show_user.username}}&period=curr-year">текущий&nbsp;год</a>,
+            <a class="link" href="/analytics?username={{show_user.username}}">всё&nbsp;время</a>
+        </div>
+
         <div class="profile">
             <div class="profile-image">
                 <img src="{{show_user.avatar_url}}">

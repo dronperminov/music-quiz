@@ -42,6 +42,13 @@
     text-align: center;
 }
 
+.analytics-period {
+    font-size: 0.9em;
+    margin-top: -0.5em;
+    margin-bottom: 1em;
+    line-height: 1.5em;
+}
+
 .analytics-block {
     border: 1px solid var(--border-color);
     border-radius: 0.8em;

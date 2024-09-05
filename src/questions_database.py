@@ -1,7 +1,8 @@
 import logging
 import random
 from collections import defaultdict
-from typing import Dict, List, Optional
+from datetime import datetime
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -197,8 +198,12 @@ class QuestionsDatabase:
 
         return group_id2scale
 
-    def get_analytics(self, username: str) -> Analytics:
-        questions = list(self.database.questions.find({"username": username, "correct": {"$ne": None}}))
+    def get_analytics(self, username: str, period: Optional[Tuple[datetime, datetime]]) -> Analytics:
+        query = {"username": username, "correct": {"$ne": None}}
+        if period:
+            query["timestamp"] = {"$gte": period[0], "$lte": period[1]}
+
+        questions = list(self.database.questions.find(query))
         track_ids = list({question["track_id"] for question in questions})
         tracks = list(self.database.tracks.find({"track_id": {"$in": track_ids}}))
         return Analytics.evaluate(questions, tracks)
