@@ -374,13 +374,22 @@ h2 + .description {
     background: var(--main-color);
 }
 
-.notification {
+#notifications {
     position: fixed;
-    margin: 0 auto;
+    display: grid;
+    grid-gap: 0.5em;
+    bottom: 15px;
+    justify-items: center;
+    max-width: calc(var(--max-width) - 10px);
     left: 0;
     right: 0;
-    max-width: calc(var(--max-width) - 10px);
-    bottom: 15px;
+    margin: 0 auto;
+    max-height: 50vh;
+    pointer-events: none;
+    user-select: none;
+}
+
+.notification {
     opacity: 0;
     padding: 0.8em 1em;
     z-index: 9999;
