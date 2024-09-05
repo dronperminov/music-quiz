@@ -13,10 +13,13 @@ def main() -> None:
 
     user_roles = {
         "dronperminov": "owner",
-        "LittleSun": "admin",
+        "LittleSun": "owner",
         "sobol": "admin",
         "Lika_Mangova": "admin",
-        "alemattoni": "admin"
+        "alemattoni": "admin",
+        "katerinasonrisa": "admin",
+        "PaSeR": "admin",
+        "Jokogo": "admin"
     }
 
     client = MongoClient("mongodb://localhost:27017/")
