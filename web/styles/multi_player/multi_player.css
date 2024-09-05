@@ -143,12 +143,12 @@
     border: 1px solid var(--text-color);
 }
 
-.session-history-action .correct {
+.session-history-action .correct, .notification .correct {
     font-weight: bold;
     color: var(--correct-color);
 }
 
-.session-history-action .incorrect {
+.session-history-action .incorrect, .notification .incorrect {
     font-weight: bold;
     color: var(--incorrect-color);
 }

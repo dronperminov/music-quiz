@@ -7,7 +7,6 @@ function MultiPlayer() {
     this.pageHeaderBlock = document.getElementById("page-header")
     this.questionBlock = document.getElementById("question")
     this.managerBlock = document.getElementById("multi-player-manager")
-    this.menu = document.querySelector("header")
 
     this.sessionInfo = document.getElementById("session-info")
     this.usersCountSpan = document.getElementById("connected-users-count")
@@ -42,7 +41,7 @@ MultiPlayer.prototype.Open = function() {
     this.statisticsBlock.classList.remove("hidden")
     this.reactionBlock.classList.remove("hidden")
     this.connectionBlock.classList.remove("hidden")
-    this.menu.classList.add("hidden")
+    document.querySelector("body").classList.add("hidden-menu")
 
     localStorage.setItem("sessionId", this.sessionId)
 
@@ -74,8 +73,7 @@ MultiPlayer.prototype.Disconnect = function() {
     this.reactionBlock.classList.add("hidden")
     this.connectionBlock.classList.add("hidden")
     this.sessionInfo.classList.add("hidden")
-    this.menu.classList.remove("hidden")
-
+    document.querySelector("body").classList.remove("hidden-menu")
     this.ClearQuestion()
 
     localStorage.removeItem("sessionId")
@@ -239,9 +237,15 @@ MultiPlayer.prototype.AppendHistory = function(session) {
 
     if (session.action == "connect") {
         text = `@${session.username} подключился`
+
+        if (session.username != this.username)
+            ShowNotification(text, "info-notification", 1500)
     }
     else if (session.action == "disconnect") {
         text = `@${session.username} отключился`
+
+        if (session.username != this.username)
+            ShowNotification(text, "info-notification", 1500)
     }
     else if (session.action == "remove" && session.username == session.created_by) {
         text = `@${session.username} удалил сессию`
@@ -251,10 +255,13 @@ MultiPlayer.prototype.AppendHistory = function(session) {
         let correct = session.answers[session.username].correct ? '<span class="correct">знаю</span>' : '<span class="incorrect">не знаю</span>'
         let time = FormatTime(session.answers[session.username].answer_time)
         text = `@${session.username} ответил ${correct} (${time})`
+
+        if (session.username != this.username)
+            ShowNotification(text, "info-notification", 1500)
     }
     else if (this.reactions.indexOf(session.action) > -1) {
         text = `@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`
-        ShowNotification(`@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`, "info-notification", 1800)
+        ShowNotification(text, "info-notification", 1800)
     }
 
     let action = MakeElement("session-history-action", null)
