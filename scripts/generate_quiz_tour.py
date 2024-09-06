@@ -30,6 +30,9 @@ def get_tags(args: Namespace) -> List[str]:
     if args.positions in ["hits", "unhackneyed"]:
         tags.append(args.positions)
 
+    if args.positions == "top3":
+        tags.append("hits")
+
     if args.years != "all":
         tags.extend(args.years.split("-") if "-" in args.years else [args.years])
 
