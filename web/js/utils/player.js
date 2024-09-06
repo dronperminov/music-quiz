@@ -190,6 +190,12 @@ Player.prototype.ParseTimecode = function(timecode) {
     return [+timestamps[0], +timestamps[1]]
 }
 
+Player.prototype.Reset = function() {
+    this.SetTimecode("")
+    this.SetPlaybackRate(1)
+    this.ShowIcons()
+}
+
 Player.prototype.PointToSeek = function(e) {
     let x = e.touches ? e.touches[0].clientX - this.progress.offsetLeft : e.offsetX
     let part = Math.max(0, Math.min(1, x / this.progressBar.clientWidth))

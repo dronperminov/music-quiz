@@ -228,15 +228,16 @@ Question.prototype.ShowAnswer = function(correct = null) {
         document.getElementById("answer-button-incorrect").setAttribute("disabled", "")
     }
 
-    let audio = document.getElementById(`audio-${this.trackId}`)
-    audio.addEventListener("play", () => {
-        let player = players.GetPlayer()
+    this.ResetPlayer()
+}
 
-        if (player === null)
-            return
+Question.prototype.ResetPlayer = function() {
+    let player = players.GetPlayer()
 
-        player.SetTimecode("")
-        player.SetPlaybackRate(1)
-        player.ShowIcons()
-    })
+    if (player !== null) {
+        player.Reset()
+        return
+    }
+
+    setTimeout(() => this.ResetPlayer(), 1000)
 }
