@@ -124,6 +124,40 @@
                 <svg class="hidden" id="times-incorrect-chart"></svg>
             </div>
         </div>
+
+        <div class="analytics-block">
+            <div class="analytics-title">Динамика</div>
+            <div class="analytics-description">В данном блоке отображаются результаты, сгруппированные по
+                {% if analytics.period.group_by == "day" %}дням
+                {% elif analytics.period.group_by == "week" %}неделям
+                {% else %}месяцам
+                {% endif %}
+            </div>
+
+            <div class="analytics-subtitle analytics-title-interactive" onclick="TogglePeriodChart('time')">Среднее время ответа</div>
+            <div class="analytics-description">Нажмите, чтобы увидеть диаграмму.</div>
+            <div class="analytics-chart-period analytics-chart" id="period-time-block">
+                <svg id="period-time-chart"></svg>
+            </div>
+
+            <div class="analytics-subtitle analytics-title-interactive" onclick="TogglePeriodChart('questions')">Общее количество вопросов</div>
+            <div class="analytics-description">Нажмите, чтобы увидеть диаграмму.</div>
+            <div class="analytics-chart-period analytics-chart" id="period-questions-block">
+                <svg id="period-questions-chart"></svg>
+            </div>
+
+            <div class="analytics-subtitle analytics-title-interactive" onclick="TogglePeriodChart('correct')">Доля верных ответов (%)</div>
+            <div class="analytics-description">Нажмите, чтобы увидеть диаграмму.</div>
+            <div class="analytics-chart-period analytics-chart" id="period-correct-block">
+                <svg id="period-correct-chart"></svg>
+            </div>
+
+            <div class="analytics-subtitle analytics-title-interactive" onclick="TogglePeriodChart('incorrect')">Доля неверных ответов (%)</div>
+            <div class="analytics-description">Нажмите, чтобы увидеть диаграмму.</div>
+            <div class="analytics-chart-period analytics-chart" id="period-incorrect-block">
+                <svg id="period-incorrect-chart"></svg>
+            </div>
+        </div>
         {% else %}
         <div class="analytics-block">
             <div class="analytics-no-info">Пока что нет информации</div>
@@ -216,6 +250,7 @@
     <script src="/js/charts/chart.js?v={{version}}"></script>
     <script src="/js/charts/bar_chart.js?v={{version}}"></script>
     <script src="/js/charts/radar_chart.js?v={{version}}"></script>
+    <script src="/js/charts/plot_chart.js?v={{version}}"></script>
 
     <script src="/js/user/analytics.js?v={{version}}"></script>
 
@@ -231,6 +266,18 @@
             incorrect: [{% for key in main.time.histogram_keys %}{label: "{{key}}", count: {{main.time.histogram_incorrect[key]}} },{% endfor %}]
         }
 
+        const periodData = [
+            {% for data in analytics.period.data %}
+            {
+                label: "{{data.label}}",
+                time: {{data.time|round(1)}},
+                correct: {{(data.correct / data.total * 100)|round(1)}},
+                incorrect: {{(data.incorrect / data.total * 100)|round(1)}},
+                questions: {{data.total}}
+            },
+            {% endfor %}
+        ]
+
         const genresData = [
             {% for genre, count in analytics.tracks.genres.items() %}
             {value: {{count}}, color: "{{genre.to_color()}}", label: "{{genre.to_rus()}}"},
@@ -238,6 +285,10 @@
         ]
 
         PlotGenresChart()
+        PlotPeriodPlotChart("time", false)
+        PlotPeriodBarChart("questions")
+        PlotPeriodBarChart("correct", 100)
+        PlotPeriodBarChart("incorrect", 100)
     </script>
 
     {% include "components/footer.html" %}

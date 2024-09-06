@@ -4,6 +4,7 @@ from typing import List
 from src.entities.analytics_entities.artists_analytics import ArtistsAnalytics
 from src.entities.analytics_entities.genres_analytics import TracksAnalytics
 from src.entities.analytics_entities.main_analytics import MainAnalytics
+from src.entities.analytics_entities.period_analytics import PeriodAnalytics
 
 
 @dataclass
@@ -11,6 +12,7 @@ class Analytics:
     main: MainAnalytics
     artists: ArtistsAnalytics
     tracks: TracksAnalytics
+    period: PeriodAnalytics
 
     @classmethod
     def evaluate(cls: "Analytics", questions: List[dict], tracks: List[dict]) -> "Analytics":
@@ -19,5 +21,6 @@ class Analytics:
         return cls(
             main=MainAnalytics.evaluate(questions),
             artists=ArtistsAnalytics.evaluate(questions, track_id2artist_ids),
-            tracks=TracksAnalytics.evaluate(tracks)
+            tracks=TracksAnalytics.evaluate(tracks),
+            period=PeriodAnalytics.evaluate(questions)
         )

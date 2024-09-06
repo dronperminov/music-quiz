@@ -2,7 +2,10 @@ const key2color = {
     total: "#2f7bf0",
     correct: "#47b39c",
     incorrect: "#ec6b56",
-    unknown: "#ffc154"
+    unknown: "#ffc154",
+
+    questions: "#d82e6b",
+    time: "#d82e6b"
 }
 
 function ToggleQuestionsChart() {
@@ -115,4 +118,21 @@ function PlotGenresChart() {
 
     let radar = new RadarChart({labelSize: 10})
     radar.Plot(svg, genresData)
+}
+
+function PlotPeriodBarChart(key, maxValue = null) {
+    let svg = document.getElementById(`period-${key}-chart`)
+    let chart = new BarChart({barColor: key2color[key], minRectWidth: 32, maxRectWidth: 38, bottomPadding: 12})
+    chart.Plot(svg, periodData, "label", key, maxValue)
+}
+
+function PlotPeriodPlotChart(key) {
+    let svg = document.getElementById(`period-${key}-chart`)
+    let chart = new PlotChart({markerColor: key2color[key]})
+    chart.Plot(svg, periodData, "label", key)
+}
+
+function TogglePeriodChart(key) {
+    let block = document.getElementById(`period-${key}-block`)
+    block.classList.toggle("analytics-chart-open")
 }

@@ -75,6 +75,12 @@
     border-bottom-style: solid;
 }
 
+.analytics-subtitle {
+    font-weight: bold;
+    font-size: 0.95em;
+    margin-top: 1em;
+}
+
 .analytics-description {
     color: var(--subtext-color);
     font-size: 0.8em;
@@ -82,6 +88,10 @@
 
 .analytics-title + .analytics-description {
     margin: -1.5em 0 1.5em 0;
+}
+
+.analytics-description + .analytics-subtitle {
+    margin-top: 0em;
 }
 
 .analytics-items {
@@ -123,6 +133,16 @@
     max-height: 0;
     overflow: hidden;
     transition: all .2s linear;
+}
+
+.analytics-chart-period {
+    max-width: 100%;
+    overflow-x: auto;
+    text-align: left !important;
+}
+
+.analytics-chart-period svg {
+    height: 250px;
 }
 
 .analytics-chart-checkbox {
