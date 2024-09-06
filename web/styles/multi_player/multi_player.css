@@ -157,19 +157,47 @@
     position: relative;
 }
 
-.reactions {
-    right: 10px;
-    top: 50px;
-    position: absolute;
-    display: grid;
-    grid-auto-flow: row;
-    grid-auto-rows: 20px;
-    width: 20px;
-    grid-gap: 12px;
+.hidden-menu .content {
+    margin-bottom: 35px;
 }
 
-.reactions img {
-    width: 20px;
+.hidden-menu #notifications {
+    bottom: 45px;
+}
+
+.reactions {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    padding: 5px;
+    position: fixed;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--block-background);
+}
+
+.reaction-items {
+    margin: 0 auto;
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    max-width: 100%;
+    overflow-x: auto;
+    align-items: center;
+    justify-items: center;
+}
+
+.reaction-items .reaction {
+    max-width: 45px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.reaction-items img {
+    width: 24px;
+    cursor: pointer;
 }
 
 .reaction {

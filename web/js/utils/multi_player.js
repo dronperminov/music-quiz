@@ -215,7 +215,6 @@ MultiPlayer.prototype.InitQuestion = function(session) {
     this.pageHeaderBlock.classList.add("hidden")
     this.question = new Question(session.question, (correct, answerTime) => SendMultiplayerAnswer(correct, answerTime))
     this.question.Build(this.questionBlock, session)
-    this.reactionBlock.classList.remove("hidden")
 
     if (this.username in session.answers) {
         this.question.answerTime = session.answers[this.username].answer_time
@@ -227,7 +226,6 @@ MultiPlayer.prototype.InitQuestion = function(session) {
 
 MultiPlayer.prototype.ClearQuestion = function() {
     this.pageHeaderBlock.classList.remove("hidden")
-    this.reactionBlock.classList.add("hidden")
     this.questionBlock.innerHTML = ""
     this.question = null
 

@@ -399,6 +399,7 @@ h2 + .description {
     max-height: 25vh;
     pointer-events: none;
     user-select: none;
+    overflow: hidden;
 }
 
 .notification {
