@@ -165,7 +165,7 @@
     grid-auto-flow: row;
     grid-auto-rows: 1.65em;
     width: 1.65em;
-    grid-gap: 0.75em;
+    grid-gap: 0.9em;
 }
 
 .reactions img {

@@ -69,6 +69,9 @@ async def remove_multiplayer_session(session_id: str = Body(..., embed=True), us
 
 def get_session_message(session_id: str, username: str, action: str) -> dict:
     session = database.get_session(session_id=session_id)
+    if not session:
+        return {}
+
     users = database.users.find({"username": {"$in": session.players}}, {"username": 1, "avatar_url": 1, "full_name": 1, "_id": 0})
     username2user = {user["username"]: user for user in users}
 
