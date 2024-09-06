@@ -54,4 +54,7 @@ class ArtistsSearch:
         if not self.query:
             return {}
 
+        if re.fullmatch(r"/[^/]+/", self.query):
+            return {"name": {"$regex": self.query[1:-1], "$options": "i"}}
+
         return {"name": {"$regex": re.escape(self.query), "$options": "i"}}
