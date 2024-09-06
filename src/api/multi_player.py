@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 
 from fastapi import APIRouter, Body, Cookie, Depends, HTTPException
@@ -5,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 
-from src import database, music_database, questions_database
+from src import database, logger, music_database, questions_database
 from src.api import templates
 from src.entities.session import Session
 from src.entities.user import User
@@ -15,7 +16,7 @@ from src.utils.common import get_static_hash
 from src.utils.connection_manager import ConnectionManager
 
 router = APIRouter()
-connection_manager = ConnectionManager()
+connection_manager = ConnectionManager(logger=logger)
 
 
 @router.post("/create-multiplayer-session")
@@ -68,23 +69,24 @@ async def remove_multiplayer_session(session_id: str = Body(..., embed=True), us
 
 
 def get_session_message(session_id: str, username: str, action: str) -> dict:
+    message = {
+        "session_id": session_id,
+        "username": username,
+        "action": action
+    }
+
     session = database.get_session(session_id=session_id)
     if not session:
-        return {}
+        return message
 
     users = database.users.find({"username": {"$in": session.players}}, {"username": 1, "avatar_url": 1, "full_name": 1, "_id": 0})
     username2user = {user["username"]: user for user in users}
 
-    message = {
-        "session_id": session.session_id,
-        "username": username,
-        "action": action,
-        "created_by": session.created_by,
-        "players": [username2user[username] for username in session.players],
-        "answers": {username: {"correct": answer.correct, "answer_time": answer.answer_time} for username, answer in session.answers.items()},
-        "question": None,
-        "statistics": {username: [answer.to_dict() for answer in answers] for username, answers in session.statistics.items()}
-    }
+    message["created_by"] = session.created_by
+    message["players"] = [username2user[username] for username in session.players]
+    message["answers"] = {username: {"correct": answer.correct, "answer_time": answer.answer_time} for username, answer in session.answers.items()}
+    message["question"] = None
+    message["statistics"] = {username: [answer.to_dict() for answer in answers] for username, answers in session.statistics.items()}
 
     if not session.question:
         return message
@@ -119,15 +121,22 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
     if user.username not in session.players:
         database.sessions.update_one({"session_id": session_id}, {"$push": {"players": user.username}})
 
+    logger.info(f'@{user.username} connected to the session "{session_id}"')
     await connection_manager.connect(websocket, session_id=session_id)
+    asyncio.create_task(connection_manager.ping(websocket, session_id=session_id))
     await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "connect"))
 
     try:
         while True:
             message = await websocket.receive_text()
+
+            if message == "pong":
+                continue
+
             await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, message))
     except (WebSocketDisconnect, OSError):
         connection_manager.disconnect(websocket, session_id=session_id)
+        logger.info(f'@{user.username} disconnected from the session "{session_id}"')
 
         if database.sessions.find_one({"session_id": session_id}):
             database.sessions.update_one({"session_id": session_id}, {"$pull": {"players": user.username}})  # TODO: подумать, как сделать правильно

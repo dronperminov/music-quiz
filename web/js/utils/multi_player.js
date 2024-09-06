@@ -21,17 +21,18 @@ function MultiPlayer() {
     this.removeSessionButton = document.getElementById("remove-session-button")
 
     this.reactionBlock = document.getElementById("reactions")
-    this.reactions = ["poo", "heart", "angry", "crying", "happy", "monkey", "party-popper"]
+    this.reactions = ["poo", "heart", "angry", "crying", "happy", "monkey", "party-popper", "clapping"]
 }
 
 MultiPlayer.prototype.Connect = function(sessionId, username) {
     this.sessionId = sessionId
     this.username = username
-    this.ws = new WebSocket(this.GetWebsockerUrl(sessionId))
 
-    this.ws.addEventListener("open", () => this.Open())
-    this.ws.addEventListener("message", (e) => this.HandleMessage(JSON.parse(e.data)))
-    this.ws.addEventListener("close", () => this.Close())
+    this.ws = new WebSocket(this.GetWebsockerUrl(sessionId))
+    this.ws.onopen = () => this.Open()
+    this.ws.onmessage = (e) => this.HandleMessage(e.data)
+    this.ws.onclose = () => this.Close()
+    this.ws.onerror = (error) => this.HandleError(error)
 }
 
 MultiPlayer.prototype.Open = function() {
@@ -94,7 +95,13 @@ MultiPlayer.prototype.IsAllAnswered = function(session) {
     return true
 }
 
-MultiPlayer.prototype.HandleMessage = function(session) {
+MultiPlayer.prototype.HandleMessage = function(message) {
+    if (message === "ping") {
+        this.ws.send("pong")
+        return
+    }
+
+    let session = JSON.parse(message)
     this.UpdateSessionInfo(session)
 
     if (session.action == "remove") {
@@ -119,6 +126,10 @@ MultiPlayer.prototype.HandleMessage = function(session) {
 
     if (session.question !== null && (this.question == null || session.question.track_id != this.question.trackId))
         this.InitQuestion(session)
+}
+
+MultiPlayer.prototype.HandleError = function(error) {
+    ShowNotification(`Произошла ошибка вебсокета: ${error}`, "error-notification", 2000)
 }
 
 MultiPlayer.prototype.UpdateSessionInfo = function(session) {

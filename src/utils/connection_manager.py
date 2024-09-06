@@ -1,11 +1,14 @@
+import asyncio
 import json
+from logging import Logger
 from typing import Dict, List
 
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 
 
 class ConnectionManager:
-    def __init__(self) -> None:
+    def __init__(self, logger: Logger) -> None:
+        self.logger = logger
         self.active_connections: Dict[str, List[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, session_id: str) -> None:
@@ -29,8 +32,21 @@ class ConnectionManager:
         if session_id not in self.active_connections:
             return
 
-        for connection in self.active_connections[session_id]:
+        for websocket in self.active_connections[session_id]:
             try:
-                await connection.send_text(json.dumps(message, ensure_ascii=False))
+                await websocket.send_text(json.dumps(message, ensure_ascii=False))
             except (RuntimeError, WebSocketDisconnect):
-                self.disconnect(connection, session_id)
+                self.disconnect(websocket, session_id)
+
+    async def ping(self, websocket: WebSocket, session_id: str) -> None:
+        while True:
+            await asyncio.sleep(30)
+            try:
+                await websocket.send_text("ping")
+            except WebSocketDisconnect:
+                self.disconnect(websocket, session_id)
+                break
+            except Exception as e:
+                self.logger.error(f'Error during ping in the session "{session_id}": {e}')
+                self.disconnect(websocket, session_id)
+                break
