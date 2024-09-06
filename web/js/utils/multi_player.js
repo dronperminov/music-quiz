@@ -70,7 +70,10 @@ MultiPlayer.prototype.Disconnect = function() {
     this.ws.close()
 
     this.managerBlock.classList.remove("hidden")
-    this.historyBlock.classList.add("hidden")
+
+    if (this.historyActionsBlock.children.length == 0)
+        this.historyBlock.classList.add("hidden")
+
     this.reactionBlock.classList.add("hidden")
     this.connectionBlock.classList.add("hidden")
     this.sessionInfo.classList.add("hidden")
