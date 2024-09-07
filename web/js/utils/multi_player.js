@@ -274,8 +274,7 @@ MultiPlayer.prototype.AppendHistory = function(session) {
         let time = FormatTime(session.answers[session.username].answer_time)
         text = `@${session.username} ответил ${correct} (${time})`
 
-        if (session.username != this.username)
-            ShowNotification(text, "info-notification", 1500)
+        ShowNotification(session.username == this.username ? `Вы ответили ${correct} (${time})` : text, "info-notification", 1500)
     }
     else if (this.reactions.indexOf(session.action) > -1) {
         text = `@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`
