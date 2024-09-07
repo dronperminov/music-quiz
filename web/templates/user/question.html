@@ -42,7 +42,7 @@
             <div class="track-main">
                 <div class="track-image">
                     {% if quiz_tour %}
-                    {% if quiz_tour.quiz_tour_type == QuizTourType.ALPHABET %}
+                    {% if quiz_tour.quiz_tour_type == QuizTourType.ALPHABET or (quiz_tour.quiz_tour_type == QuizTourType.CHAIN and quiz_tour.question_ids.index(question_id) > 0) %}
                     <div class="track-tip">
                         <div class="track-tip-letter">{{artist_id2artist[track.artists[0]].name[0].upper()}}</div>
                         <div class="track-tip-letter-language">

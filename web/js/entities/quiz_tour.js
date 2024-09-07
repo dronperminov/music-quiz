@@ -61,7 +61,8 @@ QuizTour.prototype.QuizTourTypeToRus = function() {
         "alphabet": "алфавит",
         "stairs": "лесенка",
         "letter": "на одну букву",
-        "miracles_field": "поле чудес"
+        "miracles_field": "поле чудес",
+        "chain": "цепочка"
     }
 
     return type2rus[this.quizTourType]

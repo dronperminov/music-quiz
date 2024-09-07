@@ -7,6 +7,7 @@ class QuizTourType(Enum):
     STAIRS = "stairs"
     LETTER = "letter"
     MIRACLES_FIELD = "miracles_field"
+    CHAIN = "chain"
 
     def to_rus(self) -> str:
         quiz_tour_type2rus = {
@@ -14,6 +15,7 @@ class QuizTourType(Enum):
             QuizTourType.ALPHABET: "алфавит",
             QuizTourType.STAIRS: "лесенка",
             QuizTourType.LETTER: "на одну букву",
-            QuizTourType.MIRACLES_FIELD: "поле чудес"
+            QuizTourType.MIRACLES_FIELD: "поле чудес",
+            QuizTourType.CHAIN: "цепочка"
         }
         return quiz_tour_type2rus[self]
