@@ -92,38 +92,3 @@ function Load() {
     input.value = sessionId
     ConnectSession()
 }
-
-function Start() {
-    SendRequest("/get-multi-player-question", {session_id: multiPlayer.sessionId}).then(response => {
-        if (response.status != SUCCESS_STATUS) {
-            ShowNotification(`Не удалось получить вопрос<br><b>Причина</b>: ${response.message}`)
-            return
-        }
-    })
-}
-
-function SendMultiplayerAnswer(correct, answerTime) {
-    let answer = {
-        correct: correct,
-        session_id: multiPlayer.sessionId,
-        username: multiPlayer.username,
-        answer_time: answerTime
-    }
-
-    let buttons = [
-        document.getElementById("answer-button-correct"),
-        document.getElementById("answer-button-incorrect")
-    ]
-
-    for (let button of buttons)
-        button.setAttribute("disabled", "")
-
-    SendRequest("/answer-multi-player-question", answer).then(response => {
-        if (response.status != SUCCESS_STATUS) {
-            ShowNotification(response.message, "error-notification")
-
-            for (let button of buttons)
-                button.removeAttribute("disabled")
-        }
-    })
-}

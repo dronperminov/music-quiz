@@ -83,6 +83,17 @@ MultiPlayer.prototype.Disconnect = function() {
     localStorage.removeItem("sessionId")
 }
 
+MultiPlayer.prototype.RemoveSession = function() {
+    if (this.sessionId === null)
+        return
+
+    if (!confirm("Вы уверены, что хотите удалить сессию?"))
+        return
+
+    this.ws.send(JSON.stringify({action: "remove", username: this.username}))
+    this.Disconnect()
+}
+
 MultiPlayer.prototype.GetWebsockerUrl = function(sessionId) {
     let protocol = location.protocol == "https:" ? "wss" : "ws"
     let host = window.location.host
@@ -105,34 +116,23 @@ MultiPlayer.prototype.HandleMessage = function(message) {
     }
 
     let session = JSON.parse(message)
-    this.UpdateSessionInfo(session)
 
     if (session.action == "remove") {
         this.Disconnect()
         return
     }
 
-    if (session.action == "disconnect" && session.username == session.created_by) {
-        this.Disconnect()
-        return
-    }
+    this.UpdateSessionInfo(session)
 
-    if (session.players.length < 2) {
+    if (session.question === null || session.players.length < 2)
         this.ClearQuestion()
-        return
-    }
-
-    if (session.question === null || this.IsAllAnswered(session)) {
-        this.ClearQuestion()
-        Start()
-    }
-
-    if (session.question !== null && (this.question == null || session.question.track_id != this.question.trackId))
+    else if (this.question === null || this.question.trackId != session.question.track_id || session.action == "question")
         this.InitQuestion(session)
 }
 
 MultiPlayer.prototype.HandleError = function(error) {
-    ShowNotification(`Произошла ошибка вебсокета: ${error}`, "error-notification", 2000)
+    ShowNotification(`Произошла ошибка вебсокета: ${JSON.stringify(error)}`, "error-notification", 5000)
+    this.Disconnect()
 }
 
 MultiPlayer.prototype.UpdateSessionInfo = function(session) {
@@ -216,13 +216,14 @@ MultiPlayer.prototype.InitQuestion = function(session) {
     this.ClearQuestion()
 
     this.pageHeaderBlock.classList.add("hidden")
-    this.question = new Question(session.question, (correct, answerTime) => SendMultiplayerAnswer(correct, answerTime))
+    this.question = new Question(session.question, (correct, answerTime) => this.AnswerQuestion(correct, answerTime))
     this.question.Build(this.questionBlock, session)
 
-    if (this.username in session.answers) {
-        this.question.answerTime = session.answers[this.username].answer_time
-        this.question.ShowAnswer(session.answers[this.username].correct)
-    }
+    if (this.username in session.answers)
+        this.question.ShowAnswer(session.answers[this.username].correct, session.answers[this.username].answer_time)
+
+    window.scrollTo({top: 0, behavior: 'smooth'})
+    this.historyActionsBlock.scrollTop = 0
 
     PlayTrack(this.question.trackId)
 }
@@ -234,6 +235,11 @@ MultiPlayer.prototype.ClearQuestion = function() {
 
     players.Clear()
     infos.Clear()
+}
+
+MultiPlayer.prototype.AnswerQuestion = function(correct, answerTime) {
+    this.question.UpdateAnswerButtons(correct)
+    this.ws.send(JSON.stringify({action: "answer", username: this.username, correct: correct, answer_time: answerTime}))
 }
 
 MultiPlayer.prototype.AppendHistory = function(session) {
@@ -285,5 +291,5 @@ MultiPlayer.prototype.AppendHistory = function(session) {
 }
 
 MultiPlayer.prototype.SendReaction = function(reaction) {
-    this.ws.send(reaction)
+    this.ws.send(JSON.stringify({action: "reaction", value: reaction}))
 }

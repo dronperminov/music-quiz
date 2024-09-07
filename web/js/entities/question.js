@@ -203,9 +203,13 @@ Question.prototype.InitQuestion = function() {
     this.answerTime = performance.now()
 }
 
-Question.prototype.ShowAnswer = function(correct = null) {
-    if (this.answerTime !== null) {
+Question.prototype.ShowAnswer = function(correct = null, answerTime = null) {
+    if (answerTime !== null)
+        this.answerTime = answerTime
+    else if (this.answerTime !== null)
         this.answerTime = (performance.now() - this.answerTime) / 1000
+
+    if (this.answerTime !== null) {
         let answerTimeSpan = document.getElementById("answer-time")
         answerTimeSpan.innerText = FormatTime(this.answerTime)
         answerTimeSpan.parentNode.classList.remove("hidden")
@@ -223,12 +227,24 @@ Question.prototype.ShowAnswer = function(correct = null) {
     let answerBlock = document.getElementById("answer")
     answerBlock.classList.remove("hidden")
 
-    if (correct !== null) {
-        document.getElementById("answer-button-correct").setAttribute("disabled", "")
-        document.getElementById("answer-button-incorrect").setAttribute("disabled", "")
+    this.ResetPlayer()
+    this.UpdateAnswerButtons(correct)
+}
+
+Question.prototype.UpdateAnswerButtons = function(correct = null) {
+    if (correct === null)
+        return
+
+    let buttons = {
+        "true": document.getElementById("answer-button-correct"),
+        "false": document.getElementById("answer-button-incorrect")
     }
 
-    this.ResetPlayer()
+    for (let [value, button] of Object.entries(buttons)) {
+        button.setAttribute("disabled", "")
+        if (value !== `${correct}`)
+            button.classList.add("hidden")
+    }
 }
 
 Question.prototype.ResetPlayer = function() {

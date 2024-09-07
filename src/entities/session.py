@@ -51,6 +51,15 @@ class Session:
             "statistics": {username: [answer.to_dict() for answer in answers] for username, answers in self.statistics.items()}
         }
 
+    def add_player(self, player: str) -> None:
+        if player in self.players:
+            return
+
+        self.players.append(player)
+
+    def remove_player(self, target_player: str) -> None:
+        self.players = [player for player in self.players if player != target_player]
+
     def set_question(self, question: Question) -> None:
         self.question = question
         self.answers = {}
