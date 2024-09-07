@@ -21,7 +21,7 @@ function MultiPlayer() {
     this.removeSessionButton = document.getElementById("remove-session-button")
 
     this.reactionBlock = document.getElementById("reactions")
-    this.reactions = ["poo", "heart", "angry", "crying", "happy", "monkey", "party-popper", "clapping"]
+    this.reactions = ["poo", "heart", "angry", "crying", "happy", "anguished", "monkey", "party-popper", "clapping"]
 }
 
 MultiPlayer.prototype.Connect = function(sessionId, username) {
