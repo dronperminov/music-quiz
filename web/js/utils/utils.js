@@ -75,15 +75,18 @@ function Round(value, scale = 100) {
 }
 
 function FormatTime(time) {
-    if (time < 10)
-        return `${Round(time, 10)} ${GetWordForm(Math.floor(time * 10) % 10, ['секунда', 'секунды', 'секунд'], true)}`
+    if (time >= 60) {
+        let seconds = `${Math.floor(time) % 60}`.padStart(2, '0')
+        let minutes = `${Math.floor(time / 60)}`.padStart(2, '0')
+        return `${minutes}:${seconds}`
+    }
 
-    if (time < 60)
+    if (time >= 10)
         return GetWordForm(Math.round(time), ['секунда', 'секунды', 'секунд'])
 
-    let seconds = `${Math.floor(time) % 60}`.padStart(2, '0')
-    let minutes = `${Math.floor(time / 60)}`.padStart(2, '0')
-    return `${minutes}:${seconds}`
+    let rounded = Math.round(time * 10)
+    let last = rounded % 10
+    return `${Round(time, 10)} ${GetWordForm(last == 0 || last == 5 ? Math.floor(rounded / 10) : last, ['секунда', 'секунды', 'секунд'], true)}`
 }
 
 function ParseDateTime(datetime) {
