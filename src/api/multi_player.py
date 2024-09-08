@@ -167,8 +167,10 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
                 if session.update_settings(question_settings=question_settings):
                     database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
                     await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "settings"))
+            elif message["action"] == "message":
+                await connection_manager.broadcast(session_id=session_id, message={"action": "message", "username": user.username, "text": message["text"]})
             elif message["action"] == "reaction":
-                await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, message["value"]))
+                await connection_manager.broadcast(session_id=session_id, message={"action": "reaction", "username": user.username, "reaction": message["reaction"]})
             elif message["action"] == "remove" and message["username"] == session.created_by:
                 await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "remove"))
                 database.sessions.delete_one({"session_id": session.session_id})

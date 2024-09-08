@@ -22,8 +22,13 @@ function MultiPlayer() {
     this.settingsBlock = document.getElementById("session-settings")
     this.showedSettings = false
 
+    this.chatInput = document.getElementById("session-chat-text")
+    this.chatSend = document.getElementById("session-chat-send")
+    this.chatInput.addEventListener("input", () => this.InputChatText())
+    this.chatInput.addEventListener("keyup", (e) => { if (e.keyCode == 13) this.SendChatMessage()})
+    this.chatSend.addEventListener("click", () => this.SendChatMessage())
+
     this.reactionBlock = document.getElementById("reactions")
-    this.reactions = ["poo", "heart", "angry", "crying", "happy", "anguished", "monkey", "party-popper", "clapping"]
 }
 
 MultiPlayer.prototype.Connect = function(sessionId, username) {
@@ -122,6 +127,11 @@ MultiPlayer.prototype.HandleMessage = function(message) {
 
     if (session.action == "remove") {
         this.Disconnect()
+        return
+    }
+
+    if (session.action == "message" || session.action == "reaction") {
+        this.AppendHistory(session)
         return
     }
 
@@ -255,7 +265,7 @@ MultiPlayer.prototype.AnswerQuestion = function(correct, answerTime) {
 }
 
 MultiPlayer.prototype.AppendHistory = function(session) {
-    if (["connect", "disconnect", "remove", "answer", "settings", ...this.reactions].indexOf(session.action) == -1)
+    if (["connect", "disconnect", "remove", "answer", "settings", "message", "reaction"].indexOf(session.action) == -1)
         return
 
     let date = new Date()
@@ -293,8 +303,13 @@ MultiPlayer.prototype.AppendHistory = function(session) {
         text = `@${session.username} обновил настройки вопросов`
         ShowNotification(`${author} настройки вопросов`, "info-notification", 1800)
     }
-    else if (this.reactions.indexOf(session.action) > -1) {
-        text = `@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`
+    else if (session.action == "message") {
+        let author = session.username == this.username ? "Вы" : `@${session.username}`
+        text = `@${session.username}: ${session.text}`
+        ShowNotification(`${author}: ${session.text}`, "info-notification", 1800)
+    }
+    else if (session.action == "reaction") {
+        text = `@${session.username} отправил <img class="reaction" src="/images/reactions/${session.reaction}.svg">`
         ShowNotification(text, "info-notification", 1800)
     }
 
@@ -306,8 +321,23 @@ MultiPlayer.prototype.AppendHistory = function(session) {
     this.historyActionsBlock.prepend(action)
 }
 
+MultiPlayer.prototype.InputChatText = function() {
+    if (this.chatInput.value.trim() !== "")
+        this.chatSend.classList.remove("session-chat-hidden")
+    else
+        this.chatSend.classList.add("session-chat-hidden")
+}
+
+MultiPlayer.prototype.SendChatMessage = function() {
+    let text = this.chatInput.value.trim()
+    this.chatInput.value = ""
+    this.chatInput.blur()
+    this.InputChatText()
+    this.ws.send(JSON.stringify({action: "message", text: text}))
+}
+
 MultiPlayer.prototype.SendReaction = function(reaction) {
-    this.ws.send(JSON.stringify({action: "reaction", value: reaction}))
+    this.ws.send(JSON.stringify({action: "reaction", reaction: reaction}))
 }
 
 MultiPlayer.prototype.UpdateQuestionSettings = function(settings) {

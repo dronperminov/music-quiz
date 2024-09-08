@@ -77,7 +77,6 @@ function ShowQuestionSettings(settings) {
     document.getElementById("start-from-chorus").checked = settings.start_from_chorus
     document.getElementById("show-simple-artist-type").checked = settings.show_simple_artist_type
 
-    console.log(settings)
     answerTimeInput.SetValue(settings.answer_time)
     genresInput.SetValue(settings.genres)
     yearsInput.SetValue(GetYearsDict(settings.years))

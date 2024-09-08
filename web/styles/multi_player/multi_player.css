@@ -72,6 +72,30 @@
     transition: max-height 0.2s linear;
 }
 
+.session-chat {
+    margin-top: 0.8em;
+}
+
+.session-chat .session-header {
+    margin-bottom: 0.2em;
+}
+
+.session-chat-controls {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    grid-gap: 0.1em;
+}
+
+.session-chat-controls img {
+    width: 24px;
+    transition: width 0.2s;
+}
+
+.session-chat-hidden {
+    width: 0 !important;
+    transition: width 0.2s;
+}
+
 .connected-users {
     display: inline-grid;
     grid-auto-flow: column;
