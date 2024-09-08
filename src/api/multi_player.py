@@ -1,6 +1,7 @@
 import asyncio
 import json
 import urllib.parse
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Body, Cookie, Depends, HTTPException
@@ -10,8 +11,10 @@ from fastapi.websockets import WebSocket, WebSocketDisconnect
 
 from src import database, logger, music_database, questions_database
 from src.api import templates
+from src.entities.question_settings import QuestionSettings
 from src.entities.session import Session
 from src.entities.user import User
+from src.enums import ArtistsCount, Genre, Language, QuestionType
 from src.query_params.question_answer import QuestionAnswer
 from src.utils.auth import get_user, token_to_user
 from src.utils.common import get_static_hash
@@ -29,7 +32,8 @@ async def create_multiplayer_session(session_id: str = Body(..., embed=True), us
     if database.get_session(session_id=session_id):
         return JSONResponse({"status": "error", "message": f'Сессия с идентификатором "{session_id}" уже есть'})
 
-    session = Session.create(session_id=session_id, username=user.username)
+    settings = database.get_settings(username=user.username)
+    session = Session.create(session_id=session_id, username=user.username, question_settings=settings.question_settings)
     database.sessions.insert_one(session.to_dict())
     return JSONResponse({"status": "success", "session_id": session_id, "username": user.username})
 
@@ -72,6 +76,7 @@ def get_session_message(session_id: str, username: str, action: str) -> dict:
     message["answers"] = {username: {"correct": answer.correct, "answer_time": answer.answer_time} for username, answer in session.answers.items()}
     message["question"] = None
     message["statistics"] = {username: [answer.to_dict() for answer in answers] for username, answers in session.statistics.items()}
+    message["question_settings"] = session.question_settings.to_dict()
 
     if not session.question:
         return message
@@ -92,6 +97,7 @@ def get_session_message(session_id: str, username: str, action: str) -> dict:
 
 async def get_session_question(session: Session, username: str) -> None:
     settings = database.get_settings(username=session.created_by)
+    settings.question_settings = session.question_settings
     question = questions_database.get_question(settings)
     session.set_question(question)
     database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
@@ -156,6 +162,11 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
 
             if message["action"] == "answer":
                 await handle_player_answer(session, message["username"], QuestionAnswer(correct=message["correct"], answer_time=message["answer_time"]))
+            elif message["action"] == "settings":
+                question_settings = QuestionSettings.from_dict(message["settings"])
+                if session.update_settings(question_settings=question_settings):
+                    database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
+                    await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "settings"))
             elif message["action"] == "reaction":
                 await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, message["value"]))
             elif message["action"] == "remove" and message["username"] == session.created_by:
@@ -179,5 +190,16 @@ def multi_player(user: Optional[User] = Depends(get_user)) -> Response:
         return RedirectResponse(url=f'/login?back_url={urllib.parse.quote("/multi-player")}')
 
     template = templates.get_template("multi_player/multi_player.html")
-    content = template.render(user=user, page="multi_player", version=get_static_hash())
+    settings = database.get_settings(username=user.username)
+    content = template.render(
+        user=user,
+        page="multi_player",
+        version=get_static_hash(),
+        question_settings=settings.question_settings,
+        Genre=Genre,
+        Language=Language,
+        ArtistsCount=ArtistsCount,
+        QuestionType=QuestionType,
+        today=datetime.now()
+    )
     return HTMLResponse(content=content)

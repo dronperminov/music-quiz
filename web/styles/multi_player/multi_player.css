@@ -48,6 +48,30 @@
     grid-auto-columns: 1fr;
 }
 
+.session-settings {
+    margin-top: 1em;
+}
+
+.session-settings[disabled] .session-settings-inputs * {
+    color: var(--subtext-color);
+    pointer-events: none;
+}
+
+.session-settings-inputs {
+    max-height: 0;
+    overflow-y: auto;
+    resize: vertical;
+    font-size: 0.9em;
+    transition: max-height 0.2s linear;
+}
+
+.session-settings-open .session-settings-inputs {
+    min-height: 100px;
+    height: 250px;
+    max-height: 250px;
+    transition: max-height 0.2s linear;
+}
+
 .connected-users {
     display: inline-grid;
     grid-auto-flow: column;
@@ -79,6 +103,12 @@
 .session-header {
     margin-bottom: 0.5em;
     font-weight: bold;
+}
+
+.session-header-description {
+    font-size: 0.9em;
+    color: var(--subtext-color);
+    margin: -0.5em 0 0.5em 0;
 }
 
 .session-statistics {

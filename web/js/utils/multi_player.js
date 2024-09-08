@@ -19,6 +19,8 @@ function MultiPlayer() {
 
     this.connectionBlock = document.getElementById("connection-block")
     this.removeSessionButton = document.getElementById("remove-session-button")
+    this.settingsBlock = document.getElementById("session-settings")
+    this.showedSettings = false
 
     this.reactionBlock = document.getElementById("reactions")
     this.reactions = ["poo", "heart", "angry", "crying", "happy", "anguished", "monkey", "party-popper", "clapping"]
@@ -79,6 +81,7 @@ MultiPlayer.prototype.Disconnect = function() {
     this.sessionInfo.classList.add("hidden")
     document.querySelector("body").classList.remove("hidden-menu")
     this.ClearQuestion()
+    this.showedSettings = false
 
     localStorage.removeItem("sessionId")
 }
@@ -124,6 +127,11 @@ MultiPlayer.prototype.HandleMessage = function(message) {
 
     this.UpdateSessionInfo(session)
 
+    if (!this.showedSettings || session.action == "settings") {
+        ShowQuestionSettings(session.question_settings)
+        this.showedSettings = true
+    }
+
     if (session.question === null || session.players.length < 2)
         this.ClearQuestion()
     else if (this.question === null || this.question.trackId != session.question.track_id || session.action == "question")
@@ -150,10 +158,14 @@ MultiPlayer.prototype.ShowConnectedUsers = function(session) {
     this.usersCountSpan.innerText = session.players.length
     this.usersBlock.innerHTML = ""
 
-    if (session.created_by == this.username)
+    if (session.created_by == this.username) {
         this.removeSessionButton.classList.remove("hidden")
-    else
+        this.settingsBlock.removeAttribute("disabled")
+    }
+    else {
         this.removeSessionButton.classList.add("hidden")
+        this.settingsBlock.setAttribute("disabled", "")
+    }
 
     for (let user of session.players)
         this.BuildConnectedUser(user, session.answers)
@@ -243,7 +255,7 @@ MultiPlayer.prototype.AnswerQuestion = function(correct, answerTime) {
 }
 
 MultiPlayer.prototype.AppendHistory = function(session) {
-    if (["connect", "disconnect", "remove", "answer", ...this.reactions].indexOf(session.action) == -1)
+    if (["connect", "disconnect", "remove", "answer", "settings", ...this.reactions].indexOf(session.action) == -1)
         return
 
     let date = new Date()
@@ -276,6 +288,11 @@ MultiPlayer.prototype.AppendHistory = function(session) {
 
         ShowNotification(session.username == this.username ? `Вы ответили ${correct} (${time})` : text, "info-notification", 1500)
     }
+    else if (session.action == "settings") {
+        let author = session.username == this.username ? "Вы обновили" : `@${session.username} обновил`
+        text = `@${session.username} обновил настройки вопросов`
+        ShowNotification(`${author} настройки вопросов`, "info-notification", 1800)
+    }
     else if (this.reactions.indexOf(session.action) > -1) {
         text = `@${session.username} отправил <img class="reaction" src="/images/reactions/${session.action}.svg">`
         ShowNotification(text, "info-notification", 1800)
@@ -291,4 +308,8 @@ MultiPlayer.prototype.AppendHistory = function(session) {
 
 MultiPlayer.prototype.SendReaction = function(reaction) {
     this.ws.send(JSON.stringify({action: "reaction", value: reaction}))
+}
+
+MultiPlayer.prototype.UpdateQuestionSettings = function(settings) {
+    this.ws.send(JSON.stringify({action: "settings", settings: settings}))
 }

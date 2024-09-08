@@ -65,22 +65,29 @@ function ConnectSession() {
     })
 }
 
-function RemoveSession() {
-    if (multiPlayer.sessionId === null)
+function UpdateQuestionSettings() {
+    let settings = GetQuestionSettings(true)
+    if (settings === null)
         return
 
-    if (!confirm("Вы уверены, что хотите удалить сессию?"))
-        return
+    multiPlayer.UpdateQuestionSettings(settings)
+}
 
-    SendRequest("/remove-multiplayer-session", {session_id: multiPlayer.sessionId}).then(response => {
-        if (response.status != SUCCESS_STATUS) {
-            ShowNotification(`Не удалось удалить сессию с идентификатором "${multiPlayer.sessionId}"<br><b>Причина</b>: ${response.message}`)
-            localStorage.removeItem("sessionId")
-            return
-        }
+function ShowQuestionSettings(settings) {
+    document.getElementById("start-from-chorus").checked = settings.start_from_chorus
+    document.getElementById("show-simple-artist-type").checked = settings.show_simple_artist_type
 
-        multiPlayer.Disconnect()
-    })
+    console.log(settings)
+    answerTimeInput.SetValue(settings.answer_time)
+    genresInput.SetValue(settings.genres)
+    yearsInput.SetValue(GetYearsDict(settings.years))
+    languagesInput.SetValue(settings.languages)
+    artistsCountInput.SetValue(settings.artists_count)
+    questionTypesInput.SetValue(settings.question_types)
+    listenCountInput.SetValue(settings.listen_count)
+    trackPositionInput.SetValue(settings.track_position)
+    repeatIncorrectProbabilityInput.SetValue(Math.round(settings.repeat_incorrect_probability * 100))
+    trackModificationsProbabilityInput.SetValue(Math.round(settings.track_modifications.probability * 100))
 }
 
 function Load() {
