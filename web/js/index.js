@@ -1,4 +1,4 @@
-function BuildTopPlayers(players, topCount = 10) {
+function BuildTopPlayers(players, topCount = 15) {
     let leaderboard = document.getElementById("leaderboard")
 
     if (players.length == 0) {
