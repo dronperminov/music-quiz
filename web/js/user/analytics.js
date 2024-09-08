@@ -122,12 +122,20 @@ function PlotGenresChart() {
 
 function PlotPeriodBarChart(key, maxValue = null) {
     let svg = document.getElementById(`period-${key}-chart`)
-    let chart = new BarChart({barColor: key2color[key], minRectWidth: 32, maxRectWidth: 38, bottomPadding: 12})
+
+    if (svg === null)
+        return
+
+    let chart = new BarChart({barColor: key2color[key], minRectWidth: 32, maxRectWidth: 38, bottomPadding: 25})
     chart.Plot(svg, periodData, "label", key, maxValue)
 }
 
 function PlotPeriodPlotChart(key) {
     let svg = document.getElementById(`period-${key}-chart`)
+
+    if (svg === null)
+        return
+
     let chart = new PlotChart({markerColor: key2color[key]})
     chart.Plot(svg, periodData, "label", key)
 }

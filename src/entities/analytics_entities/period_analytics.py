@@ -28,7 +28,9 @@ class PeriodAnalytics:
         min_date, max_date = questions[0]["timestamp"], questions[-1]["timestamp"]
         delta = (max_date - min_date).days
 
-        if delta <= 30:
+        if delta < 3:
+            group_by = "hour"
+        elif delta <= 30:
             group_by = "day"
         elif delta < 200:
             group_by = "week"
@@ -47,6 +49,9 @@ class PeriodAnalytics:
 
     @staticmethod
     def __is_new_date(prev_date: datetime, new_date: datetime, group_by: str) -> bool:
+        if group_by == "hour":
+            return (prev_date.year, prev_date.month, prev_date.day, prev_date.hour) != (new_date.year, new_date.month, new_date.day, new_date.hour)
+
         if group_by == "day":
             return new_date.date() != prev_date.date()
 
@@ -60,10 +65,12 @@ class PeriodAnalytics:
 
     @staticmethod
     def __evaluate_group(questions: List[dict], group_by: str) -> PeriodAnalyticsItem:
-        if group_by == "day":
-            label = questions[0]["timestamp"].strftime("%d.%m")
+        if group_by == "hour":
+            label = questions[0]["timestamp"].strftime("%H:00\\n%d.%m")
+        elif group_by == "day":
+            label = questions[0]["timestamp"].strftime("%d.%m\\n%Y")
         elif group_by == "week":
-            label = f'{questions[0]["timestamp"].strftime("%d.%m.%Y")}-{questions[-1]["timestamp"].strftime("%d.%m.%Y")}'
+            label = f'{questions[0]["timestamp"].strftime("%d.%m.%Y")}\\n{questions[-1]["timestamp"].strftime("%d.%m.%Y")}'
         else:
             months = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]
             label = f'{months[questions[0]["timestamp"].month]}\\n{questions[0]["timestamp"].year}'

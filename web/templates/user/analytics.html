@@ -128,7 +128,8 @@
         <div class="analytics-block">
             <div class="analytics-title">Динамика</div>
             <div class="analytics-description">В данном блоке отображаются результаты, сгруппированные по
-                {% if analytics.period.group_by == "day" %}дням
+                {% if analytics.period.group_by == "hour" %}часам
+                {% elif analytics.period.group_by == "day" %}дням
                 {% elif analytics.period.group_by == "week" %}неделям
                 {% else %}месяцам
                 {% endif %}
