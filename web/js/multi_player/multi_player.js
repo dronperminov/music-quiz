@@ -21,7 +21,7 @@ function GetSessionId() {
         return null
     }
 
-    if (sessionId.match(/^[a-z\d]+$/gi) === null) {
+    if (sessionId.match(/^[a-z\d_\-]+$/gi) === null) {
         ErrorSessionId("Идентификатор сессии должен состоять только из латинских символов и цифр")
         return null
     }

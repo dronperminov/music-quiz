@@ -47,7 +47,7 @@ async def check_multiplayer_session(session_id: str = Body(..., embed=True), rem
     if not session:
         return JSONResponse({"status": "error", "message": "Сессия не существует"})
 
-    if session.created_by not in session.players and user.username != session.created_by:
+    if not session.players and user.username != session.created_by:
         return JSONResponse({"status": "error", "message": "Автор сессии не подключен"})
 
     if session.created_by == user.username and remove_statistics:
@@ -109,25 +109,29 @@ async def get_session_question(session: Session, username: str) -> None:
     await connection_manager.broadcast(session_id=session.session_id, message=get_session_message(session.session_id, username, "question"))
 
 
-async def handle_player_answer(session: Session, username: str, answer: QuestionAnswer) -> None:
-    session.add_answer(username=username, answer=answer)
-    database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
-    await connection_manager.broadcast(session_id=session.session_id, message=get_session_message(session.session_id, username, "answer"))
+async def check_all_answered(session_id: str, username: str) -> None:
+    session = database.get_session(session_id=session_id)
 
-    if not session.all_answered():
+    if not session or not session.all_answered():
         return
 
     question = session.question
 
-    for username, answer in session.answers.items():
-        question.username = username
+    for player, answer in session.answers.items():
+        question.username = player
         question.set_answer(answer)
-        database.questions.update_one({"username": username, "correct": None, "group_id": None}, {"$set": question.to_dict()}, upsert=True)
+        database.questions.update_one({"username": player, "correct": None, "group_id": None}, {"$set": question.to_dict()}, upsert=True)
 
     if session.created_by not in session.players:
         database.questions.delete_one({"username": session.created_by, "correct": None, "group_id": None})
 
     await get_session_question(session=session, username=username)
+
+
+async def handle_player_answer(session: Session, username: str, answer: QuestionAnswer) -> None:
+    session.add_answer(username=username, answer=answer)
+    database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
+    await connection_manager.broadcast(session_id=session.session_id, message=get_session_message(session.session_id, username, "answer"))
 
 
 @router.websocket("/ws/{session_id}")
@@ -180,6 +184,8 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
                 await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "remove"))
                 database.sessions.delete_one({"session_id": session.session_id})
                 await websocket.close()
+
+            await check_all_answered(session_id=session_id, username=user.username)
     except (WebSocketDisconnect, OSError):
         connection_manager.disconnect(websocket, session_id=session_id)
         logger.info(f'@{user.username} disconnected from the session "{session_id}"')
@@ -189,6 +195,7 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
             database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
 
         await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "disconnect"))
+        await check_all_answered(session_id=session_id, username="")
 
 
 @router.get("/multi-player")
