@@ -53,8 +53,8 @@
                         {% endif %}
                         </div>
                     </div>
-                    {% elif quiz_tour.quiz_tour_type == QuizTourType.STAIRS and quiz_tour.question_ids.index(question_id) > 0 %}
-                    {% set name_len = (sub("\W", "", artist_id2artist[track.artists[0]].name)|length) %}
+                    {% elif quiz_tour.quiz_tour_type in [QuizTourType.STAIRS, QuizTourType.N_LETTERS] and quiz_tour.question_ids.index(question_id) > 0 %}
+                    {% set name_len = get_name_length(artist_id2artist[track.artists[0]].name) %}
                     <div class="track-tip">
                         <div class="track-tip-letter">{{name_len}}</div>
                         <div class="track-tip-letter-language">{{get_word_form(name_len, ['буква', 'буквы', 'букв'], True)}}</div>

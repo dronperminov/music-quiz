@@ -49,7 +49,7 @@ def main() -> None:
     parser.add_argument("--genres", help="", choices=("all", "rock", "hip-hop", "pop"), default="all")
     parser.add_argument("--languages", help="", choices=("all", "russian", "foreign"), default="all")
     parser.add_argument("--positions", help="", choices=("all", "top3", "hits", "normal", "unhackneyed"), default="normal")
-    parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter", "miracles_field", "chain"), default="regular")
+    parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter", "n_letters", "miracles_field", "chain"), default="regular")
     parser.add_argument("--listen-count", help="Min border of artist listen count", type=int, default=100_000)
 
     args = parser.parse_args()
@@ -93,6 +93,7 @@ def main() -> None:
         "alphabet": QuizTourType.ALPHABET,
         "stairs": QuizTourType.STAIRS,
         "letter": QuizTourType.LETTER,
+        "n_letters": QuizTourType.N_LETTERS,
         "miracles_field": QuizTourType.MIRACLES_FIELD,
         "chain": QuizTourType.CHAIN
     }[args.mechanics]

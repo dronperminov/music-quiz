@@ -1,5 +1,6 @@
 import hashlib
 import os
+import re
 from collections import defaultdict
 from typing import List
 
@@ -61,3 +62,7 @@ def get_top_letter(word: str) -> str:
         letter2count[letter] += 1
 
     return max([(count, letter) for letter, count in letter2count.items()])[1]
+
+
+def get_name_length(name: str) -> int:
+    return len(re.findall(r"[a-zа-яё\d]", name.lower()))

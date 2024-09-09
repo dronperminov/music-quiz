@@ -1,4 +1,3 @@
-import re
 import urllib.parse
 from typing import Optional
 
@@ -13,7 +12,7 @@ from src.enums import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
 from src.query_params.quiz_tours_search import QuizToursSearch, QuizToursSearchQuery
 from src.utils.auth import get_user
-from src.utils.common import format_time, get_static_hash, get_top_letter, get_word_form
+from src.utils.common import format_time, get_name_length, get_static_hash, get_top_letter, get_word_form
 
 router = APIRouter()
 
@@ -115,8 +114,8 @@ def get_quiz_tour_question(quiz_tour_id: int, user: Optional[User] = Depends(get
         jsonable_encoder=jsonable_encoder,
         QuizTourType=QuizTourType,
         get_word_form=get_word_form,
-        sub=re.sub,
-        get_top_letter=get_top_letter
+        get_top_letter=get_top_letter,
+        get_name_length=get_name_length
     )
     return HTMLResponse(content=content)
 
