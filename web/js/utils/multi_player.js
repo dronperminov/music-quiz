@@ -235,6 +235,9 @@ MultiPlayer.prototype.BuildUserStatistics = function(username, answers) {
 }
 
 MultiPlayer.prototype.InitQuestion = function(session) {
+    session.track_id2scale = session.track_id2scale[this.username]
+    session.artist_id2scale = session.artist_id2scale[this.username]
+
     this.ClearQuestion()
 
     this.pageHeaderBlock.classList.add("hidden")

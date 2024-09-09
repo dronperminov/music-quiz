@@ -81,11 +81,16 @@ def get_session_message(session_id: str, username: str, action: str) -> dict:
     if not session.question:
         return message
 
-    settings = database.get_settings(username=username)
     track = music_database.get_track(track_id=session.question.track_id)
     artist_id2artist = music_database.get_artists_by_ids(artist_ids=track.artists)
-    artist_id2scale = questions_database.get_artists_scales(username=username, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}
-    track_id2scale = questions_database.get_tracks_scales(username=username, tracks=[track]) if settings.show_knowledge_status else {}
+
+    artist_id2scale = {}
+    track_id2scale = {}
+
+    for player in session.players:
+        settings = database.get_settings(username=player)
+        artist_id2scale[player] = questions_database.get_artists_scales(username=player, artists=list(artist_id2artist.values())) if settings.show_knowledge_status else {}
+        track_id2scale[player] = questions_database.get_tracks_scales(username=player, tracks=[track]) if settings.show_knowledge_status else {}
 
     message["question"] = jsonable_encoder(session.question)
     message["track"] = jsonable_encoder(track)
