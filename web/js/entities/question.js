@@ -163,7 +163,7 @@ Question.prototype.BuildAnswerInfo = function(parent, params) {
 
     for (let artist of this.artists) {
         artist = new Artist(artist)
-        artistsBlock.appendChild(artist.Build(artistId2scale))
+        artistsBlock.appendChild(artist.Build(params.artist_id2scale))
         infos.Add(artist.BuildInfo())
     }
 
