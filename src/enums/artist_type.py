@@ -76,3 +76,20 @@ class ArtistType(Enum):
         }
 
         return artist_type2title[self]
+
+    def to_pair_title(self, simple: bool = False) -> str:
+        artist_type2title = {
+            ArtistType.SINGER_MALE: "обоих исполнителей" if simple else "обоих певцов",
+            ArtistType.SINGER_FEMALE: "обеих исполнительниц" if simple else "обеих певиц",
+            ArtistType.PERFORMER_MALE: "обоих исполнителей",
+            ArtistType.PERFORMER_FEMALE: "обеих исполнительниц",
+            ArtistType.BAND: "обе группы",
+            ArtistType.PROJECT: "обе группы" if simple else "оба проекта",
+            ArtistType.DUET: "обе группы" if simple else "оба дуэта",
+            ArtistType.TRIO: "обе группы" if simple else "оба трио",
+            ArtistType.DJ: "обоих диджеев",
+            ArtistType.VIA: "обоих ВИА",
+            ArtistType.UNKNOWN: "обоих авторов"
+        }
+
+        return artist_type2title[self]

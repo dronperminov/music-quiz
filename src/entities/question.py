@@ -94,6 +94,9 @@ class Question:
 
     @staticmethod
     def get_artist_types(track: Track, artist_id2artist: Dict[int, Artist], simple: bool) -> str:
+        if len(track.artists) == 2 and artist_id2artist[track.artists[0]].artist_type == artist_id2artist[track.artists[1]].artist_type:
+            return artist_id2artist[track.artists[0]].artist_type.to_pair_title(simple=simple)
+
         artist_types = [artist_id2artist[artist_id].artist_type.to_title(simple=simple) for artist_id in track.artists]
 
         if len(artist_types) == 1:
