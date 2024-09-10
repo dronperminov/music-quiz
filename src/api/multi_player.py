@@ -100,7 +100,7 @@ def get_session_message(session_id: str, username: str, action: str) -> dict:
 async def get_session_question(session: Session, username: str) -> None:
     settings = database.get_settings(username=session.created_by)
     settings.question_settings = session.question_settings
-    question = questions_database.get_question(settings)
+    question = questions_database.get_question(settings, external_questions=reversed(session.questions))
     session.set_question(question)
     database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
     await connection_manager.broadcast(session_id=session.session_id, message=get_session_message(session.session_id, username, "question"))
@@ -109,7 +109,7 @@ async def get_session_question(session: Session, username: str) -> None:
 async def check_all_answered(session_id: str, username: str) -> None:
     session = database.get_session(session_id=session_id)
 
-    if not session or not session.all_answered():
+    if not session or session.question is None or len(session.players) < 2 or not session.all_answered():
         return
 
     question = session.question
@@ -117,11 +117,9 @@ async def check_all_answered(session_id: str, username: str) -> None:
     for player, answer in session.answers.items():
         question.username = player
         question.set_answer(answer)
-        database.questions.update_one({"username": player, "correct": None, "group_id": None}, {"$set": question.to_dict()}, upsert=True)
+        database.questions.insert_one(question.to_dict())
 
-    if session.created_by not in session.players:
-        database.questions.delete_one({"username": session.created_by, "correct": None, "group_id": None})
-
+    session.add_question(question)
     await get_session_question(session=session, username=username)
 
 

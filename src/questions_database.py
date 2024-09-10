@@ -37,19 +37,23 @@ class QuestionsDatabase:
         question.set_answer(answer)
         self.database.questions.update_one({"username": username, "correct": None, "group_id": answer.group_id}, {"$set": question.to_dict()})
 
-    def get_question(self, settings: Settings, group_id: Optional[int] = None) -> Optional[Question]:
+    def get_question(self, settings: Settings, group_id: Optional[int] = None, external_questions: Optional[List[Question]] = None) -> Optional[Question]:
         tracks = self.get_question_tracks(settings.question_settings) if group_id is None else self.get_group_question_tracks(group_id)
 
         if not tracks:
             return None
 
-        if question := self.__get_user_question(username=settings.username, group_id=group_id):
+        if external_questions is None and (question := self.__get_user_question(username=settings.username, group_id=group_id)):
             if question.is_valid({track["track_id"] for track in tracks}, settings.question_settings):
                 return self.update_question(question, settings.question_settings)
 
             self.database.questions.delete_one({"username": settings.username, "correct": None, "group_id": group_id})
 
-        last_questions = self.__get_last_questions(username=settings.username, track_ids=[track["track_id"] for track in tracks], group_id=group_id)
+        if external_questions:
+            last_questions = external_questions
+        else:
+            last_questions = self.__get_last_questions(username=settings.username, track_ids=[track["track_id"] for track in tracks], group_id=group_id)
+
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
         if group_id is None and last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
@@ -58,7 +62,9 @@ class QuestionsDatabase:
             track = self.sample_question_tracks(tracks=tracks, last_questions=last_questions, settings=settings.question_settings, group_id=group_id, count=1)[0]
             question = self.generate_question(track=track, username=settings.username, settings=settings.question_settings, group_id=group_id)
 
-        self.database.questions.insert_one(question.to_dict())
+        if external_questions is None:
+            self.database.questions.insert_one(question.to_dict())
+
         return question
 
     def generate_question(self, track: Track, username: str, settings: QuestionSettings, group_id: Optional[int]) -> Question:
