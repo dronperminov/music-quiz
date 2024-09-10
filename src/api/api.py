@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
@@ -53,6 +53,22 @@ def parse_artists(params: ArtistsParse, user: Optional[User] = Depends(get_user)
 
     try:
         tracks, artists = yandex_music_parser.parse_artists(params.artist_ids, params.max_tracks, params.max_artists, params.from_playlist)
+        new_artists, new_tracks = music_database.add_from_yandex(artists=artists, tracks=tracks, username=user.username)
+        return JSONResponse({"status": "success", "tracks": len(tracks), "artists": len(artists), "new_tracks": new_tracks, "new_artists": new_artists})
+    except Exception as error:
+        return JSONResponse({"status": "error", "message": str(error)})
+
+
+@router.post("/parse-tracks")
+def parse_tracks(track_ids: List[str] = Body(..., embed=True), user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    if user.role == UserRole.USER:
+        return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
+
+    try:
+        tracks, artists = yandex_music_parser.parse_tracks(track_ids, max_artists=4)
         new_artists, new_tracks = music_database.add_from_yandex(artists=artists, tracks=tracks, username=user.username)
         return JSONResponse({"status": "success", "tracks": len(tracks), "artists": len(artists), "new_tracks": new_tracks, "new_artists": new_artists})
     except Exception as error:

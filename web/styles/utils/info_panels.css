@@ -33,7 +33,7 @@
     max-width: var(--max-width);
     margin: 0 auto;
     user-select: none;
-    z-index: 9999;
+    z-index: 9990;
 }
 
 .info-open {

@@ -127,9 +127,9 @@ function BuildAdminInfo() {
     let artistBlock = MakeElement("info-line", info, {innerHTML: "<b>Исполнители</b>"})
     MakeElement("description", artistBlock, {innerText: "Добавление новых и обновление имеющихся исполнителей"})
 
-    let urlBlock = MakeElement("info-textarea-line", info)
-    let urlLabel = MakeElement("", urlBlock, {innerText: "Ссылки:", "for": "artist-url"}, "label")
-    let urlInput = MakeElement("basic-textarea", urlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/artist/...", id: "artist-url"}, "textarea")
+    let artistUrlBlock = MakeElement("info-textarea-line", info)
+    let artistUrlLabel = MakeElement("", artistUrlBlock, {innerText: "Ссылки:", "for": "artist-url"}, "label")
+    let artistUrlInput = MakeElement("basic-textarea", artistUrlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/artist/...", id: "artist-url"}, "textarea")
     MakeElement("error", info, {id: "artist-url-error"})
 
     let fromPlaylistBlock = MakeElement("info-checkbox-line", info)
@@ -147,6 +147,18 @@ function BuildAdminInfo() {
     MakeElement("error", info, {id: "artist-max-artists-error"})
 
     let artistButton = MakeElement("basic-button gradient-button", info, {innerText: "Добавить"}, "button")
+
+    MakeElement("info-divider-line", info)
+
+    let trackBlock = MakeElement("info-line", info, {innerHTML: "<b>Треки</b>"})
+    MakeElement("description", trackBlock, {innerText: "Добавление новых и обновление имеющихся треков"})
+
+    let trackUrlBlock = MakeElement("info-textarea-line", info)
+    let trackUrlLabel = MakeElement("", trackUrlBlock, {innerText: "Ссылки:", "for": "track-url"}, "label")
+    let trackUrlInput = MakeElement("basic-textarea", trackUrlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/track/...", id: "track-url"}, "textarea")
+    MakeElement("error", info, {id: "track-url-error"})
+
+    let trackButton = MakeElement("basic-button gradient-button", info, {innerText: "Добавить"}, "button")
 
     MakeElement("info-divider-line", info)
 
@@ -177,13 +189,14 @@ function BuildAdminInfo() {
 
     let historyButton = MakeElement("basic-button gradient-button", info, {innerText: "Получить"}, "button")
 
-    urlLabel.addEventListener("click", () => {
-        urlInput.value = ""
-        urlInput.focus()
+    artistUrlLabel.addEventListener("click", () => {
+        artistUrlInput.value = ""
+        artistUrlInput.focus()
     })
 
-    chartButton.addEventListener("click", () => ParseChart([chartButton, artistButton]))
-    artistButton.addEventListener("click", () => AddArtist([chartButton, artistButton]))
+    chartButton.addEventListener("click", () => ParseChart([chartButton, artistButton, trackButton]))
+    artistButton.addEventListener("click", () => AddArtist([chartButton, artistButton, trackButton]))
+    trackButton.addEventListener("click", () => AddTrack([chartButton, artistButton, trackButton]))
     historyButton.addEventListener("click", () => {
         let artistActions = artistActionsInput.checked ? ["add_artist", "edit_artist", "remove_artist"] : []
         let trackActions = trackActionsInput.checked ? ["add_track", "edit_track", "remove_track"] : []

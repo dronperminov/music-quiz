@@ -400,12 +400,12 @@ h2 + .description {
     pointer-events: none;
     user-select: none;
     overflow: hidden;
+    z-index: 9999;
 }
 
 .notification {
     opacity: 0;
     padding: 0.8em 1em;
-    z-index: 9999;
     background-color: var(--block-background);
     border: 1px solid var(--border-color);
     border-radius: 0.8em;
