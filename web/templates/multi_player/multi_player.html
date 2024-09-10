@@ -37,7 +37,7 @@
 
         <div class="multi-player" id="multi-player-manager">
             <label for="session-id">Идентификатор сессии:</label>
-            <input class="basic-input" id="session-id" type="text" placeholder="введите название сессии" oninput="InputSessionId()" value="">
+            <input class="basic-input" id="session-id" type="text" placeholder="введите название сессии" oninput="InputSessionId()" value="{{session_id}}">
 
             <div class="multi-player-options">
                 <label class="switch-checkbox">
@@ -55,6 +55,7 @@
         </div>
 
         <div class="session-info hidden" id="session-info">
+            <div class="session-info-id">сессия: <b><span id="session-id-span"></span></b></div>
             <div class="connected-users-count">Подключенные пользователи: <span id="connected-users-count">0</span></div>
             <div class="connected-users" id="connected-users"></div>
             <div class="session-info-buttons" id="connection-block">
@@ -138,6 +139,11 @@
         let artistId2scale = null
 
         let multiPlayer = new MultiPlayer("connected-users")
+
+        {% if session_id %}
+        localStorage.removeItem("sessionId")
+        ConnectSession()
+        {% endif %}
 
         document.addEventListener("DOMContentLoaded", () => Load())
     </script>

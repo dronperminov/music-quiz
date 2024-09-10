@@ -41,6 +41,12 @@
     font-weight: normal;
 }
 
+.session-info-id {
+    margin-bottom: 0.2em;
+    font-size: 0.75em;
+    text-align: right;
+}
+
 .session-info-buttons {
     display: grid;
     grid-auto-flow: column;

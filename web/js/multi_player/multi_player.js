@@ -61,6 +61,10 @@ function ConnectSession() {
             return
         }
 
+        let url = new URL(window.location.href)
+        url.searchParams.delete("session_id")
+        window.history.replaceState(null, "", url.toString())
+
         multiPlayer.Connect(sessionId, response.username)
     })
 }

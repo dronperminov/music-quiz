@@ -1,10 +1,11 @@
 import asyncio
 import json
+import re
 import urllib.parse
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Body, Cookie, Depends, HTTPException
+from fastapi import APIRouter, Body, Cookie, Depends, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.websockets import WebSocket, WebSocketDisconnect
@@ -32,8 +33,7 @@ async def create_multiplayer_session(session_id: str = Body(..., embed=True), us
     if database.get_session(session_id=session_id):
         return JSONResponse({"status": "error", "message": f'Сессия с идентификатором "{session_id}" уже есть'})
 
-    settings = database.get_settings(username=user.username)
-    session = Session.create(session_id=session_id, username=user.username, question_settings=settings.question_settings)
+    session = Session.create(session_id=session_id, username=user.username, question_settings=QuestionSettings.default())
     database.sessions.insert_one(session.to_dict())
     return JSONResponse({"status": "success", "session_id": session_id, "username": user.username})
 
@@ -206,9 +206,13 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
 
 
 @router.get("/multi-player")
-def multi_player(user: Optional[User] = Depends(get_user)) -> Response:
+def multi_player(session_id: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
+    if not re.fullmatch(r"[a-zA-Z\d_\-]+", session_id):
+        session_id = ""
+
     if not user:
-        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote("/multi-player")}')
+        back_url = f"/multi-player?session_id={session_id}"
+        return RedirectResponse(url=f"/login?back_url={urllib.parse.quote(back_url)}")
 
     template = templates.get_template("multi_player/multi_player.html")
     settings = database.get_settings(username=user.username)
@@ -221,6 +225,7 @@ def multi_player(user: Optional[User] = Depends(get_user)) -> Response:
         Language=Language,
         ArtistsCount=ArtistsCount,
         QuestionType=QuestionType,
-        today=datetime.now()
+        today=datetime.now(),
+        session_id=session_id
     )
     return HTMLResponse(content=content)

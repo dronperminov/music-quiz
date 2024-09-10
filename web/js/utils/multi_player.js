@@ -11,6 +11,7 @@ function MultiPlayer() {
     this.sessionInfo = document.getElementById("session-info")
     this.usersCountSpan = document.getElementById("connected-users-count")
     this.usersBlock = document.getElementById("connected-users")
+    this.sessionIdSpan = document.getElementById("session-id-span")
     this.statisticsBlock = document.getElementById("session-statistics")
     this.statisticsItems = document.getElementById("session-statistics-items")
     this.historyBlock = document.getElementById("session-history")
@@ -159,6 +160,8 @@ MultiPlayer.prototype.UpdateSessionInfo = function(session) {
         this.sessionInfo.classList.remove("hidden")
     else
         this.sessionInfo.classList.add("hidden")
+
+    this.sessionIdSpan.innerText = this.sessionId
 
     this.ShowConnectedUsers(session)
     this.ShowStatistics(session)
