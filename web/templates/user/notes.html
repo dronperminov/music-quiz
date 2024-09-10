@@ -1,0 +1,104 @@
+{% set title = "Мои заметки | Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/search.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/history.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/tracks/track.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/artists/artists.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/lyrics_updater.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/utils/player.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+    
+    <div class="content">
+        <h1>Мои заметки</h1>
+
+        <div class="search search-query-empty" id="search">
+            <div class="search-main">
+                <div class="search-clear">
+                    <div class="search-clear-icon"></div>
+                </div>
+                <div class="search-query">
+                    <input class="basic-input" type="search" id="query" placeholder="введите запрос">
+                </div>
+                <div class="search-filters" title="Фильтры">
+                    <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="search-filters-popup" id="search-filters-popup">
+                <div class="close-icon" onclick="search.CloseFiltersPopup()"></div>
+
+                <h3>Фильтры</h3>
+
+                <div class="search-filter">
+                    <label>Наличие текста
+                        <select class="basic-select" id="with-text">
+                            <option value="any">не важно</option>
+                            <option value="text">только с текстом</option>
+                            <option value="no-text">только без текста</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter-button">
+                    <button class="basic-button gradient-button" onclick="search.Search()">Искать</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="notes">
+            <div class="search-results"></div>
+            <div class="notes"></div>
+            <div class="loader hidden"><img src="/images/loader.svg"></div>
+        </div>
+    </div>
+
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/swipe_handler.js?v={{version}}"></script>
+    <script src="/js/utils/info_panels.js?v={{version}}"></script>
+    <script src="/js/utils/search.js?v={{version}}"></script>
+    <script src="/js/utils/history.js?v={{version}}"></script>
+    <script src="/js/utils/parse.js?v={{version}}"></script>
+    <script src="/js/utils/infinite_scroll.js?v={{version}}"></script>
+    <script src="/js/utils/lyrics_updater.js?v={{version}}"></script>
+    <script src="/js/utils/player.js?v={{version}}"></script>
+    <script src="/js/utils/player_collection.js?v={{version}}"></script>
+
+    <script src="/js/inputs/multi_select.js?v={{version}}"></script>
+
+    <script src="/js/entities/genre.js?v={{version}}"></script>
+    <script src="/js/entities/artist_type.js?v={{version}}"></script>
+    <script src="/js/entities/language.js?v={{version}}"></script>
+    <script src="/js/entities/metadata.js?v={{version}}"></script>
+    <script src="/js/entities/artist.js?v={{version}}"></script>
+    <script src="/js/entities/track.js?v={{version}}"></script>
+    <script src="/js/entities/note.js?v={{version}}"></script>
+
+    <script src="/js/tracks/track.js?v={{version}}"></script>
+
+    <script src="/js/user/notes.js?v={{version}}"></script>
+    <script>
+        let config = {
+            pageSize: 10,
+            url: "/notes",
+
+            getParams: GetSearchParams,
+            onLoad: LoadNotes
+        }
+
+        let infos = new InfoPanels()
+        let players = new PlayerCollection()
+        let search = new Search("search", SearchNotes, ClearNotes)
+        let infiniteScroll = new InfiniteScroll("notes", config)
+        infiniteScroll.LoadContent()
+    </script>
+    {% include "components/footer.html" %}
+</body>
+</html>

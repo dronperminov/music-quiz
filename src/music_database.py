@@ -19,6 +19,7 @@ from src.entities.track import Track
 from src.enums import ArtistsCount, Language
 from src.query_params.artists_groups_search import ArtistsGroupsSearch
 from src.query_params.artists_search import ArtistsSearch
+from src.query_params.notes_search import NotesSearch
 from src.utils.yandex_music_parser import YandexMusicParser
 
 
@@ -321,6 +322,15 @@ class MusicDatabase:
                 artist_id2note[note["artist_id"]] = Note.from_dict(note)
 
         return artist_id2note
+
+    def get_user_notes(self, username: str, params: NotesSearch) -> Tuple[int, List[Note]]:
+        notes = []
+
+        for note in self.database.notes.find({"username": username, **params.to_query()}).sort({params.order: 1, "_id": 1}):
+            notes.append(Note.from_dict(note))
+
+        total = len(notes)
+        return total, notes[params.page_size * params.page:params.page_size * (params.page + 1)]
 
     def add_note(self, note: Note) -> None:
         artist = self.database.artists.find_one({"artist_id": note.artist_id}, {"name": 1})

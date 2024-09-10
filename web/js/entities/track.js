@@ -10,6 +10,7 @@ function Track(data) {
     this.duration = data.duration
     this.imageUrl = data.image_url !== null ? data.image_url : '/images/tracks/default.png'
     this.metadata = new Metadata(data.metadata, "Добавлен", "Обновлён")
+    this.downloaded = data.downloaded
 }
 
 Track.prototype.BuildInfo = function(artists = null) {
@@ -133,7 +134,7 @@ Track.prototype.BuildLyrics = function(block) {
         return
 
     let detailsBlock = MakeElement("info-line", block)
-    let details = MakeElement("details details-open", detailsBlock)
+    let details = MakeElement("details", detailsBlock)
     let detailsHeader = MakeElement("details-header", details)
     detailsHeader.addEventListener("click", () => details.classList.toggle('details-open'))
 
