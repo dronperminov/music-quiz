@@ -47,9 +47,6 @@ async def check_multiplayer_session(session_id: str = Body(..., embed=True), rem
     if not session:
         return JSONResponse({"status": "error", "message": "Сессия не существует"})
 
-    if not session.players and user.username != session.created_by:
-        return JSONResponse({"status": "error", "message": "Автор сессии не подключен"})
-
     if session.created_by == user.username and remove_statistics:
         session.clear_statistics()
         database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
@@ -128,10 +125,27 @@ async def check_all_answered(session_id: str, username: str) -> None:
     await get_session_question(session=session, username=username)
 
 
-async def handle_player_answer(session: Session, username: str, answer: QuestionAnswer) -> None:
+async def handle_player_answer(session_id: str, username: str, answer: QuestionAnswer) -> None:
+    session = database.get_session(session_id=session_id)
+    if not session:
+        return
+
     session.add_answer(username=username, answer=answer)
     database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
     await connection_manager.broadcast(session_id=session.session_id, message=get_session_message(session.session_id, username, "answer"))
+    await check_all_answered(session_id=session_id, username=username)
+
+
+async def update_settings(session_id: str, settings: dict, username: str) -> None:
+    session = database.get_session(session_id=session_id)
+
+    if not session:
+        return
+
+    question_settings = QuestionSettings.from_dict(settings)
+    if session.update_settings(question_settings=question_settings):
+        database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
+        await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, username, "settings"))
 
 
 @router.websocket("/ws/{session_id}")
@@ -170,12 +184,9 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
             session = database.get_session(session_id=session_id)
 
             if message["action"] == "answer":
-                await handle_player_answer(session, message["username"], QuestionAnswer(correct=message["correct"], answer_time=message["answer_time"]))
+                await handle_player_answer(session_id=session_id, username=user.username, answer=QuestionAnswer.from_dict(message))
             elif message["action"] == "settings":
-                question_settings = QuestionSettings.from_dict(message["settings"])
-                if session.update_settings(question_settings=question_settings):
-                    database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
-                    await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "settings"))
+                await update_settings(session_id=session_id, settings=message["settings"], username=user.username)
             elif message["action"] == "message":
                 await connection_manager.broadcast(session_id=session_id, message={"action": "message", "username": user.username, "text": message["text"]})
             elif message["action"] == "reaction":
@@ -184,9 +195,7 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
                 await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "remove"))
                 database.sessions.delete_one({"session_id": session.session_id})
                 await websocket.close()
-
-            await check_all_answered(session_id=session_id, username=user.username)
-    except (WebSocketDisconnect, OSError):
+    except (WebSocketDisconnect, OSError, RuntimeError):
         connection_manager.disconnect(websocket, session_id=session_id)
         logger.info(f'@{user.username} disconnected from the session "{session_id}"')
 

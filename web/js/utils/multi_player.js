@@ -126,6 +126,7 @@ MultiPlayer.prototype.HandleMessage = function(message) {
     let session = JSON.parse(message)
 
     if (session.action == "remove") {
+        this.AppendHistory(session)
         this.Disconnect()
         return
     }
@@ -264,7 +265,7 @@ MultiPlayer.prototype.ClearQuestion = function() {
 
 MultiPlayer.prototype.AnswerQuestion = function(correct, answerTime) {
     this.question.UpdateAnswerButtons(correct)
-    this.ws.send(JSON.stringify({action: "answer", username: this.username, correct: correct, answer_time: answerTime}))
+    this.ws.send(JSON.stringify({action: "answer", correct: correct, answer_time: answerTime}))
 }
 
 MultiPlayer.prototype.AppendHistory = function(session) {
