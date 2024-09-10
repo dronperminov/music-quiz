@@ -54,7 +54,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
 @router.get("/group-question/{group_id}")
 def get_group_question(group_id: int, user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote(f"/question?group_id={group_id}", safe="")}')
+        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote(f"/group-question/{group_id}", safe="")}')
 
     group = music_database.get_artists_group(group_id=group_id)
 

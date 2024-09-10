@@ -127,8 +127,13 @@ QuizTour.prototype.BuildAnalytics = function(quizTour, titleCase) {
 }
 
 QuizTour.prototype.BuildQuestions = function(quizTour) {
-    let percent = Math.round(this.status.correct / this.questionIds.length * 1000) / 10
-    let rating = this.IsStarted() ? ` (<span class="correct-color">${GetWordForm(this.status.correct, ['балл', 'балла', 'баллов'])}, ${percent}%</span>)` : ""
+    let rating = ""
+
+    if (this.IsStarted()) {
+        let percent = Math.round(this.status.correct / this.questionIds.length * 1000) / 10
+        rating = ` (<span class="correct-color">${GetWordForm(this.status.correct, ['балл', 'балла', 'баллов'])}, ${percent}%</span>)`
+    }
+
     let questions = GetWordForm(this.questionIds.length, ['вопрос', 'вопроса', 'вопросов'])
     MakeElement("quiz-tour-questions", quizTour, {innerHTML: `${questions}${rating}`})
 }
