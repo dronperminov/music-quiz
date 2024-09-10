@@ -19,10 +19,13 @@ function UpdateQuestionSettings() {
         return
 
     SendRequest("/question_settings", settings).then(response => {
-        if (response.status != SUCCESS_STATUS)
+        if (response.status != SUCCESS_STATUS) {
             ShowNotification(`<b>Ошибка</b>: не удалось обновить настройки вопросов<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
-        else
-            ShowNotification(`Настройки вопросов успешно обновлены`, "success-notification", 1000)
+            return
+        }
+
+        let tracks = GetWordForm(response.tracks, ["трек удовлетворяет", "трека удовлетворяют", "треков удовлетворяют"])
+        ShowNotification(`Настройки вопросов успешно обновлены<br>${tracks} выбранным настройкам `, "success-notification", 1000)
     })
 }
 

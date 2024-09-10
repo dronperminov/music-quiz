@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
-from src import database
+from src import database, questions_database
 from src.api import templates
 from src.entities.artists_group_settings import ArtistsGroupSettings
 from src.entities.question_settings import QuestionSettings
@@ -56,7 +56,8 @@ def update_question_settings(question_settings: QuestionSettings, user: Optional
 
     settings = database.get_settings(username=user.username)
     database.update_settings(settings.update_question(question_settings))
-    return JSONResponse({"status": "success"})
+    tracks = len(questions_database.get_question_tracks(settings.question_settings))
+    return JSONResponse({"status": "success", "tracks": tracks})
 
 
 @router.post("/artists_group_settings")
