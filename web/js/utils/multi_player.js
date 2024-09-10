@@ -14,6 +14,7 @@ function MultiPlayer() {
     this.sessionIdSpan = document.getElementById("session-id-span")
     this.statisticsBlock = document.getElementById("session-statistics")
     this.statisticsItems = document.getElementById("session-statistics-items")
+    this.chatMessagesBlock = document.getElementById("session-chat-messages")
     this.historyBlock = document.getElementById("session-history")
     this.historyActionsBlock = document.getElementById("session-history-actions")
     this.username2avatar = {}
@@ -169,7 +170,7 @@ MultiPlayer.prototype.UpdateSessionInfo = function(session) {
 }
 
 MultiPlayer.prototype.ShowConnectedUsers = function(session) {
-    this.usersCountSpan.innerText = session.players.length
+    this.usersCountSpan.innerText = GetWordForm(session.players.length, ["игрок", "игрока", "игроков"])
     this.usersBlock.innerHTML = ""
 
     if (session.created_by == this.username) {
@@ -324,6 +325,9 @@ MultiPlayer.prototype.AppendHistory = function(session) {
     let user = MakeElement("session-history-action-user", action)
     MakeElement("", user, {src: this.username2avatar[session.username]}, "img")
     MakeElement("", action, {innerHTML: `${hours}:${minutes}:${seconds}: ${text}`})
+
+    if (session.action == "message")
+        this.chatMessagesBlock.prepend(action.cloneNode(true))
 
     this.historyActionsBlock.prepend(action)
 }

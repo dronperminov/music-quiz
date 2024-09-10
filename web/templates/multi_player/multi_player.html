@@ -55,8 +55,7 @@
         </div>
 
         <div class="session-info hidden" id="session-info">
-            <div class="session-info-id">сессия: <b><span id="session-id-span"></span></b></div>
-            <div class="connected-users-count">Подключенные пользователи: <span id="connected-users-count">0</span></div>
+            <div class="session-info-id">сессия: <b><span id="session-id-span"></span></b>, <span id="connected-users-count">0 пользователей</span></div>
             <div class="connected-users" id="connected-users"></div>
             <div class="session-info-buttons" id="connection-block">
                 <button class="basic-button gradient-button" id="disconnect-button" onclick="multiPlayer.Disconnect()">Отключиться</button>
@@ -70,12 +69,14 @@
                 {% include "components/question_settings.html" %}
                 </div>
             </div>
-            <div class="session-chat">
-                <div class="session-header">Чат</div>
+            <div class="session-chat session-chat-open">
+                <div class="session-header" onclick="this.parentNode.classList.toggle('session-chat-open')">Чат</div>
+                <div class="session-header-description">Нажмите, чтобы показать чат</div>
                 <div class="session-chat-controls">
                     <div><input class="basic-input" type="text" inputmode="search" placeholder="напишите что-нибудь" id="session-chat-text"></div>
                     <div><img class="session-chat-hidden" id="session-chat-send" src="/images/send.svg"></div>
                 </div>
+                <div class="session-chat-messages" id="session-chat-messages"></div>
             </div>
         </div>
 

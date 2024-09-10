@@ -32,15 +32,6 @@
     border-radius: 0.5em;
 }
 
-.connected-users-count {
-    font-weight: bold;
-    margin-bottom: 0.5em;
-}
-
-.connected-users-count span {
-    font-weight: normal;
-}
-
 .session-info-id {
     margin-bottom: 0.2em;
     font-size: 0.75em;
@@ -82,24 +73,52 @@
     margin-top: 0.8em;
 }
 
-.session-chat .session-header {
-    margin-bottom: 0.2em;
-}
-
 .session-chat-controls {
     display: grid;
     grid-template-columns: 1fr min-content;
     grid-gap: 0.1em;
+    height: 0;
+    margin-top: -0.3em;
+    overflow: hidden;
+}
+
+.session-chat-open .session-chat-controls {
+    height: 24px;
+    overflow: unset;
 }
 
 .session-chat-controls img {
     width: 24px;
+    height: 24px;
     transition: width 0.2s;
 }
 
 .session-chat-hidden {
     width: 0 !important;
     transition: width 0.2s;
+}
+
+.session-chat-messages:not(:empty) {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 0.5em;
+    max-height: 0;
+    overflow-y: hidden;
+    transition: max-height 0.1s;
+    margin-top: 0.2em;
+}
+
+.session-chat-open .session-chat-messages:not(:empty) {
+    overflow-y: auto;
+    max-height: 250px;
+    transition: max-height 0.1s;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    border: 1px solid var(--border-color);
+}
+
+.session-chat-open .session-header-description {
+    display: none;
 }
 
 .connected-users {
