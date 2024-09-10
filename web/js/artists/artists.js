@@ -143,7 +143,7 @@ function BuildAdminInfo() {
 
     let maxArtistsBlock = MakeElement("info-input-line", info)
     let maxArtistsLabel = MakeElement("", maxArtistsBlock, {innerText: "Исполнителей трека не более:", "for": "artist-max-artists"}, "label")
-    let maxArtistsInput = MakeElement("basic-input", maxArtistsBlock, {type: "text", value: "4", id: "artist-max-artists"}, "input")
+    let maxArtistsInput = MakeElement("basic-input", maxArtistsBlock, {type: "text", value: "1", id: "artist-max-artists"}, "input")
     MakeElement("error", info, {id: "artist-max-artists-error"})
 
     let artistButton = MakeElement("basic-button gradient-button", info, {innerText: "Добавить"}, "button")
