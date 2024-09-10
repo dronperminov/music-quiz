@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from typing import List
 
 from src.entities.analytics_entities.artists_analytics import ArtistsAnalytics
-from src.entities.analytics_entities.genres_analytics import TracksAnalytics
 from src.entities.analytics_entities.main_analytics import MainAnalytics
 from src.entities.analytics_entities.period_analytics import PeriodAnalytics
+from src.entities.analytics_entities.tracks_analytics import TracksAnalytics
 
 
 @dataclass
