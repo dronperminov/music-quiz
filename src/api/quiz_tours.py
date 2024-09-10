@@ -1,4 +1,3 @@
-import urllib.parse
 from typing import Optional
 
 from fastapi import APIRouter, Depends
@@ -6,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import database, music_database, questions_database, quiz_tours_database
-from src.api import send_error, templates
+from src.api import login_redirect, send_error, templates
 from src.entities.user import User
 from src.enums import QuizTourType
 from src.query_params.question_answer import QuizTourQuestionAnswer
@@ -33,7 +32,7 @@ def get_quiz_tours(params: QuizToursSearchQuery = Depends(), user: Optional[User
 @router.get("/quiz-tour/{quiz_tour_id}")
 def get_quiz_tour(quiz_tour_id: int, user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote(f"/quiz-tours/{quiz_tour_id}", safe="")}')
+        return login_redirect(back_url=f"/quiz-tours/{quiz_tour_id}")
 
     quiz_tour = quiz_tours_database.get_quiz_tour(quiz_tour_id=quiz_tour_id)
 
@@ -75,7 +74,7 @@ def get_quiz_tour(quiz_tour_id: int, user: Optional[User] = Depends(get_user)) -
 @router.get("/quiz-tours/{quiz_tour_id}")
 def get_quiz_tour_question(quiz_tour_id: int, user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote(f"/quiz-tours/{quiz_tour_id}", safe="")}')
+        return login_redirect(back_url=f"/quiz-tours/{quiz_tour_id}")
 
     quiz_tour = quiz_tours_database.get_quiz_tour(quiz_tour_id=quiz_tour_id)
 

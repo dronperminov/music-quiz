@@ -1,12 +1,11 @@
-import urllib.parse
 from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from src import database, questions_database
-from src.api import templates
+from src.api import login_redirect, templates
 from src.entities.artists_group_settings import ArtistsGroupSettings
 from src.entities.question_settings import QuestionSettings
 from src.entities.user import User
@@ -21,7 +20,7 @@ router = APIRouter()
 @router.get("/settings")
 def get_settings(user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote("/settings", safe="")}')
+        return login_redirect(back_url="/settings")
 
     settings = database.get_settings(username=user.username)
     template = templates.get_template("user/settings.html")

@@ -1,17 +1,16 @@
 import asyncio
 import json
 import re
-import urllib.parse
 from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Body, Cookie, Depends, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 
 from src import database, logger, music_database, questions_database
-from src.api import templates
+from src.api import login_redirect, templates
 from src.entities.question_settings import QuestionSettings
 from src.entities.session import Session
 from src.entities.user import User
@@ -211,8 +210,7 @@ def multi_player(session_id: str = Query(""), user: Optional[User] = Depends(get
         session_id = ""
 
     if not user:
-        back_url = f"/multi-player?session_id={session_id}"
-        return RedirectResponse(url=f"/login?back_url={urllib.parse.quote(back_url)}")
+        return login_redirect(back_url=f"/multi-player?session_id={session_id}")
 
     template = templates.get_template("multi_player/multi_player.html")
     settings = database.get_settings(username=user.username)

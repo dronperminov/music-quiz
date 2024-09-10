@@ -1,12 +1,11 @@
-import urllib.parse
 from typing import Optional
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from src import database, music_database, questions_database
-from src.api import send_error, templates
+from src.api import login_redirect, send_error, templates
 from src.entities.user import User
 from src.query_params.question_answer import QuestionAnswer
 from src.utils.auth import get_user
@@ -18,7 +17,7 @@ router = APIRouter()
 @router.get("/question")
 def get_question(user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote("/question", safe="")}')
+        return login_redirect(back_url="/question")
 
     settings = database.get_settings(username=user.username)
     question = questions_database.get_question(settings)
@@ -54,7 +53,7 @@ def get_question(user: Optional[User] = Depends(get_user)) -> Response:
 @router.get("/group-question/{group_id}")
 def get_group_question(group_id: int, user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        return RedirectResponse(url=f'/login?back_url={urllib.parse.quote(f"/group-question/{group_id}", safe="")}')
+        return login_redirect(back_url=f"/group-question/{group_id}")
 
     group = music_database.get_artists_group(group_id=group_id)
 

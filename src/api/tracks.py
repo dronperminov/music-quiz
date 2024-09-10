@@ -1,13 +1,12 @@
 import random
-import urllib.parse
 from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, Query
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from src import database, music_database, questions_database
-from src.api import send_error, templates
+from src.api import login_redirect, send_error, templates
 from src.entities.user import User
 from src.enums import UserRole
 from src.query_params.track_update import TrackUpdate
@@ -55,8 +54,7 @@ def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(Fa
 @router.get("/markup-track")
 def get_markup(track_id: int = Query(0), language: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        back_url = urllib.parse.quote(f"/markup-track?track_id={track_id}", safe="")
-        return RedirectResponse(url=f"/login?back_url={back_url}")
+        return login_redirect(back_url=f"/markup-track?track_id={track_id}")
 
     if track_id == 0:
         query = {"lyrics": {"$ne": None}, "lyrics.lrc": True, "lyrics.validated": False, "artists.1": {"$exists": False}}
