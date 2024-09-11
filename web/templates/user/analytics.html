@@ -244,6 +244,39 @@
             <div class="analytics-no-info">Пока что нет информации</div>
             {% endif %}
         </div>
+
+        <div class="analytics-block" id="years-block">
+            <div class="analytics-title analytics-title-interactive" onclick="ToggleYearsChart()">Распределение по годам</div>
+            <div class="analytics-description">Количество треков, соответствующих тому или иному временному периоду. Нажмите на заголовок, чтобы увидеть подробную диаграмму.</div>
+            <div class="analytics-chart" id="years-chart-block">
+                <div class="analytics-items">
+                    <div class="analytics-item analytics-item-interactive" onclick="ShowYearsChart('total')">
+                        <div class="analytics-item-name" id="years-total-label">всего</div>
+                    </div>
+
+                    <div class="analytics-item analytics-item-interactive" onclick="ShowYearsChart('correct')">
+                        <div class="analytics-item-name" id="years-correct-label"><span class="circle correct-background"></span>верно</div>
+                    </div>
+
+                    <div class="analytics-item analytics-item-interactive" onclick="ShowYearsChart('incorrect')">
+                        <div class="analytics-item-name" id="years-incorrect-label"><span class="circle incorrect-background"></span>неверно</div>
+                    </div>
+                </div>
+                <div class="analytics-chart-checkbox" id="years-percents-block">
+                    <label class="switch-checkbox">
+                        <input type="checkbox" id="years-percents" onchange="ShowYearsChart()">
+                        <span class="switch-checkbox-slider"></span>
+                    </label>
+                    <label for="years-percents">В виде процентов</label>
+                </div>
+
+                <div class="analytics-chart-scrollable">
+                    <svg id="years-total-chart"></svg>
+                    <svg class="hidden" id="years-correct-chart"></svg>
+                    <svg class="hidden" id="years-incorrect-chart"></svg>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="/js/utils/fetch.js?v={{version}}"></script>
@@ -284,6 +317,12 @@
             {value: {{count}}, color: "{{genre.to_color()}}", label: "{{genre.to_rus()}}"},
             {% endfor %}
         ]
+
+        const yearsData = {
+            total: [{% for key, count in analytics.tracks.years_total.items() %}{label: "{{key}}", count: {{count}} },{% endfor %}],
+            correct: [{% for key, count in analytics.tracks.years_correct.items() %}{label: "{{key}}", count: {{count}} },{% endfor %}],
+            incorrect: [{% for key, count in analytics.tracks.years_incorrect.items() %}{label: "{{key}}", count: {{count}} },{% endfor %}]
+        }
 
         PlotGenresChart()
         PlotPeriodPlotChart("time", false)

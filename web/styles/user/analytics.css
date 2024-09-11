@@ -135,6 +135,10 @@
     transition: all .2s linear;
 }
 
+.analytics-chart-scrollable {
+    overflow-x: auto;
+}
+
 .analytics-chart-period {
     max-width: 100%;
     overflow-x: auto;
@@ -162,13 +166,20 @@
     width: 100%;
 }
 
+#years-total-chart, #years-correct-chart, #years-incorrect-chart {
+    margin-top: 1.5em;
+    height: 200px;
+    width: 100%;
+    min-width: 360px;
+}
+
 #genres-chart {
     height: 230px;
     width: 100%;
 }
 
 .analytics-chart-open {
-    max-height: 270px;
+    max-height: 400px;
     transition: all .2s linear;
 }
 

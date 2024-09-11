@@ -17,10 +17,12 @@ class Analytics:
     @classmethod
     def evaluate(cls: "Analytics", questions: List[dict], tracks: List[dict]) -> "Analytics":
         track_id2artist_ids = {track["track_id"]: track["artists"] for track in tracks}
+        correct_track_ids = [question["track_id"] for question in questions if question["correct"]]
+        incorrect_track_ids = [question["track_id"] for question in questions if not question["correct"]]
 
         return cls(
             main=MainAnalytics.evaluate(questions),
             artists=ArtistsAnalytics.evaluate(questions, track_id2artist_ids),
-            tracks=TracksAnalytics.evaluate(tracks),
+            tracks=TracksAnalytics.evaluate(tracks, correct=correct_track_ids, incorrect=incorrect_track_ids),
             period=PeriodAnalytics.evaluate(questions)
         )

@@ -144,3 +144,72 @@ function TogglePeriodChart(key) {
     let block = document.getElementById(`period-${key}-block`)
     block.classList.toggle("analytics-chart-open")
 }
+
+function ToggleYearsChart() {
+    if (yearsData.total.reduce((sum, value) => sum + value.count, 0) == 0)
+        return
+
+    let block = document.getElementById("years-chart-block")
+    block.classList.toggle("analytics-chart-open")
+
+    for (let key of ["total", "correct", "incorrect"]) {
+        let label = document.getElementById(`years-${key}-label`)
+        label.classList.remove("analytics-label-selected")
+    }
+
+    if (block.classList.contains("analytics-chart-open"))
+        ShowYearsChart("total")
+}
+
+function ShowYearsChart(targetKey = null) {
+    if (yearsData.total.reduce((sum, value) => sum + value.count, 0) == 0)
+        return
+
+    let chartBlock = document.getElementById("years-chart-block")
+    chartBlock.classList.add("analytics-chart-open")
+
+    let percentsBlock = document.getElementById("years-percents-block")
+    percentsBlock.classList.add("hidden")
+
+    for (let key of ["total", "correct", "incorrect"])
+        if (targetKey === null && !document.getElementById(`years-${key}-chart`).classList.contains("hidden"))
+            targetKey = key
+
+    if (targetKey != "total")
+        percentsBlock.classList.remove("hidden")
+
+    let percents = document.getElementById("years-percents").checked
+
+    if (percents) {
+        yearsData.correctPercents = []
+        yearsData.incorrectPercents = []
+
+        for (let i = 0; i < yearsData.total.length; i++) {
+            yearsData.correctPercents.push({label: yearsData.total[i].label, count: Math.round(yearsData.correct[i].count / Math.max(yearsData.total[i].count, 1) * 1000) / 10})
+            yearsData.incorrectPercents.push({label: yearsData.total[i].label, count: Math.round(yearsData.incorrect[i].count / Math.max(yearsData.total[i].count, 1) * 1000) / 10})
+        }
+    }
+
+    for (let key of ["total", "correct", "incorrect"]) {
+        let svg = document.getElementById(`years-${key}-chart`)
+        let label = document.getElementById(`years-${key}-label`)
+
+        if (key != targetKey) {
+            svg.classList.add("hidden")
+            label.classList.remove("analytics-label-selected")
+            continue
+        }
+
+        svg.classList.remove("hidden")
+        label.classList.add("analytics-label-selected")
+
+        let chart = new BarChart({barColor: key2color[key], minRectWidth: 48, maxRectWidth: 55, bottomPadding: 10, labelSize: 9})
+        if (percents && key != "total")
+            key += "Percents"
+
+        chart.Plot(svg, yearsData[key], "label", "count")
+    }
+
+    let block = document.getElementById("years-block")
+    block.scrollIntoView({behavior: "smooth"})
+}
