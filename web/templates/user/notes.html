@@ -93,6 +93,11 @@
             onLoad: LoadNotes
         }
 
+        {% if search_params %}
+        document.getElementById("query").value = {{search_params.query|tojson}}
+        document.getElementById("with-text").value = {{search_params.with_text|tojson}}
+        {% endif %}
+
         let infos = new InfoPanels()
         let players = new PlayerCollection()
         let search = new Search("search", SearchNotes, ClearNotes)

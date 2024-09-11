@@ -8,7 +8,7 @@ from src import database, music_database, questions_database
 from src.api import login_redirect, templates
 from src.entities.user import User
 from src.query_params.note_update import NoteUpdate
-from src.query_params.notes_search import NotesSearch
+from src.query_params.notes_search import NotesSearch, NotesSearchQuery
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash
 
@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 @router.get("/notes")
-def get_notes(user: Optional[User] = Depends(get_user)) -> Response:
+def get_notes(params: NotesSearchQuery = Depends(), user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
         return login_redirect(back_url="/notes")
 
@@ -27,6 +27,7 @@ def get_notes(user: Optional[User] = Depends(get_user)) -> Response:
         page="notes",
         version=get_static_hash(),
         settings=settings,
+        search_params=params.to_params()
     )
     return HTMLResponse(content=content)
 

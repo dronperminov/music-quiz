@@ -6,7 +6,6 @@ function GetSearchParams() {
 }
 
 function LoadNotes(response, block) {
-    console.log(response)
     for (let note of response.notes) {
         let artistId = `${note.artist_id}`
         let artist = new Artist(response.artist_id2artist[artistId])
@@ -29,7 +28,7 @@ function PushUrlParams(params = null) {
         if (params.query !== "")
             url.searchParams.set("query", params.query)
 
-        url.searchParams.set("with-text", params.with_text)
+        url.searchParams.set("with_text", params.with_text)
     }
 
     window.history.pushState(null, '', url.toString())
