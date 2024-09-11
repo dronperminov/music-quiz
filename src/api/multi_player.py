@@ -13,6 +13,7 @@ from src import database, logger, music_database, questions_database
 from src.api import login_redirect, templates
 from src.entities.question_settings import QuestionSettings
 from src.entities.session import Session
+from src.entities.settings import Settings
 from src.entities.user import User
 from src.enums import ArtistsCount, Genre, Language, QuestionType
 from src.query_params.question_answer import QuestionAnswer
@@ -96,10 +97,14 @@ def get_session_message(session_id: str, username: str, action: str) -> dict:
     return message
 
 
-async def get_session_question(session: Session, username: str) -> None:
-    settings = database.get_settings(username=session.created_by)
-    settings.question_settings = session.question_settings
-    question = questions_database.get_question(settings, external_questions=reversed(session.questions))
+async def get_session_question(session_id: str, username: str) -> None:
+    session = database.get_session(session_id=session_id)
+    if not session:
+        return
+
+    settings = Settings.default(username="")
+    settings.update_question(session.question_settings)
+    question = questions_database.get_question(settings, external_questions=session.get_questions())
     session.set_question(question)
     database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
     await connection_manager.broadcast(session_id=session.session_id, message=get_session_message(session.session_id, username, "question"))
@@ -112,14 +117,21 @@ async def check_all_answered(session_id: str, username: str) -> None:
         return
 
     question = session.question
+    answers = []
 
     for player, answer in session.answers.items():
+        answers.append(answer.correct)
+
         question.username = player
         question.set_answer(answer)
         database.questions.insert_one(question.to_dict())
 
+    question.username = ""
+    question.set_answer(QuestionAnswer(correct=sum(answers) > len(answers) * 0.4, answer_time=None))
     session.add_question(question)
-    await get_session_question(session=session, username=username)
+    database.sessions.update_one({"session_id": session_id}, {"$set": session.to_dict()})
+
+    await get_session_question(session_id=session_id, username=username)
 
 
 async def handle_player_answer(session_id: str, username: str, answer: QuestionAnswer) -> None:
@@ -159,11 +171,13 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
         raise HTTPException(status_code=404, detail="Session not found")
 
     session.add_player(user.username)
+    database.sessions.update_one({"session_id": session_id}, {"$set": session.to_dict()})
 
-    if len(session.players) > 1 and session.question is None:
-        await get_session_question(session=session, username=user.username)
-
-    database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
+    if len(session.players) > 1:
+        if session.question is None:
+            await get_session_question(session_id=session_id, username=user.username)
+        else:
+            await check_all_answered(session_id=session_id, username=user.username)
 
     logger.info(f'@{user.username} connected to the session "{session_id}"')
     await connection_manager.connect(websocket, session_id=session_id)
@@ -190,7 +204,7 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
                 await connection_manager.broadcast(session_id=session_id, message={"action": "reaction", "username": user.username, "reaction": message["reaction"]})
             elif message["action"] == "remove" and message["username"] == session.created_by:
                 await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "remove"))
-                database.sessions.delete_one({"session_id": session.session_id})
+                database.sessions.delete_one({"session_id": session_id})
                 await websocket.close()
     except (WebSocketDisconnect, OSError, RuntimeError):
         connection_manager.disconnect(websocket, session_id=session_id)
@@ -198,7 +212,7 @@ async def handle_websocket(websocket: WebSocket, session_id: str, quiz_token: st
 
         if session := database.get_session(session_id=session_id):
             session.remove_player(user.username)
-            database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
+            database.sessions.update_one({"session_id": session_id}, {"$set": session.to_dict()})
 
         await connection_manager.broadcast(session_id=session_id, message=get_session_message(session_id, user.username, "disconnect"))
         await check_all_answered(session_id=session_id, username="")

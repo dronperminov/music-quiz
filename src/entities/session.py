@@ -105,3 +105,6 @@ class Session:
 
         self.question_settings = question_settings
         return True
+
+    def get_questions(self) -> List[Question]:
+        return [question for question in self.questions[::-1]]

@@ -28,6 +28,7 @@ class QuestionsDatabase:
 
         self.alpha = 0.999
         self.last_questions_count = 500
+        self.min_incorrect_count = 20
 
     def have_question(self, username: str, group_id: Optional[int]) -> bool:
         return self.__get_user_question(username=username, group_id=group_id) is not None
@@ -56,7 +57,7 @@ class QuestionsDatabase:
 
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
-        if group_id is None and last_incorrect_questions and random.random() < settings.question_settings.repeat_incorrect_probability:
+        if group_id is None and len(last_incorrect_questions) >= self.min_incorrect_count and random.random() < settings.question_settings.repeat_incorrect_probability:
             question = self.repeat_incorrect_question(last_incorrect_questions, settings.question_settings)
         else:
             track = self.sample_question_tracks(tracks=tracks, last_questions=last_questions, settings=settings.question_settings, group_id=group_id, count=1)[0]
