@@ -29,6 +29,9 @@ function GetActionDiffLyrics(diff) {
     if (diff.prev === null)
         return `<b>текст песни</b>: <s class="error-color">null</s> &rarr; <span class="success-color">${JSON.stringify(diff.new)}</span></li>`
 
+    if (diff.new === null)
+        return `<b>текст песни</b>: <s class="error-color">${JSON.stringify(diff.prev)}</s> &rarr; <span class="success-color">null</span></li>`
+
     let prevLines = JSON.stringify(diff.prev.lines, null, 1).replace("\n", "")
     let newLines = JSON.stringify(diff.new.lines, null, 1).replace("\n", "")
     if (prevLines != newLines)
