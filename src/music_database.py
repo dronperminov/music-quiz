@@ -14,6 +14,7 @@ from src.entities.history_action import AddArtistAction, AddArtistsGroupAction, 
 from src.entities.metadata import Metadata
 from src.entities.note import Note
 from src.entities.quiz_tour import QuizTour
+from src.entities.session import Session
 from src.entities.source import YandexSource
 from src.entities.track import Track
 from src.enums import ArtistsCount, Language
@@ -187,6 +188,14 @@ class MusicDatabase:
             note = Note.from_dict(note_dict)
             note.track_id2seek.pop(track_id)
             self.database.notes.update_one({"artist_id": note.artist_id, "username": note.username}, {"$set": note.to_dict()})
+
+        # удаляем вопрос из сессий
+        for session in self.database.sessions.find({"questions.track_id": track_id}):
+            session = Session.from_dict(session)
+            session.questions = [question for question in session.questions if question.track_id != track_id]
+            if session.question is not None and session.question.track_id == track_id:
+                session.question = None
+            self.database.sessions.update_one({"session_id": session.session_id}, {"$set": session.to_dict()})
 
         # удаляем все вопросы и ответы из туров, связанные с этим треком
         tour_question_ids = [question["question_id"] for question in self.database.quiz_tour_questions.find({"question.track_id": track_id}, {"question_id": 1})]
