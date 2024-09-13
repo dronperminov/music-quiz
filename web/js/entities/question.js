@@ -10,6 +10,8 @@ Question.prototype.Build = function(parent, params) {
     this.answerTime = null
 
     MakeElement("question-title", parent, {innerHTML: this.question.title})
+
+    this.BuildQuestionLines(parent)
     this.BuildAudio(parent, params)
     this.BuildTrack(parent, params)
     this.BuildTrackModifications(parent)
@@ -17,6 +19,16 @@ Question.prototype.Build = function(parent, params) {
     this.BuildAnswerBlock(parent, params)
 
     parent.classList.remove("hidden")
+}
+
+Question.prototype.BuildQuestionLines = function(parent) {
+    if (!this.question.lines)
+        return
+
+    let lines = MakeElement("question-lines", parent)
+
+    for (let line of this.question.lines)
+        MakeElement("question-line", lines, {innerText: line})
 }
 
 Question.prototype.BuildAudio = function(parent, params) {
@@ -36,6 +48,9 @@ Question.prototype.BuildAudio = function(parent, params) {
 
     if (this.question.question_timecode)
         audio.setAttribute("data-timecode", this.question.question_timecode)
+
+    if (this.question.answer_seek)
+        audio.setAttribute("data-answer-seek", this.question.answer_seek)
 
     if (params.note && this.trackId in note.track_id2seek)
         audio.setAttribute("data-note-seek", params.note.track_id2seek[this.trackId])
@@ -236,6 +251,9 @@ Question.prototype.ResetPlayer = function() {
 
     if (player !== null) {
         player.Reset()
+
+        if (this.question.answer_seek)
+            player.Seek(this.question.answer_seek)
         return
     }
 
