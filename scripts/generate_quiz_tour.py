@@ -30,7 +30,7 @@ def get_tags(args: Namespace) -> List[str]:
     if args.positions in ["hits", "unhackneyed"]:
         tags.append(args.positions)
 
-    if args.positions == "top3":
+    if args.positions in ["top1", "top3"]:
         tags.append("hits")
 
     if args.years != "all":
@@ -48,9 +48,10 @@ def main() -> None:
     parser.add_argument("--years", help="", choices=("all", "1990", "1990-2000", "2000", "2000-2010", "modern", "2020"), required=True)
     parser.add_argument("--genres", help="", choices=("all", "rock", "hip-hop", "pop"), default="all")
     parser.add_argument("--languages", help="", choices=("all", "russian", "foreign"), default="all")
-    parser.add_argument("--positions", help="", choices=("all", "top3", "hits", "normal", "unhackneyed"), default="normal")
+    parser.add_argument("--positions", help="", choices=("all", "top1", "top3", "hits", "normal", "unhackneyed"), default="normal")
     parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter", "n_letters", "miracles_field", "chain"), default="regular")
     parser.add_argument("--listen-count", help="Min border of artist listen count", type=int, default=100_000)
+    parser.add_argument("--question-type", help="", choices=("artist_by_track", "line_by_text", "line_by_chorus"), default="artist_by_track")
 
     args = parser.parse_args()
     assert args.questions >= 7
@@ -82,6 +83,7 @@ def main() -> None:
 
     track_position = {
         "all": ("", ""),
+        "top1": ("", 1),
         "top3": ("", 3),
         "hits": ("", 5),
         "normal": ("", 10),
@@ -107,7 +109,7 @@ def main() -> None:
         languages=languages,
         artists_count={ArtistsCount.SOLO: 1},
         listen_count=(args.listen_count, ""),
-        question_types={QuestionType.ARTIST_BY_TRACK: 1},
+        question_types={QuestionType(args.question_type): 1},
         track_position=track_position,
         black_list=[],
         repeat_incorrect_probability=0,
@@ -136,6 +138,7 @@ def main() -> None:
     print(f"- track position: {settings.track_position}")
     print(f"- listen count: {settings.listen_count}")
     print(f"- start from chorus: {settings.start_from_chorus}")
+    print(f"- question type: {settings.question_types}")
 
     answer = input("Write yes for continue >")
 
