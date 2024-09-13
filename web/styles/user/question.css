@@ -51,6 +51,17 @@
     margin-bottom: 0.6em;
 }
 
+.question-lines {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 0.4em;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    background-color: var(--block-background);
+    border: 1px solid var(--border-color);
+    margin-bottom: 0.5em;
+}
+
 .track-modifications {
     color: var(--subtext-color);
     font-size: 0.8em;

@@ -12,7 +12,7 @@ from src.entities.analytics import Analytics
 from src.entities.artist import Artist
 from src.entities.artists_group import ArtistsGroup
 from src.entities.group_analytics import GroupAnalytics
-from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, NameByTrackQuestion, Question
+from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, LineByChorusQuestion, LineByTextQuestion, NameByTrackQuestion, Question
 from src.entities.question_settings import QuestionSettings
 from src.entities.settings import Settings
 from src.entities.track import Track
@@ -70,8 +70,7 @@ class QuestionsDatabase:
 
     def generate_question(self, track: Track, username: str, settings: QuestionSettings, group_id: Optional[int]) -> Question:
         if group_id is None:
-            implemented_question_types = {QuestionType.ARTIST_BY_TRACK, QuestionType.NAME_BY_TRACK, QuestionType.ARTIST_BY_INTRO}
-            question_types = list(set(settings.question_types).intersection(track.get_question_types()).intersection(implemented_question_types))
+            question_types = list(set(settings.question_types).intersection(track.get_question_types()))
             question_weights = [settings.question_types[question_type] for question_type in question_types]
             question_type = random.choices(question_types, weights=question_weights, k=1)[0]
         else:
@@ -243,6 +242,12 @@ class QuestionsDatabase:
 
         if question_type == QuestionType.NAME_BY_TRACK:
             return NameByTrackQuestion.generate(track, username, settings, group_id)
+
+        if question_type == QuestionType.LINE_BY_TEXT:
+            return LineByTextQuestion.generate(track, username, settings, group_id)
+
+        if question_type == QuestionType.LINE_BY_CHORUS:
+            return LineByChorusQuestion.generate(track, username, settings, group_id)
 
         raise ValueError("Invalid question type")
 

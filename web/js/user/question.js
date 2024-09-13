@@ -33,20 +33,27 @@ function ShowAnswer(correct = null) {
     let answerBlock = document.getElementById("answer")
     answerBlock.classList.remove("hidden")
 
-    let player = players.GetPlayer()
-
-    if (player === null)
-        return
-
-    player.SetTimecode("")
-    player.SetPlaybackRate(1)
-    player.ShowIcons()
+    ResetPlayer()
 
     if (correct === null)
         return
 
     let button = document.getElementById(`answer-button-${correct ? "incorrect" : "correct"}`)
     button.classList.add("hidden")
+}
+
+function ResetPlayer() {
+    let player = players.GetPlayer()
+
+    if (player !== null) {
+        player.Reset()
+
+        if (player.audio.hasAttribute("data-answer-seek"))
+            player.Seek(+player.audio.getAttribute("data-answer-seek"))
+        return
+    }
+
+    setTimeout(() => ResetPlayer(), 1000)
 }
 
 function SendAnswer(correct) {

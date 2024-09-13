@@ -15,7 +15,15 @@
         {% if quiz_tour %}<div class="quiz-tour-name"><a class="link" href="/quiz-tours">Мини-квизы</a> / {{quiz_tour.name}}</div>{% endif %}
         <div class="question-title">{% if quiz_tour %}Вопрос {{quiz_tour.question_ids.index(question_id) + 1}} из {{quiz_tour.question_ids|length}}. {% endif %}{{question.title}}</div>
 
-        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" data-playback-rate="{{question.track_modifications.playback_rate}}" {% if note and track.track_id in note.track_id2seek %}data-note-seek="{{note.track_id2seek[track.track_id]}}"{% endif %} preload="metadata" onplay="InitQuestion()"></audio>
+        {% if question.lines %}
+        <div class="question-lines">
+            {% for line in question.lines %}
+            <div class="question-line">{{line}}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <audio id="audio-{{track.track_id}}" data-track-id="{{track.track_id}}" {% if track.downloaded %}data-src="https://music.dronperminov.ru/tracks/{{track.track_id}}.mp3"{% else %}data-yandex-id="{{track.source.yandex_id}}"{% endif %} data-seek="{{question.question_seek}}" data-timecode="{{question.question_timecode}}" data-playback-rate="{{question.track_modifications.playback_rate}}" {% if note and track.track_id in note.track_id2seek %}data-note-seek="{{note.track_id2seek[track.track_id]}}"{% endif %} {% if question.answer_seek %}data-answer-seek="{{question.answer_seek}}"{% endif %} preload="metadata" onplay="InitQuestion()"></audio>
 
         {% if quiz_tour and quiz_tour.quiz_tour_type == QuizTourType.MIRACLES_FIELD %}
         {% set top_letter = get_top_letter(artist_id2artist[track.artists[0]].name).upper() %}
