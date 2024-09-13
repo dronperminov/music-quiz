@@ -201,6 +201,66 @@
     background: linear-gradient(180deg, #f9aa69 0%, #d77223 100%);
 }
 
+.faq {
+    padding: 0.7em;
+    border: 1px solid var(--border-color);
+    border-radius: 0.7em;
+    background: var(--block-background);
+    margin-bottom: 1.3em;
+}
+
+.faq:last-child {
+    margin-bottom: 0;
+}
+
+.faq-question {
+    display: grid;
+    grid-template-columns: 1fr 32px;
+    grid-gap: 10px;
+    min-height: 32px;
+}
+
+.faq-question label {
+    cursor: pointer;
+    font-size: 1.05em;
+}
+
+.faq-question img {
+    filter: grayscale(100%);
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.faq input {
+    display: none;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s;
+}
+
+.faq input:checked ~ .faq-question label {
+    font-weight: bold;
+}
+
+.faq input:checked ~ .faq-question img {
+    filter: unset;
+    transform: rotate(-135deg);
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.faq input:checked ~ .faq-answer {
+    font-size: 0.9em;
+    max-height: 100dvh;
+    overflow-y: auto;
+    transition: max-height 0.2s;
+}
+
+.faq-answer p {
+    margin-top: 0.8em;
+}
+
 @media (max-width: 767px) {
     .top3-players {
         grid-gap: 0.8em;
