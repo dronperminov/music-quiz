@@ -21,7 +21,7 @@ class TrackModifications:
 
     @classmethod
     def from_settings(cls: "TrackModifications", settings: TrackModificationSettings) -> "TrackModifications":
-        if random.random() < settings.probability:
+        if settings.change_playback_rate and random.random() < settings.probability:
             return cls(playback_rate=random.choice([0.25, 0.5, 0.75, 1.5, 2, 3, 4]))
 
         return cls(playback_rate=1)
