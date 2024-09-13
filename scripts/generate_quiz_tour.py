@@ -3,7 +3,7 @@ import random
 from argparse import ArgumentParser, Namespace
 from typing import List
 
-from src import database, quiz_tours_database
+from src import database, questions_database, quiz_tours_database
 from src.entities.question_settings import QuestionSettings
 from src.entities.track_modification_settings import TrackModificationSettings
 from src.enums import ArtistsCount, Genre, Language, QuestionType
@@ -142,6 +142,8 @@ def main() -> None:
     if answer != "yes":
         return
 
+    questions_database.alpha = 0.999999
+    questions_database.last_questions_count = 10000
     quiz_tours_database.generate_tour(params, quiz_tour_type=mechanics, settings=settings, questions_count=args.questions)
 
 
