@@ -62,9 +62,9 @@ class Question:
         elif question_type == QuestionType.NAME_BY_TRACK:
             question = NameByTrackQuestion(data["title"], data["answer"], data["question_seek"])
         elif question_type == QuestionType.LINE_BY_TEXT:
-            question = LineByTextQuestion(data["title"], data["answer"], data["question_seek"], data["lines"], data["answer_seek"])
+            question = LineByTextQuestion(data["title"], data["answer"], data["question_seek"], data["lines"], data["question_timecode"], data["answer_seek"])
         elif question_type == QuestionType.LINE_BY_CHORUS:
-            question = LineByChorusQuestion(data["title"], data["answer"], data["question_seek"], data["lines"], data["answer_seek"])
+            question = LineByChorusQuestion(data["title"], data["answer"], data["question_seek"], data["lines"], data["question_timecode"], data["answer_seek"])
         else:
             raise ValueError(f'Invalid question_type "{question_type}"')
 
@@ -210,18 +210,22 @@ class ArtistByIntroQuestion(Question):
 @dataclass
 class LineByTextQuestion(Question):
     lines: List[str]
+    question_timecode: str
     answer_seek: float
 
     @classmethod
     def generate(cls: Self, track: Track, username: str, settings: QuestionSettings, group_id: Optional[int]) -> Self:
         start_index = random.randint(0, len(track.lyrics.lines) - 4)
+        start_time = track.lyrics.lines[start_index].time - 0.1
+        end_time = track.lyrics.lines[start_index + 3].time
 
         question = cls(
             title="Напишите следующую строку песни",
             answer=track.lyrics.lines[start_index + 3].text,
-            question_seek=track.lyrics.lines[start_index].time - 0.1,
+            question_seek=start_time,
             lines=[track.lyrics.lines[start_index + i].text for i in range(3)],
-            answer_seek=track.lyrics.lines[start_index + 3].time
+            answer_seek=end_time,
+            question_timecode=f"{start_time},{end_time - 0.1}"
         )
 
         question.init_base(question_type=QuestionType.LINE_BY_TEXT, username=username, settings=settings, track_id=track.track_id, group_id=group_id)
@@ -235,13 +239,15 @@ class LineByTextQuestion(Question):
         return {
             **super().to_dict(),
             "lines": self.lines,
-            "answer_seek": self.answer_seek
+            "answer_seek": self.answer_seek,
+            "question_timecode": self.question_timecode
         }
 
 
 @dataclass
 class LineByChorusQuestion(Question):
     lines: List[str]
+    question_timecode: str
     answer_seek: float
 
     @classmethod
@@ -252,12 +258,16 @@ class LineByChorusQuestion(Question):
             start_index = random.randint(start_index, end_index - 3)
             end_index = min(start_index + random.randint(3, 5), end_index)
 
+        start_time = track.lyrics.lines[start_index].time - 0.1
+        end_time = track.lyrics.lines[end_index].time
+
         question = cls(
             title="Напишите следующую строку припева",
             answer=track.lyrics.lines[end_index].text,
-            question_seek=track.lyrics.lines[start_index].time - 0.1,
+            question_seek=start_time,
             lines=[track.lyrics.lines[i].text for i in range(start_index, end_index)],
-            answer_seek=track.lyrics.lines[end_index].time
+            answer_seek=end_time,
+            question_timecode=f"{start_time},{end_time - 0.1}"
         )
 
         question.init_base(question_type=QuestionType.LINE_BY_CHORUS, username=username, settings=settings, track_id=track.track_id, group_id=group_id)
@@ -271,5 +281,6 @@ class LineByChorusQuestion(Question):
         return {
             **super().to_dict(),
             "lines": self.lines,
-            "answer_seek": self.answer_seek
+            "answer_seek": self.answer_seek,
+            "question_timecode": self.question_timecode
         }
