@@ -153,7 +153,7 @@ Player.prototype.Pause = function() {
 }
 
 Player.prototype.Seek = function(seek) {
-    this.audio.currentTime = Math.max(this.startTime, Math.min(this.endTime - this.startTime, seek))
+    this.audio.currentTime = Math.max(this.startTime, Math.min(this.endTime, seek))
 }
 
 Player.prototype.SetTimecode = function(timecode = "") {
