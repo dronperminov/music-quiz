@@ -18,6 +18,12 @@ const PLAYER_NOTE_ICON = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill
     <path d="M21 7.52V9.62C21 9.96 20.67 10.2 20.34 10.09L19.8 9.91C18.75 9.58 17.68 9.72 16.81 10.34C15.98 10.96 15.51 11.94 15.51 13.02V15.47C15.51 15.74 15.3 15.96 15.03 16C12.97 16.31 11.38 18.1 11.38 20.25C11.38 20.3 11.38 20.35 11.38 20.4C11.39 20.71 11.16 21 10.84 21H7.52C4.07 21 2 18.94 2 15.48V7.52C2 4.06 4.07 2 7.52 2H15.48C18.93 2 21 4.06 21 7.52Z"/>
 </svg>`
 
+const PLAYER_VOLUME_ICON = `<svg width="1em" height="1em" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M29,4a.9.9,0,0,0-.7.3L16.7,15H8a2,2,0,0,0-2,2V31a2,2,0,0,0,2,2h8.7L28.3,43.7a.9.9,0,0,0,.7.3,1,1,0,0,0,1-1V5a1,1,0,0,0-1-1Z"/>
+    <path d="M34,15.5v17a.5.5,0,0,0,.9.3,14,14,0,0,0,0-17.6A.5.5,0,0,0,34,15.5Z"/>
+</svg>
+`
+
 const TRACK_LOAD_ICON = `
 <svg width="1.25em" height="1.25em" viewBox="0 0 7.1 7.1" xmlns="http://www.w3.org/2000/svg">
     <path d="M5.495,2.573 L1.501,0.142 C0.832,-0.265 0,0.25 0,1.069 L0,5.931 C0,6.751 0.832,7.264 1.501,6.858 L5.495,4.428 C6.168,4.018 6.168,2.983 5.495,2.573" />
@@ -61,6 +67,8 @@ Player.prototype.Build = function(trackId, config) {
     this.progressBar = this.BuildElement("player-progress-bar", this.progress)
     this.progressCurrent = this.BuildElement("player-progress-current", this.progressBar)
     this.time = this.BuildElement("player-time", this.block)
+
+    this.BuildVolume()
 
     this.lyricsUpdater = null
 
@@ -126,6 +134,38 @@ Player.prototype.BuildElement = function(className, parent, innerHTML = "") {
 
     parent.appendChild(element)
     return element
+}
+
+Player.prototype.BuildVolume = function() {
+    this.volume = this.BuildElement("player-volume", this.block)
+    this.volumeIcon = this.BuildElement("player-icon", this.volume, PLAYER_VOLUME_ICON)
+
+    this.volumeInput = document.createElement("input")
+    this.volumeInput.setAttribute("type", "range")
+    this.volumeInput.setAttribute("min", 5)
+    this.volumeInput.setAttribute("max", 100)
+    this.volumeInput.setAttribute("step", 5)
+    this.volumeInput.setAttribute("value", 100)
+    this.volumeInput.setAttribute("orient", "vertical")
+    this.volumeInput.classList.add("player-volume-input")
+    this.volumeInput.classList.add("hidden")
+    this.volume.appendChild(this.volumeInput)
+
+    this.volumeInput.addEventListener("input", () => {
+        this.audio.volume = +this.volumeInput.value / 100
+        localStorage.setItem("player-volume", this.audio.volume)
+    })
+
+    this.volumeIcon.addEventListener("click", () => {
+        this.volumeInput.classList.toggle("hidden")
+        this.volumeIcon.classList.toggle("player-icon-pressed")
+    })
+
+    let volume = localStorage.getItem("player-volume")
+    if (volume !== null) {
+        this.audio.volume = volume
+        this.volumeInput.value = Math.max(0, Math.min(100, Math.floor(volume * 100)))
+    }
 }
 
 Player.prototype.UpdateLoop = function() {

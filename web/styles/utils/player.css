@@ -39,6 +39,22 @@
     color: var(--player-time-color);
 }
 
+.player-volume {
+    display: table-cell;
+    vertical-align: middle;
+    padding-left: 0.5em;
+    position: relative;
+}
+
+.player-volume-input {
+    position: absolute;
+    font-size: 0.8em;
+    -webkit-appearance: slider-vertical;
+    width: 1em;
+    height: 8em;
+    bottom: 2em;
+}
+
 .player-progress-bar {
     border-radius: 5px;
     height: 5px;
