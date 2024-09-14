@@ -106,6 +106,16 @@ Player.prototype.InitEvents = function() {
     this.progress.addEventListener("mousemove", (e) => this.ProgressMouseMove(this.PointToSeek(e)))
     this.progress.addEventListener("mouseup", (e) => this.ProgressMouseUp())
     this.progress.addEventListener("mouseleave", (e) => this.ProgressMouseUp())
+
+    this.volumeInput.addEventListener("touchstart", (e) => this.VolumeMouseDown(this.PointToVolume(e)))
+    this.volumeInput.addEventListener("touchmove", (e) => this.VolumeMouseMove(this.PointToVolume(e)))
+    this.volumeInput.addEventListener("touchend", (e) => this.VolumeMouseUp())
+    this.volumeInput.addEventListener("touchleave", (e) => this.VolumeMouseUp())
+
+    this.volumeInput.addEventListener("mousedown", (e) => this.VolumeMouseDown(this.PointToVolume(e)))
+    this.volumeInput.addEventListener("mousemove", (e) => this.VolumeMouseMove(this.PointToVolume(e)))
+    this.volumeInput.addEventListener("mouseup", (e) => this.VolumeMouseUp())
+    this.volumeInput.addEventListener("mouseleave", (e) => this.VolumeMouseUp())
 }
 
 Player.prototype.InitMediaSessionHandlers = function() {
@@ -139,33 +149,16 @@ Player.prototype.BuildElement = function(className, parent, innerHTML = "") {
 Player.prototype.BuildVolume = function() {
     this.volume = this.BuildElement("player-volume", this.block)
     this.volumeIcon = this.BuildElement("player-icon", this.volume, PLAYER_VOLUME_ICON)
-
-    this.volumeInput = document.createElement("input")
-    this.volumeInput.setAttribute("type", "range")
-    this.volumeInput.setAttribute("min", 5)
-    this.volumeInput.setAttribute("max", 100)
-    this.volumeInput.setAttribute("step", 5)
-    this.volumeInput.setAttribute("value", 100)
-    this.volumeInput.setAttribute("orient", "vertical")
-    this.volumeInput.classList.add("player-volume-input")
-    this.volumeInput.classList.add("hidden")
-    this.volume.appendChild(this.volumeInput)
-
-    this.volumeInput.addEventListener("input", () => {
-        this.audio.volume = +this.volumeInput.value / 100
-        localStorage.setItem("player-volume", this.audio.volume)
-    })
+    this.volumeInput = this.BuildElement("player-volume-input hidden", this.volume)
+    this.volumeInputBar = this.BuildElement("player-volume-input-bar", this.volumeInput)
+    this.volumeInputCurrent = this.BuildElement("player-volume-input-current", this.volumeInputBar)
 
     this.volumeIcon.addEventListener("click", () => {
         this.volumeInput.classList.toggle("hidden")
         this.volumeIcon.classList.toggle("player-icon-pressed")
     })
 
-    let volume = localStorage.getItem("player-volume")
-    if (volume !== null) {
-        this.audio.volume = volume
-        this.volumeInput.value = Math.max(0, Math.min(100, Math.floor(volume * 100)))
-    }
+    this.SetVolume(localStorage.getItem("player-volume"))
 }
 
 Player.prototype.UpdateLoop = function() {
@@ -194,6 +187,13 @@ Player.prototype.Pause = function() {
 
 Player.prototype.Seek = function(seek) {
     this.audio.currentTime = Math.max(this.startTime, Math.min(this.endTime, seek))
+}
+
+Player.prototype.SetVolume = function(volume) {
+    volume = volume === null ? 100 : Math.max(0, Math.min(100, volume))
+    this.volumeInputCurrent.style.height = `${volume}%`
+    this.audio.volume = volume / 100
+    localStorage.setItem("player-volume", volume)
 }
 
 Player.prototype.SetTimecode = function(timecode = "") {
@@ -258,6 +258,30 @@ Player.prototype.PointToSeek = function(e) {
     return this.startTime + part * (this.endTime - this.startTime)
 }
 
+Player.prototype.PointToVolume = function(e) {
+    e.preventDefault()
+
+    let y
+
+    if (!e.touches) {
+        y = e.offsetY
+    }
+    else {
+        let top = 0
+        let element = this.volumeInput
+
+        do {
+            top += element.offsetTop || 0
+            element = element.offsetParent
+        }
+        while (element)
+
+        y = e.touches[0].clientY - top
+    }
+
+    return Math.max(0, Math.min(1, 1 - y / this.volumeInput.clientHeight)) * 100
+}
+
 Player.prototype.UpdateProgressBar = function() {
     if (this.audio.currentTime >= this.endTime || this.audio.ended)
         this.audio.currentTime = this.startTime
@@ -296,6 +320,23 @@ Player.prototype.ProgressMouseUp = function() {
 
     if (!this.paused)
         this.audio.play()
+}
+
+Player.prototype.VolumeMouseDown = function(volume) {
+    this.pressed = true
+    this.SetVolume(volume)
+}
+
+Player.prototype.VolumeMouseMove = function(volume) {
+    if (this.pressed)
+        this.SetVolume(volume)
+}
+
+Player.prototype.VolumeMouseUp = function() {
+    if (!this.pressed)
+        return
+
+    this.pressed = false
 }
 
 Player.prototype.PlayEvent = function() {
