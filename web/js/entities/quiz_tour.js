@@ -86,7 +86,7 @@ QuizTour.prototype.TagToRus = function(tag) {
 
         "hits": "хиты",
         "unhackneyed": "незаезженное",
-        "individual": "личный"
+        "individual": "личное"
     }
 
     return tag2rus[tag]
