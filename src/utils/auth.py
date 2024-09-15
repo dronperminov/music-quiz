@@ -37,8 +37,7 @@ async def token_to_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="/log
     except jwt.exceptions.DecodeError:
         return None
 
-    user = database.users.find_one({"username": payload["sub"]})
-    return User.from_dict(user) if user else None
+    return database.get_user(username=payload["sub"])
 
 
 async def get_user(request: Request) -> Optional[dict]:

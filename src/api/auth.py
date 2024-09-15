@@ -1,4 +1,3 @@
-import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -25,15 +24,15 @@ def login(user: Optional[User] = Depends(get_user), back_url: str = Query("/")) 
 
 @router.post("/sign-in")
 def sign_in(data: SignIn) -> JSONResponse:
-    user = database.users.find_one({"username": {"$regex": f"^{re.escape(data.username)}$", "$options": "i"}})
+    user = database.get_user(username=data.username)
 
     if user is None:
         return JSONResponse({"status": "error", "message": f'Пользователя "{data.username}" не существует'})
 
-    if not validate_password(data.password, user["password_hash"]):
+    if not validate_password(data.password, user.password_hash):
         return JSONResponse({"status": "error", "message": "Имя пользователя или пароль введены неверно"})
 
-    access_token = create_access_token(user["username"])
+    access_token = create_access_token(user.username)
     response = JSONResponse(content={"status": "success", "token": access_token})
     response.set_cookie(key=COOKIE_NAME, value=access_token, httponly=True)
     return response

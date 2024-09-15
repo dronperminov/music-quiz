@@ -1,17 +1,19 @@
 import re
-from typing import Optional
+from typing import List, Optional
 
 from pymongo import ASCENDING, MongoClient
 
 from src.entities.session import Session
 from src.entities.settings import Settings
 from src.entities.user import User
+from src.enums import UserRole
 
 
 class Database:
     client: MongoClient = None
     identifiers = None
     users = None
+    roles = None
     settings = None
     artists = None
     tracks = None
@@ -38,8 +40,9 @@ class Database:
             if self.identifiers.find_one({"_id": name}) is None:
                 self.identifiers.insert_one({"_id": name, "value": 0})
 
-        self.users = database["users"]
-        self.users.create_index([("username", ASCENDING)], unique=True)
+        self.users = self.client["quiz"]["users"]
+        self.roles = database["roles"]
+        self.roles.create_index([("username", ASCENDING)], unique=True)
 
         self.settings = database["settings"]
         self.settings.create_index([("username", ASCENDING)], unique=True)
@@ -96,7 +99,16 @@ class Database:
             return None
 
         user: dict = self.users.find_one({"username": {"$regex": f"^{re.escape(username)}$", "$options": "i"}})
-        return User.from_dict(user) if user else None
+        if not user:
+            return None
+
+        role = self.roles.find_one({"username": user["username"]})
+        return User.from_quiz_dict(user, UserRole(role["role"]) if role else UserRole.USER)
+
+    def get_users(self, usernames: List[str]) -> List[User]:
+        users = self.users.find({"username": {"$in": usernames}})
+        username2role = {role["username"]: UserRole(role["role"]) for role in self.roles.find({"username": {"$in": usernames}})}
+        return [User.from_quiz_dict(user, username2role.get(user["username"], UserRole.USER)) for user in users]
 
     def get_session(self, session_id: str) -> Optional[Session]:
         session: dict = self.sessions.find_one({"session_id": session_id})

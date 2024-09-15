@@ -30,6 +30,16 @@ class User:
             avatar_url=data["avatar_url"]
         )
 
+    @classmethod
+    def from_quiz_dict(cls: "User", data: dict, role: UserRole) -> "User":
+        return cls(
+            username=data["username"],
+            password_hash=data["password_hash"],
+            full_name=data["fullname"],
+            role=role,
+            avatar_url=data["image_src"]
+        )
+
     def to_session(self) -> dict:
         return {
             "username": self.username,

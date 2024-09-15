@@ -65,8 +65,8 @@ def get_session_message(session_id: str, username: str, action: str) -> dict:
     if not session:
         return message
 
-    users = database.users.find({"username": {"$in": session.players}}, {"username": 1, "avatar_url": 1, "full_name": 1, "_id": 0})
-    username2user = {user["username"]: user for user in users}
+    users = database.get_users(usernames=session.players)
+    username2user = {user.username: {"username": user.username, "avatar_url": user.avatar_url, "full_name": user.full_name} for user in users}
 
     message["created_by"] = session.created_by
     message["players"] = [username2user[username] for username in session.players]

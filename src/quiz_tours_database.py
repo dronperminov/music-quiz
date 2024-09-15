@@ -56,7 +56,7 @@ class QuizToursDatabase:
 
     def get_top_players(self, query: dict) -> List[Tuple[User, float, int]]:
         available_usernames = [settings["username"] for settings in self.database.settings.find({"show_progress": True}, {"username": 1})]
-        username2user = {user["username"]: User.from_dict(user) for user in self.database.users.find({"username": {"$in": available_usernames}})}
+        username2user = {user.username: user for user in self.database.get_users(usernames=available_usernames)}
         username2rating = defaultdict(int)
 
         for username in available_usernames:
