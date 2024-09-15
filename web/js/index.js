@@ -2,7 +2,7 @@ function BuildTopPlayers(players, topCount = 15) {
     let leaderboard = document.getElementById("leaderboard")
 
     if (players.length == 0) {
-        leaderboard.innerHTML = "Нет квизов, удовлетворяющих заданным параметрам"
+        leaderboard.innerHTML = "Для формирования топа недостаточно квизов, удовлетворяющих заданным параметрам"
         return
     }
 
