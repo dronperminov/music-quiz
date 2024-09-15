@@ -1,6 +1,6 @@
 import calendar
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
 
@@ -37,6 +37,16 @@ def parse_dates(date: str) -> Optional[Tuple[datetime, datetime]]:
         start_date = datetime(today.year - 1, 1, 1, 0, 0, 0)
         end_date = datetime(today.year - 1, 12, 31, 23, 59, 59)
         return start_date, end_date
+
+    if match := re.fullmatch(r"last-(?P<days>\d+)days", date):
+        start_date = datetime(today.year, today.month, today.day, 0, 0, 0) - timedelta(days=int(match.group("days")))
+        end_date = datetime(today.year, today.month, today.day, 23, 59, 59)
+        return start_date, end_date
+
+    if match := re.fullmatch(r"(?P<day1>\d\d?)-(?P<day2>\d\d?)", date):
+        start_date = datetime(today.year, today.month, int(match.group("day1")), 0, 0, 0)
+        end_date = datetime(today.year, today.month, int(match.group("day2")), 23, 59, 59)
+        return min(start_date, end_date), max(start_date, end_date)
 
     if match := re.fullmatch(r"(?P<day1>\d\d?).(?P<month1>\d\d?)-(?P<day2>\d\d?).(?P<month2>\d\d?)", date):
         start_date = datetime(today.year, int(match.group("month1")), int(match.group("day1")), 0, 0, 0)
