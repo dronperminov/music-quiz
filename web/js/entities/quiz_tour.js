@@ -85,7 +85,8 @@ QuizTour.prototype.TagToRus = function(tag) {
         "2020": "2020-ые",
 
         "hits": "хиты",
-        "unhackneyed": "незаезженное"
+        "unhackneyed": "незаезженное",
+        "individual": "личный"
     }
 
     return tag2rus[tag]
