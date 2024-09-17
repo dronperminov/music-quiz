@@ -108,6 +108,7 @@ function SearchShortArtists(order, orderType, target = "all") {
     listenCountInput.Clear()
     genresInput.Clear()
     artistTypeInput.Clear()
+    yearsInput.Clear()
 
     SearchArtists()
 }
