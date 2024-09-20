@@ -44,16 +44,18 @@ class QuestionsDatabase:
         if not tracks:
             return None
 
+        track_ids = {track["track_id"] for track in tracks}
+
         if external_questions is None and (question := self.__get_user_question(username=settings.username, group_id=group_id)):
-            if question.is_valid({track["track_id"] for track in tracks}, settings.question_settings):
+            if question.is_valid(track_ids, settings.question_settings):
                 return self.update_question(question, settings.question_settings)
 
             self.database.questions.delete_one({"username": settings.username, "correct": None, "group_id": group_id})
 
         if external_questions:
-            last_questions = external_questions
+            last_questions = [question for question in external_questions if question.track_id in track_ids]
         else:
-            last_questions = self.__get_last_questions(username=settings.username, track_ids=[track["track_id"] for track in tracks], group_id=group_id)
+            last_questions = self.__get_last_questions(username=settings.username, track_ids=list(track_ids), group_id=group_id)
 
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
