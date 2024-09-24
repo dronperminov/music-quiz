@@ -1,3 +1,4 @@
+import json
 import os
 import random
 from argparse import ArgumentParser, Namespace
@@ -10,8 +11,14 @@ from src.enums import ArtistsCount, Genre, Language, QuestionType
 from src.enums import QuizTourType
 
 
-def get_random_picture(dir_name: str) -> str:
-    image_name = random.choice(os.listdir(os.path.join("..", "web", "images", "quiz_tours", dir_name)))
+def get_picture(dir_name: str) -> str:
+    images_dir = os.path.join("..", "web", "images", "quiz_tours")
+
+    if dir_name.endswith(".jpg") and os.path.isfile(os.path.join(images_dir, dir_name)):
+        dir_name, image_name = dir_name.split("/")
+    else:
+        image_name = random.choice(os.listdir(os.path.join(images_dir, dir_name)))
+
     return f"/images/quiz_tours/{dir_name}/{image_name}"
 
 
@@ -52,6 +59,7 @@ def main() -> None:
     parser.add_argument("--mechanics", help="", choices=("regular", "alphabet", "stairs", "letter", "n_letters", "miracles_field", "chain"), default="regular")
     parser.add_argument("--listen-count", help="Min border of artist listen count", type=int, default=100_000)
     parser.add_argument("--question-type", help="", choices=("artist_by_track", "line_by_text", "line_by_chorus"), default="artist_by_track")
+    parser.add_argument("--black-list", help="path to json file with ignore artist names", type=str, default="")
 
     args = parser.parse_args()
     assert args.questions >= 7
@@ -100,6 +108,12 @@ def main() -> None:
         "chain": QuizTourType.CHAIN
     }[args.mechanics]
 
+    if args.black_list:
+        with open(args.black_list, "r", encoding="utf-8") as f:
+            black_list = [artist["artist_id"] for artist in database.artists.find({"name": {"$in": json.load(f)}}, {"artist_id": 1})]
+    else:
+        black_list = []
+
     settings = QuestionSettings(
         answer_time=0,
         show_simple_artist_type=False,
@@ -111,7 +125,7 @@ def main() -> None:
         listen_count=(args.listen_count, ""),
         question_types={QuestionType(args.question_type): 1},
         track_position=track_position,
-        black_list=[],
+        black_list=black_list,
         repeat_incorrect_probability=0,
         track_modifications=TrackModificationSettings(change_playback_rate=False, probability=0)
     )
@@ -119,7 +133,7 @@ def main() -> None:
     params = {
         "name": args.name,
         "description": args.description,
-        "image_url": get_random_picture(args.image),
+        "image_url": get_picture(args.image),
         "tags": get_tags(args)
     }
 
@@ -139,6 +153,8 @@ def main() -> None:
     print(f"- listen count: {settings.listen_count}")
     print(f"- start from chorus: {settings.start_from_chorus}")
     print(f"- question type: {settings.question_types}")
+    print(f"- black list: {len(settings.black_list)}")
+    print(f"- available tracks: {len(questions_database.get_question_tracks(settings=settings))}")
 
     answer = input("Write yes for continue >")
 
