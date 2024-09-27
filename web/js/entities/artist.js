@@ -200,7 +200,12 @@ Artist.prototype.BuildAdmin = function(block) {
 
     let removeButton = MakeElement("basic-button red-button", adminBlock, {innerText: "Удалить исполнителя"}, "button")
     buttons.push(removeButton)
+
+    let markupButton = MakeElement("basic-button gradient-button", adminBlock, {innerText: "Разметить треки"}, "button")
+    buttons.push(markupButton)
+
     removeButton.addEventListener("click", () => this.Remove(buttons))
+    markupButton.addEventListener("click", () => location.href = `/markup-track?artist_id=${this.artistId}`)
 }
 
 Artist.prototype.FormatListenCount = function() {

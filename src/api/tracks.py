@@ -9,6 +9,7 @@ from src import database, music_database, questions_database
 from src.api import login_redirect, send_error, templates
 from src.entities.user import User
 from src.enums import UserRole
+from src.query_params.markup_track import MarkupTrack
 from src.query_params.track_update import TrackUpdate
 from src.utils.auth import get_user
 from src.utils.common import get_static_hash
@@ -52,16 +53,18 @@ def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(Fa
 
 
 @router.get("/markup-track")
-def get_markup(track_id: int = Query(0), language: str = Query(""), user: Optional[User] = Depends(get_user)) -> Response:
+def get_markup(params: MarkupTrack = Depends(), user: Optional[User] = Depends(get_user)) -> Response:
     if not user:
-        return login_redirect(back_url=f"/markup-track?track_id={track_id}")
+        return login_redirect(back_url=f"/markup-track?{params.to_params()}")
 
-    if track_id == 0:
-        query = {"lyrics": {"$ne": None}, "lyrics.lrc": True, "lyrics.validated": False, "artists.1": {"$exists": False}}
-        if language != "":
-            query["language"] = language
+    if params.track_id == 0:
+        track_ids = [track["track_id"] for track in database.tracks.find(params.to_query(), {"track_id": 1})]
+        if not track_ids:
+            return send_error("Больше нет треков", "Нет треков, подходящих под выбранные условия", user=user)
 
-        track_id = random.choice([track["track_id"] for track in database.tracks.find(query, {"track_id": 1})])
+        track_id = random.choice(track_ids)
+    else:
+        track_id = params.track_id
 
     track = music_database.get_track(track_id=track_id)
 
