@@ -19,7 +19,7 @@ class Lyrics:
         lines = []
 
         for line in lyrics_str.split("\n"):
-            if (lyrics_line := LyricsLine.from_lrc(lrc_line=line)).text:
+            if line and (lyrics_line := LyricsLine.from_lrc(lrc_line=line)).text:
                 lines.append(lyrics_line)
 
         return Lyrics(lines=lines, chorus=ChorusDetector().detect(lines), lrc=True, validated=False)
