@@ -73,7 +73,7 @@ class PeriodAnalytics:
             label = f'{questions[0]["timestamp"].strftime("%d.%m.%Y")}\\n{questions[-1]["timestamp"].strftime("%d.%m.%Y")}'
         else:
             months = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]
-            label = f'{months[questions[0]["timestamp"].month]}\\n{questions[0]["timestamp"].year}'
+            label = f'{months[questions[0]["timestamp"].month - 1]}\\n{questions[0]["timestamp"].year}'
 
         times = []
         answers = {True: 0, False: 0}
