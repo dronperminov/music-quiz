@@ -35,7 +35,7 @@ QuizTour.prototype.Build = function() {
     MakeElement("quiz-tour-tags", quizTour, {innerHTML: `<b>Теги</b>: ${this.tags.map(tag => this.TagToRus(tag)).join(", ")}`})
     this.BuildQuestions(quizTour)
 
-    MakeElement("quiz-tour-date", quizTour, {innerHTML: `${ParseDateTime(this.createdAt).date}`})
+    MakeElement("quiz-tour-date", quizTour, {innerHTML: `${ParseDateTime(this.createdAt).date} by <a class="link" href="/analytics?username=${this.createdBy}">@${this.createdBy}</a>`})
 
     return quizTour
 }

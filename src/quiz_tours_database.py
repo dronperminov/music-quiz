@@ -174,7 +174,7 @@ class QuizToursDatabase:
             question_ids=[question.question_id for question in quiz_tour_questions],
             image_url=params.get("image_url", "/images/quiz_tours/default.png"),
             created_at=datetime.now(),
-            created_by="system",
+            created_by=params.get("username", "system"),
             tags=params.get("tags", [])
         )
 

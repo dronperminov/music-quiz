@@ -176,10 +176,14 @@ def add_quiz_tour(params: QuizTourAdd, user: Optional[User] = Depends(get_user))
         "name": params.name,
         "description": params.description,
         "image_url": f"/images/quiz_tours/{params.image_dir}/{image_name}",
-        "tags": params.to_tags()
+        "tags": params.to_tags(),
+        "username": user.username
     }
 
-    quiz_tour = quiz_tours_database.generate_tour(quiz_tour_params, quiz_tour_type=params.mechanics, settings=settings, questions_count=params.questions_count)
+    try:
+        quiz_tour = quiz_tours_database.generate_tour(quiz_tour_params, quiz_tour_type=params.mechanics, settings=settings, questions_count=params.questions_count)
+    except ValueError:
+        return JSONResponse({"status": "error", "message": "не удалось подобрать исполнителей для выбранной механики"})
 
     if not quiz_tour:
         return JSONResponse({"status": "error", "message": "не удалось подобрать треки"})
