@@ -83,6 +83,8 @@ QuizTour.prototype.TagToRus = function(tag) {
         "2010": "десятые",
         "modern": "современное",
         "2020": "2020-ые",
+        "xx century": "XX век",
+        "xxi century": "XXI век",
 
         "hits": "хиты",
         "unhackneyed": "незаезженное",
