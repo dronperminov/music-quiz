@@ -1,3 +1,5 @@
+import os
+import random
 from typing import Optional
 
 from fastapi import APIRouter, Depends
@@ -7,8 +9,9 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from src import database, music_database, questions_database, quiz_tours_database
 from src.api import login_redirect, send_error, templates
 from src.entities.user import User
-from src.enums import QuizTourType
+from src.enums import QuizTourType, UserRole
 from src.query_params.question_answer import QuizTourQuestionAnswer
+from src.query_params.quiz_tour_add import QuizTourAdd
 from src.query_params.quiz_tours_search import QuizToursSearch, QuizToursSearchQuery
 from src.utils.auth import get_user
 from src.utils.common import format_time, get_name_length, get_static_hash, get_top_letter, get_word_form
@@ -135,4 +138,50 @@ def answer_question(answer: QuizTourQuestionAnswer, user: Optional[User] = Depen
         return JSONResponse({"status": "error", "message": "В базе отсутствует вопрос, на который можно ответить"})
 
     quiz_tours_database.answer_question(user.username, answer)
+    return JSONResponse({"status": "success"})
+
+
+@router.get("/add-quiz-tour")
+def get_add_quiz_tour(user: Optional[User] = Depends(get_user)) -> Response:
+    if not user:
+        return login_redirect(back_url="/add-quiz-tour")
+
+    if user.role == UserRole.USER:
+        return send_error(title="Доступ запрещён", text="Эта страница доступна только администраторам", user=user)
+
+    template = templates.get_template("quiz_tours/add_quiz_tour.html")
+    content = template.render(
+        user=user,
+        page="add_quiz_tour",
+        version=get_static_hash(),
+        QuizTourType=QuizTourType
+    )
+    return HTMLResponse(content=content)
+
+
+@router.post("/add-quiz-tour")
+def add_quiz_tour(params: QuizTourAdd, user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    if user.role == UserRole.USER:
+        return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
+
+    settings = params.to_settings()
+
+    images_dir = os.path.join(os.path.dirname(__file__), "..", "..", "web", "images", "quiz_tours")
+    image_name = random.choice(os.listdir(os.path.join(images_dir, params.image_dir)))
+
+    quiz_tour_params = {
+        "name": params.name,
+        "description": params.description,
+        "image_url": f"/images/quiz_tours/{params.image_dir}/{image_name}",
+        "tags": params.to_tags()
+    }
+
+    quiz_tour = quiz_tours_database.generate_tour(quiz_tour_params, quiz_tour_type=params.mechanics, settings=settings, questions_count=params.questions_count)
+
+    if not quiz_tour:
+        return JSONResponse({"status": "error", "message": "не удалось подобрать треки"})
+
     return JSONResponse({"status": "success"})

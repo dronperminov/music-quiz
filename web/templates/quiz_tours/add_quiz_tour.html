@@ -1,0 +1,191 @@
+{% set title = "Создание музыкального квиза | Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/utils/info_panels.css?v={{version}}">
+    <link rel="stylesheet" type="text/css" href="/styles/user/settings.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Создать мини-квиз</h1>
+        
+        <div class="settings-block">
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-name">Название:</label>
+                </div>
+                <div>
+                    <input type="text" class="basic-input" id="quiz-tour-name" value="">
+                </div>
+            </div>
+            <div class="error" id="quiz-tour-name-error"></div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-description">Описание:</label>
+                </div>
+                <div>
+                    <textarea class="basic-textarea" id="quiz-tour-description"></textarea>
+                </div>
+            </div>
+            <div class="error" id="quiz-tour-description-error"></div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-questions-count">Количество вопросов:</label>
+                </div>
+                <div>
+                    <input type="text" class="basic-input" id="quiz-tour-questions-count" value="10" inputmode="numeric">
+                </div>
+            </div>
+            <div class="error" id="quiz-tour-questions-count-error"></div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-years">Годы:</label>
+                </div>
+                <div>
+                    <select class="basic-select" id="quiz-tour-years">
+                        <option value="all" selected>все подряд</option>
+                        <option value="1990">девяностые</option>
+                        <option value="1990-2000">девяностые-нулевые</option>
+                        <option value="2000">нулевые</option>
+                        <option value="2000-2010">нулевые-десятые</option>
+                        <option value="modern">современное</option>
+                        <option value="2020">2020-е</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-genres">Жанр:</label>
+                </div>
+                <div>
+                    <select class="basic-select" id="quiz-tour-genres">
+                        <option value="all" selected>все подряд</option>
+                        <option value="rock">рок</option>
+                        <option value="hip-hop">хип-хоп</option>
+                        <option value="pop">поп</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-language">Язык:</label>
+                </div>
+                <div>
+                    <select class="basic-select" id="quiz-tour-language">
+                        <option value="all">любой</option>
+                        <option value="russian">русский</option>
+                        <option value="foreign">зарубежный</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-positions">Позиция трека:</label>
+                </div>
+                <div>
+                    <select class="basic-select" id="quiz-tour-positions">
+                        <option value="all">любая</option>
+                        <option value="top1">первый трек</option>
+                        <option value="top3">в топ-3</option>
+                        <option value="hits">в топ-5</option>
+                        <option value="normal">в топ-10</option>
+                        <option value="unhackneyed">незаезженное (11+)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-mechanics">Механика:</label>
+                </div>
+                <div>
+                    <select class="basic-select" id="quiz-tour-mechanics">
+                        {% for quiz_tour_type in QuizTourType %}<option value="{{quiz_tour_type.value}}">{{quiz_tour_type.to_rus()}}</option>{% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item settings-input-item">
+                <div class="settings-name">
+                    <label for="quiz-tour-image-dir">Группа изображений:</label>
+                </div>
+                <div>
+                    <select class="basic-select" id="quiz-tour-image-dir">
+                        <option value="russian_modern">русское современное</option>
+                        <option value="russian_1990">русское, девяностые</option>
+                        <option value="russian_2000">русское, нулевые</option>
+                        <option value="russian_hip_hop">русский рэп</option>
+                        <option value="russian_rock">русский рок</option>
+                        <option value="foreign_modern">зарубежное современное</option>
+                        <option value="foreign_2000">зарубежное, нулевые</option>
+                        <option value="foreign_rock">зарубежный рок</option>
+                        <option value="rock">рок</option>
+                        <option value=""></option>
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item">
+                <div class="settings-name">Количество прослушиваний</div>
+                <div class="interval-input" id="quiz-tour-listen-count">
+                    <div class="interval-input-cell">
+                        <span class="interval-input-label">от</span> <input class="basic-input" data-min="0" type="text" id="quiz-tour-listen-count-min">
+                    </div>
+                    <div class="interval-input-cell">
+                        <span class="interval-input-label">до</span> <input class="basic-input" data-min="0" type="text" id="quiz-tour-listen-count-max">
+                    </div>
+                </div>
+            </div>
+            <div class="error" id="quiz-tour-listen-count-error"></div>
+
+            <div class="settings-line"></div>
+
+            <div class="settings-item">
+                <button class="basic-button gradient-button" onclick="AddQuizTour()">Создать мини-квиз</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+
+    <script src="/js/inputs/number_input.js?v={{version}}"></script>
+    <script src="/js/inputs/interval_input.js?v={{version}}"></script>
+    <script src="/js/inputs/text_input.js?v={{version}}"></script>
+    <script src="/js/inputs/note_input.js?v={{version}}"></script>
+
+    <script src="/js/quiz_tours/add_quiz_tour.js?v={{version}}"></script>
+    <script>
+        let nameInput = new TextInput("quiz-tour-name", /^.+$/gi, "введено пустое название", false)
+        let descriptionInput = new TextInput("quiz-tour-description", /^.+$/gi, "введено пустое описание", false)
+        let listenCountInput = new IntervalInput("quiz-tour-listen-count", true, [100000, ""])
+        let questionsCountInput = new NumberInput("quiz-tour-questions-count", 5, 30, /^\d+$/g, 10)
+    </script>
+    {% include "components/footer.html" %}
+</body>
+</html>

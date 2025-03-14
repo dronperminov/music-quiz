@@ -27,7 +27,7 @@ class QuestionsDatabase:
         self.logger = logger
 
         self.alpha = 0.999
-        self.last_questions_count = 500
+        self.last_questions_count = 10000
         self.min_incorrect_count = 20
 
     def have_question(self, username: str, group_id: Optional[int]) -> bool:
