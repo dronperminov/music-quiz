@@ -37,6 +37,7 @@ class QuizToursDatabase:
         answers = self.database.quiz_tour_answers.find({"username": username})
         question_id2correct = {answer["question_id"]: answer["correct"] for answer in answers}
         corrects = []
+        weights = []
 
         quiz_tour_id2date = {quiz_tour["quiz_tour_id"]: quiz_tour["created_at"].date() for quiz_tour in self.database.quiz_tours.find(query).sort("created_at", -1)}
         max_date = max(quiz_tour_id2date.values(), default=date.today())
@@ -50,9 +51,11 @@ class QuizToursDatabase:
             scores = [question_id2correct[question_id] for question_id in question_ids if question_id in question_id2correct]
 
             if len(scores) == len(question_ids):
-                corrects.append(sum(scores) / len(question_ids) * 100 * quiz_tour_id2scale[quiz_tour["quiz_tour_id"]])
+                weight = quiz_tour_id2scale[quiz_tour["quiz_tour_id"]]
+                corrects.append(sum(scores) / len(question_ids) * weight)
+                weights.append(weight)
 
-        return (round(sum(corrects) / len(corrects), 1), len(corrects)) if corrects else None
+        return (round(100 * sum(corrects) / sum(weights), 1), len(corrects)) if corrects else None
 
     def get_top_players(self, query: dict) -> List[Tuple[User, float, int]]:
         available_usernames = [settings["username"] for settings in self.database.settings.find({"show_progress": True}, {"username": 1})]
