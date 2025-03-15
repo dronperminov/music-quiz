@@ -18,8 +18,8 @@ Note.prototype.Build = function(artist, params) {
     artist.BuildScale(artistName, params.artist_id2scale)
     MakeElement("", artistName, {href: `/artists/${this.artistId}`, innerText: artist.name}, "a")
 
-    let tracksCount = GetWordForm(Object.keys(this.trackId2seek).length, ["трек", "трека", "треков"])
-    let artistNote = MakeElement("artist-note", artistInfo, {innerText: `${this.text} (${tracksCount})`})
+    let tracksCount = Object.keys(this.trackId2seek).length > 0 ? ` (${GetWordForm(Object.keys(this.trackId2seek).length, ["трек", "трека", "треков"])})` : ""
+    let artistNote = MakeElement("artist-note", artistInfo, {innerText: `${this.text}${tracksCount}`})
     MakeElement("artist-date", artistNote, {innerText: `${this.updatedAt.date} в ${this.updatedAt.time}`})
     artistNote.addEventListener("click", () => {
         let tracks = document.getElementById(`artist-${this.artistId}-tracks`)

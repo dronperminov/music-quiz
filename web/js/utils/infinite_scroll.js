@@ -48,7 +48,7 @@ InfiniteScroll.prototype.LoadContent = function() {
     let startTime = new Date()
 
     SendRequest(this.url, params).then(response => {
-        if (start < this.resetTime)
+        if (startTime < this.resetTime)
             return
 
         if (response.status != SUCCESS_STATUS) {

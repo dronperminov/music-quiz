@@ -51,4 +51,5 @@ function SearchNotes() {
 function ClearNotes() {
     infiniteScroll.Reset()
     PushUrlParams()
+    infiniteScroll.LoadContent()
 }
