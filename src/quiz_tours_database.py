@@ -37,11 +37,11 @@ class QuizToursDatabase:
         answers = self.database.quiz_tour_answers.find({"username": username})
         question_id2correct = {answer["question_id"]: answer["correct"] for answer in answers}
         corrects = []
-        weights = []
 
-        quiz_tour_id2date = {quiz_tour["quiz_tour_id"]: quiz_tour["created_at"].date() for quiz_tour in self.database.quiz_tours.find(query).sort("created_at", -1)}
+        quiz_tour_id2date = {quiz_tour["quiz_tour_id"]: quiz_tour["created_at"].date() for quiz_tour in self.database.quiz_tours.find(query)}
         max_date = max(quiz_tour_id2date.values(), default=date.today())
         quiz_tour_id2scale = {quiz_tour_id: self.rating_alpha ** (max_date - quiz_tour_date).days for quiz_tour_id, quiz_tour_date in quiz_tour_id2date.items()}
+        total_scales = sum(quiz_tour_id2scale.values())
 
         for quiz_tour in self.database.quiz_tours.find({"question_ids": {"$in": list(question_id2correct)}}):
             if quiz_tour["quiz_tour_id"] not in quiz_tour_id2date:
@@ -51,11 +51,9 @@ class QuizToursDatabase:
             scores = [question_id2correct[question_id] for question_id in question_ids if question_id in question_id2correct]
 
             if len(scores) == len(question_ids):
-                weight = quiz_tour_id2scale[quiz_tour["quiz_tour_id"]]
-                corrects.append(sum(scores) / len(question_ids) * weight)
-                weights.append(weight)
+                corrects.append(sum(scores) / len(question_ids) * quiz_tour_id2scale[quiz_tour["quiz_tour_id"]])
 
-        return (round(100 * sum(corrects) / sum(weights), 1), len(corrects)) if corrects else None
+        return (round(100 * sum(corrects) / total_scales, 1), len(corrects)) if corrects else None
 
     def get_top_players(self, query: dict) -> List[Tuple[User, float, int]]:
         available_usernames = [settings["username"] for settings in self.database.settings.find({"show_progress": True}, {"username": 1})]
