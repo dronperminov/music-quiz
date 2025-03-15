@@ -1,0 +1,40 @@
+{% set title = "Активность игроков | Музыкальный квиз Плюшевой наковальни" %}
+{% include "components/header.html" %}
+    <link rel="stylesheet" type="text/css" href="/styles/activity.css?v={{version}}">
+</head>
+<body ondragstart="return false">
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Активность игроков</h1>
+
+        <div id="activity">
+            <div class="search-results hidden"></div>
+            <div class="activities"></div>
+            <div class="loader hidden"><img src="/images/loader.svg"></div>
+        </div>
+    </div>
+
+    <script src="/js/utils/utils.js?v={{version}}"></script>
+    <script src="/js/utils/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/infinite_scroll.js?v={{version}}"></script>
+
+    <script src="/js/entities/activity.js?v={{version}}"></script>
+
+    <script src="/js/activity.js?v={{version}}"></script>
+    <script>
+        let config = {
+            pageSize: 25,
+            url: "/get-activity",
+
+            getParams: GetActivityParams,
+            onLoad: LoadActivity
+        }
+
+        let infiniteScroll = new InfiniteScroll("activity", config)
+        infiniteScroll.LoadContent()
+    </script>
+
+    {% include "components/footer.html" %}
+</body>
+</html>

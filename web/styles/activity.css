@@ -1,0 +1,24 @@
+.activity {
+    display: grid;
+    grid-template-columns: 2.5em 1fr;
+    grid-gap: 0.5em;
+    margin-bottom: 0.5em;
+    background: var(--block-background);
+    padding: 5px;
+    border-radius: 0.5em;
+}
+
+.activity-avatar img {
+    width: 100%;
+    border-radius: 100%;
+}
+
+.activity-timestamp {
+    font-size: 0.8em;
+    color: var(--subtext-color);
+    margin-bottom: 2px;
+}
+
+.activity-action {
+    font-size: 0.9em;
+}

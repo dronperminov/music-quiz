@@ -2,12 +2,13 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from src import database, music_database, quiz_tours_database, yandex_music_parser
-from src.api import templates
+from src.api import login_redirect, send_error, templates
 from src.entities.user import User
 from src.enums import UserRole
+from src.query_params.activity_search import ActivitySearch
 from src.query_params.artists_parse import ArtistsParse
 from src.query_params.history_query import HistoryQuery
 from src.query_params.top_players_query import TopPlayersQuery
@@ -102,3 +103,30 @@ def get_history(params: HistoryQuery) -> JSONResponse:
 def get_top_players(params: TopPlayersQuery) -> JSONResponse:
     players = quiz_tours_database.get_top_players(params.to_query())
     return JSONResponse({"status": "success", "players": jsonable_encoder(players)})
+
+
+@router.get("/activity")
+def activity(user: Optional[User] = Depends(get_user)) -> Response:
+    if not user:
+        return login_redirect(back_url="/activity")
+
+    if user.role == UserRole.USER:
+        return send_error(title="Доступ запрещён", text="Эта страница доступна только администраторам", user=user)
+
+    template = templates.get_template("activity.html")
+    content = template.render(user=user, page="activity", version=get_static_hash())
+    return HTMLResponse(content=content)
+
+
+@router.post("/get-activity")
+def get_activity(params: ActivitySearch, user: Optional[User] = Depends(get_user)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": "error", "message": "Пользователь не авторизован"})
+
+    if user.role == UserRole.USER:
+        return JSONResponse({"status": "error", "message": "Пользователь не является администратором"})
+
+    total, activities = database.get_activity(params=params)
+    users = database.get_users(usernames=list({action.username for action in activities}))
+    username2user = {user.username: {"avatar_url": user.avatar_url, "full_name": user.full_name} for user in users}
+    return JSONResponse({"status": "success", "total": total, "activity": jsonable_encoder(activities), "username2user": username2user})

@@ -1,12 +1,14 @@
 import re
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from pymongo import ASCENDING, MongoClient
 
+from src.entities.activity_action import ActivityAction
 from src.entities.session import Session
 from src.entities.settings import Settings
 from src.entities.user import User
 from src.enums import UserRole
+from src.query_params.activity_search import ActivitySearch
 
 
 class Database:
@@ -117,6 +119,12 @@ class Database:
     def get_identifier(self, collection_name: str) -> int:
         identifier = self.identifiers.find_one_and_update({"_id": collection_name}, {"$inc": {"value": 1}}, return_document=True)
         return identifier["value"]
+
+    def get_activity(self, params: ActivitySearch) -> Tuple[int, List[ActivityAction]]:
+        query = {"correct": {"$ne": None}}
+        total = self.questions.count_documents(query)
+        questions = self.questions.find(query).sort({"timestamp": -1}).skip(params.page_size * params.page).limit(params.page_size)
+        return total, [ActivityAction(username=question["username"], timestamp=question["timestamp"], group_id=question["group_id"]) for question in questions]
 
     def drop(self) -> None:
         self.client.drop_database(self.database_name)
