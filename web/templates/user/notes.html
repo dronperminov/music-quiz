@@ -46,6 +46,28 @@
 
                 <div class="search-filter-line"></div>
 
+                <div class="search-filter">
+                    <label>Сортировка:
+                        <select class="basic-select" id="order">
+                            <option value="artist_name">исполнитель</option>
+                            <option value="tracks_count">количество треков</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="search-filter-line"></div>
+
+                <div class="search-filter">
+                    <label>Порядок сортировки:
+                        <select class="basic-select" id="order-type">
+                            <option value="1">по возрастанию</option>
+                            <option value="-1">по убыванию</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="search-filter-line"></div>
+
                 <div class="search-filter-button">
                     <button class="basic-button gradient-button" onclick="search.Search()">Искать</button>
                 </div>
@@ -96,6 +118,8 @@
         {% if search_params %}
         document.getElementById("query").value = {{search_params.query|tojson}}
         document.getElementById("with-text").value = {{search_params.with_text|tojson}}
+        document.getElementById("order").value = {{search_params.order|tojson}}
+        document.getElementById("order-type").value = {{search_params.order_type|tojson}}
         {% endif %}
 
         let infos = new InfoPanels()

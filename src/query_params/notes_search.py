@@ -8,7 +8,8 @@ from fastapi import Query
 @dataclass
 class NotesSearch:
     query: str = ""
-    order: str = "artist_id"
+    order: str = "artist_name"
+    order_type: int = 1
     with_text: str = "any"
 
     page: int = 0
@@ -33,10 +34,11 @@ class NotesSearch:
 class NotesSearchQuery:
     query: Optional[str] = Query(None)
     order: Optional[str] = Query(None)
+    order_type: Optional[int] = Query(None)
     with_text: Optional[str] = Query(None)
 
     def is_empty(self) -> bool:
-        return self.query is None and self.order is None and self.with_text is None
+        return self.query is None and self.order is None and self.order_type is None and self.with_text is None
 
     def to_params(self) -> Optional[NotesSearch]:
         if self.is_empty():
@@ -44,6 +46,7 @@ class NotesSearchQuery:
 
         return NotesSearch(
             query=self.query if self.query is not None else "",
-            order=self.order if self.order is not None else "artist_id",
+            order=self.order if self.order is not None else "artist_name",
+            order_type=self.order_type if self.order_type is not None else 1,
             with_text=self.with_text if self.with_text is not None else "any"
         )

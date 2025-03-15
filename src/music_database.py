@@ -333,10 +333,13 @@ class MusicDatabase:
         return artist_id2note
 
     def get_user_notes(self, username: str, params: NotesSearch) -> Tuple[int, List[Note]]:
-        notes = []
+        notes = [Note.from_dict(note) for note in self.database.notes.find({"username": username, **params.to_query()})]
 
-        for note in self.database.notes.find({"username": username, **params.to_query()}).sort({params.order: 1, "_id": 1}):
-            notes.append(Note.from_dict(note))
+        if params.order == "artist_name":
+            artist_id2artist = self.get_artists_by_ids([note.artist_id for note in notes])
+            notes = sorted(notes, key=lambda note: artist_id2artist[note.artist_id].name.lower(), reverse=params.order_type == -1)
+        elif params.order == "tracks_count":
+            notes = sorted(notes, key=lambda note: len(note.track_id2seek), reverse=params.order_type == -1)
 
         total = len(notes)
         return total, notes[params.page_size * params.page:params.page_size * (params.page + 1)]
