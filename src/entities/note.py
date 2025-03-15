@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Dict
+from datetime import datetime
+from typing import Dict, Union
 
 
 @dataclass
@@ -8,13 +9,17 @@ class Note:
     artist_id: int
     text: str
     track_id2seek: Dict[int, float]
+    created_at: datetime
+    updated_at: datetime
 
     def to_dict(self) -> dict:
         return {
             "username": self.username,
             "artist_id": self.artist_id,
             "text": self.text,
-            "track_id2seek": [{"track_id": track_id, "seek": seek} for track_id, seek in self.track_id2seek.items()]
+            "track_id2seek": [{"track_id": track_id, "seek": seek} for track_id, seek in self.track_id2seek.items()],
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
         }
 
     @classmethod
@@ -23,7 +28,9 @@ class Note:
             username=data["username"],
             artist_id=data["artist_id"],
             text=data["text"],
-            track_id2seek={track_seek["track_id"]: track_seek["seek"] for track_seek in data["track_id2seek"]}
+            track_id2seek={track_seek["track_id"]: track_seek["seek"] for track_seek in data["track_id2seek"]},
+            created_at=data["created_at"],
+            updated_at=data["updated_at"]
         )
 
     def get_diff(self, data: dict) -> dict:
@@ -35,6 +42,18 @@ class Note:
                 diff[field] = {"prev": note_data[field], "new": data[field]}
 
         return diff
+
+    def get_order_key(self, order: str) -> Union[str, int, datetime]:
+        if order == "tracks_count":
+            return len(self.track_id2seek)
+
+        if order == "created_at":
+            return self.created_at
+
+        if order == "updated_at":
+            return self.updated_at
+
+        return self.artist_id
 
     def update_track(self, track_id: int, seek: int) -> None:
         if track_id in self.track_id2seek:

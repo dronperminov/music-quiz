@@ -160,7 +160,9 @@ class TestSerialization(TestCase):
             username="system",
             artist_id=4,
             text="note text",
-            track_id2seek={1: 40.4, 56: 120.5}
+            track_id2seek={1: 40.4, 56: 120.5},
+            created_at=datetime(2025, 1, 1, 23, 56, 18),
+            updated_at=datetime(2025, 3, 15, 2, 12, 15)
         )
 
         note_dict = note.to_dict()

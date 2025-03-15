@@ -86,6 +86,13 @@
     height: 100%;
 }
 
+.artist-date {
+    margin-top: 0.5em;
+    font-size: 0.7em;
+    color: var(--subtext-color);
+    text-align: right;
+}
+
 .artist-controls {
     align-content: end;
 }

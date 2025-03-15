@@ -2,6 +2,8 @@ function Note(note) {
     this.text = note.text
     this.artistId = note.artist_id
     this.trackId2seek = note.track_id2seek
+    this.createdAt = ParseDateTime(note.created_at)
+    this.updatedAt = ParseDateTime(note.updated_at)
 }
 
 Note.prototype.Build = function(artist, params) {
@@ -18,6 +20,7 @@ Note.prototype.Build = function(artist, params) {
 
     let tracksCount = GetWordForm(Object.keys(this.trackId2seek).length, ["трек", "трека", "треков"])
     let artistNote = MakeElement("artist-note", artistInfo, {innerText: `${this.text} (${tracksCount})`})
+    MakeElement("artist-date", artistNote, {innerText: `${this.updatedAt.date} в ${this.updatedAt.time}`})
     artistNote.addEventListener("click", () => {
         let tracks = document.getElementById(`artist-${this.artistId}-tracks`)
         tracks.classList.toggle("artist-tracks-open")

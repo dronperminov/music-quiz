@@ -338,8 +338,8 @@ class MusicDatabase:
         if params.order == "artist_name":
             artist_id2artist = self.get_artists_by_ids([note.artist_id for note in notes])
             notes = sorted(notes, key=lambda note: artist_id2artist[note.artist_id].name.lower(), reverse=params.order_type == -1)
-        elif params.order == "tracks_count":
-            notes = sorted(notes, key=lambda note: len(note.track_id2seek), reverse=params.order_type == -1)
+        else:
+            notes = sorted(notes, key=lambda note: note.get_order_key(order=params.order), reverse=params.order_type == -1)
 
         total = len(notes)
         return total, notes[params.page_size * params.page:params.page_size * (params.page + 1)]
@@ -363,7 +363,11 @@ class MusicDatabase:
             return
 
         action = EditNoteAction(username=note.username, timestamp=datetime.now(), artist_id=note.artist_id, diff=diff)
-        self.database.notes.update_one({"artist_id": note.artist_id, "username": note.username}, {"$set": {key: key_diff["new"] for key, key_diff in diff.items()}})
+
+        new_values = {key: key_diff["new"] for key, key_diff in diff.items()}
+        new_values["updated_at"] = action.timestamp
+
+        self.database.notes.update_one({"artist_id": note.artist_id, "username": note.username}, {"$set": new_values})
         self.database.history.insert_one(action.to_dict())
 
         self.logger.info(f"Updated note for artist {note.artist_id} by @{note.username} (keys: {[key for key in diff]})")
