@@ -30,6 +30,7 @@ InfiniteScroll.prototype.Reset = function() {
     this.block.innerHTML = ""
     this.results.innerHTML = ""
     this.loader.classList.add("hidden")
+    this.resetTime = new Date()
 }
 
 InfiniteScroll.prototype.LoadContent = function() {
@@ -44,7 +45,12 @@ InfiniteScroll.prototype.LoadContent = function() {
     this.status = INfINITE_SCROLL_LOADING_STATUS
     this.loader.classList.remove("hidden")
 
+    let startTime = new Date()
+
     SendRequest(this.url, params).then(response => {
+        if (start < this.resetTime)
+            return
+
         if (response.status != SUCCESS_STATUS) {
             ShowNotification(`Не удалось загрузить данные<br><b>Причина</b>: ${response.message}`, "error-notification", 3500)
             this.status = INfINITE_SCROLL_ERROR_STATUS

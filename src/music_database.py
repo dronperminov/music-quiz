@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
@@ -333,10 +334,13 @@ class MusicDatabase:
         return artist_id2note
 
     def get_user_notes(self, username: str, params: NotesSearch) -> Tuple[int, List[Note]]:
-        notes = [Note.from_dict(note) for note in self.database.notes.find({"username": username, **params.to_query()})]
+        notes = [Note.from_dict(note) for note in self.database.notes.find({"username": username})]
+        artist_id2artist = self.get_artists_by_ids([note.artist_id for note in notes])
+
+        query = re.escape(params.query)
+        notes = [note for note in notes if re.search(query, note.text, re.I) or re.search(query, artist_id2artist[note.artist_id].name, re.I)]
 
         if params.order == "artist_name":
-            artist_id2artist = self.get_artists_by_ids([note.artist_id for note in notes])
             notes = sorted(notes, key=lambda note: artist_id2artist[note.artist_id].name.lower(), reverse=params.order_type == -1)
         else:
             notes = sorted(notes, key=lambda note: note.get_order_key(order=params.order), reverse=params.order_type == -1)

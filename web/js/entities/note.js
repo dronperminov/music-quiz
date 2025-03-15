@@ -40,7 +40,6 @@ Note.prototype.BuildTracks = function(artist, params) {
         let track = new Track(params.track_id2track[`${trackId}`])
         infos.Add(track.BuildInfo())
 
-        console.log(params)
         this.BuildAudio(track, seek, tracks, params)
         this.BuildTrack(track, tracks, params)
     }

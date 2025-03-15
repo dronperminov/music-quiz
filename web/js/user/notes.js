@@ -1,7 +1,6 @@
 function GetSearchParams() {
     return {
         query: document.getElementById("query").value.trim(),
-        with_text: document.getElementById("with-text").value,
         order: document.getElementById("order").value,
         order_type: +document.getElementById("order-type").value
     }
@@ -30,7 +29,6 @@ function PushUrlParams(params = null) {
         if (params.query !== "")
             url.searchParams.set("query", params.query)
 
-        url.searchParams.set("with_text", params.with_text)
         url.searchParams.set("order", params.order)
         url.searchParams.set("order_type", params.order_type)
     }

@@ -20,7 +20,7 @@
                     <div class="search-clear-icon"></div>
                 </div>
                 <div class="search-query">
-                    <input class="basic-input" type="search" id="query" placeholder="введите запрос">
+                    <input class="basic-input" type="search" id="query" placeholder="введите запрос" oninput="SearchNotes()">
                 </div>
                 <div class="search-filters" title="Фильтры">
                     <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -33,18 +33,6 @@
                 <div class="close-icon" onclick="search.CloseFiltersPopup()"></div>
 
                 <h3>Фильтры</h3>
-
-                <div class="search-filter">
-                    <label>Наличие текста
-                        <select class="basic-select" id="with-text">
-                            <option value="any">не важно</option>
-                            <option value="text">только с текстом</option>
-                            <option value="no-text">только без текста</option>
-                        </select>
-                    </label>
-                </div>
-
-                <div class="search-filter-line"></div>
 
                 <div class="search-filter">
                     <label>Сортировка:
@@ -119,7 +107,6 @@
 
         {% if search_params %}
         document.getElementById("query").value = {{search_params.query|tojson}}
-        document.getElementById("with-text").value = {{search_params.with_text|tojson}}
         document.getElementById("order").value = {{search_params.order|tojson}}
         document.getElementById("order-type").value = {{search_params.order_type|tojson}}
         {% endif %}
