@@ -3,7 +3,7 @@ from datetime import date
 from typing import Dict, List, Tuple, Union
 
 from src.entities.track_modification_settings import TrackModificationSettings
-from src.enums import ArtistsCount, Genre, Language, QuestionType
+from src.enums import ArtistsCount, Genre, Language, QuestionType, RepeatStrategy
 from src.utils.queries import interval_query
 
 QUESTION_YEARS = ["", 1980, 1990, 2000, 2010, 2015, 2020, ""]
@@ -23,6 +23,7 @@ class QuestionSettings:
     track_position: Tuple[Union[int, str], Union[int, str]]
     black_list: List[int]
     repeat_incorrect_probability: float
+    repeat_incorrect_strategy: RepeatStrategy
     track_modifications: TrackModificationSettings
 
     def __post_init__(self) -> None:
@@ -46,6 +47,7 @@ class QuestionSettings:
             "track_position": self.track_position,
             "black_list": self.black_list,
             "repeat_incorrect_probability": self.repeat_incorrect_probability,
+            "repeat_incorrect_strategy": self.repeat_incorrect_strategy.value,
             "track_modifications": self.track_modifications.to_dict()
         }
 
@@ -64,6 +66,7 @@ class QuestionSettings:
             track_position=data["track_position"],
             black_list=data["black_list"],
             repeat_incorrect_probability=data["repeat_incorrect_probability"],
+            repeat_incorrect_strategy=RepeatStrategy(data["repeat_incorrect_strategy"]),
             track_modifications=TrackModificationSettings.from_dict(data["track_modifications"])
         )
 
@@ -84,6 +87,7 @@ class QuestionSettings:
             track_position=("", ""),
             black_list=[],
             repeat_incorrect_probability=0.04,
+            repeat_incorrect_strategy=RepeatStrategy.OLD_MISTAKES,
             track_modifications=TrackModificationSettings(change_playback_rate=False, probability=0)
         )
 

@@ -1,7 +1,7 @@
 import random
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 
 from typing_extensions import Self
 
@@ -89,7 +89,7 @@ class Question:
         self.answer_time = None
         self.timestamp = datetime.now()
 
-    def is_valid(self, track_ids: Set[int], settings: QuestionSettings) -> bool:
+    def is_valid(self, track_ids: Dict[int, dict], settings: QuestionSettings) -> bool:
         return self.track_id in track_ids and self.question_type in settings.question_types
 
     def update(self, track: Track, artist_id2artist: Dict[int, Artist], settings: QuestionSettings) -> Self:

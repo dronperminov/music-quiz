@@ -83,6 +83,8 @@ function GetQuestionSettings(yearsToList = false) {
     if (repeatIncorrectProbability === null)
         return null
 
+    let repeatIncorrectStrategy = document.getElementById("repeat-incorrect-strategy").value
+
     return {
         answer_time: answerTime,
         start_from_chorus: startFromChorus,
@@ -96,6 +98,7 @@ function GetQuestionSettings(yearsToList = false) {
         track_position: trackPosition,
         black_list: blackList,
         repeat_incorrect_probability: repeatIncorrectProbability / 100,
+        repeat_incorrect_strategy: repeatIncorrectStrategy,
         track_modifications: trackModificationSettings
     }
 }

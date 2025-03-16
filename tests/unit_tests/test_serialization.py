@@ -20,7 +20,7 @@ from src.entities.source import HandSource, YandexSource
 from src.entities.track import Track
 from src.entities.track_modification_settings import TrackModificationSettings
 from src.entities.user import User
-from src.enums import ArtistType, ArtistsCount, Genre, Language, QuestionType, UserRole
+from src.enums import ArtistType, ArtistsCount, Genre, Language, QuestionType, RepeatStrategy, UserRole
 from src.enums import QuizTourType
 
 
@@ -87,6 +87,7 @@ class TestSerialization(TestCase):
             track_position=(5, ""),
             black_list=[1, 4, 8],
             repeat_incorrect_probability=0.04,
+            repeat_incorrect_strategy=RepeatStrategy.WEIGHTED_ARTISTS,
             track_modifications=track_modifications
         )
 

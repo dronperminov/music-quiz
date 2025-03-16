@@ -281,13 +281,40 @@
     </div>
 
     <div class="settings-item-description">
-        <p>Как часто можно повторно задавать вопрос, на который был дан <b>некорректный</b> ответ вместо загадывания нового. Для быстрого изменения доступны следующие варианты:</p>
+        <p>Как часто можно повторно задавать вопрос, на который был дан ответ вместо загадывания нового. Для быстрого изменения доступны следующие варианты:</p>
         <ul>
             <li><span class="settings-item-label" onclick="repeatIncorrectProbabilityInput.SetValue(0); UpdateQuestionSettings()">никогда (0%)</span> – не повторять вовсе;</li>
             <li><span class="settings-item-label" onclick="repeatIncorrectProbabilityInput.SetValue(5); UpdateQuestionSettings()">иногда (5%)</span> – примерно каждый 20-ый вопрос будет являться повтором;</li>
             <li><span class="settings-item-label" onclick="repeatIncorrectProbabilityInput.SetValue(25); UpdateQuestionSettings()">часто (25%)</span> – примерно каждый четвёртый вопрос будет являться повтором.</li>
-        </ul></div>
+        </ul>
+    </div>
     <div class="error" id="repeat-incorrect-probability-error"></div>
+
+    <div class="settings-line"></div>
+
+    <div class="settings-item settings-input-item">
+        <div class="settings-name">
+            <label id="repeat-incorrect-strategy-label" for="repeat-incorrect-strategy">Стратегия повтора:</label>
+        </div>
+        <div>
+            <select class="basic-select" id="repeat-incorrect-strategy" value="{{question_settings.repeat_incorrect_strategy}}" onchange="UpdateQuestionSettings()">
+                <option value="old_mistakes"{% if question_settings.repeat_incorrect_strategy.value == "old_mistakes" %} selected{% endif %}>давние ошибки</option>
+                <option value="recent_mistakes"{% if question_settings.repeat_incorrect_strategy.value == "recent_mistakes" %} selected{% endif %}>свежие ошибки</option>
+                <option value="weighted_artists"{% if question_settings.repeat_incorrect_strategy.value == "weighted_artists" %} selected{% endif %}>незнакомые исполнители</option>
+                <option value="interval_tracks"{% if question_settings.repeat_incorrect_strategy.value == "interval_tracks" %} selected{% endif %}>интервальное запоминание</option>
+            </select>
+        </div>
+    </div>
+    <div class="settings-item-description">
+        <p>Вопрос для повтора выбирается среди последних 10000 загаданных вопросов. Для разных целей тренировок имеются различные стратегии:</p>
+        <ul>
+            <li><b>давние ошибки</b> – вероятность выбрать вопрос с <b>неверным ответом</b> выше для старых ответов;</li>
+            <li><b>свежие ошибки</b> – вероятность выбрать вопрос с <b>неверным ответом</b> выше для недавних ответов;</li>
+            <li><b>незнакомые исполнители</b> – вероятность выбрать вопрос с <b>неверным ответом</b> выше для исполнителей с более высокой долей некорректных ответов;</li>
+            <li><b>интервальное запоминание</b> – каждый корректный ответ уменьшает вероятость повтора вопроса вдвое, а некорректный сбрасывает вероятность до 1.</li>
+        </ul>
+        <p>Каждая из стратегий назначает вес каждому из вопросов, после чего взвешенно выбирается один из них в качестве повтора.</p>
+    </div>
 </div>
 
 <h4>Модификация треков</h4>

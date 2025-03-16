@@ -14,9 +14,10 @@ from src.entities.artists_group import ArtistsGroup
 from src.entities.group_analytics import GroupAnalytics
 from src.entities.question import ArtistByIntroQuestion, ArtistByTrackQuestion, LineByChorusQuestion, LineByTextQuestion, NameByTrackQuestion, Question
 from src.entities.question_settings import QuestionSettings
+from src.entities.repeat_strategy import IntervalsRepeatStrategy, OldMistakesRepeatStrategy, RecentMistakesRepeatStrategy, WeightedArtistsRepeatStrategy
 from src.entities.settings import Settings
 from src.entities.track import Track
-from src.enums import QuestionType
+from src.enums import QuestionType, RepeatStrategy
 from src.query_params.question_answer import QuestionAnswer
 
 
@@ -29,6 +30,13 @@ class QuestionsDatabase:
         self.alpha = 0.999
         self.last_questions_count = 10000
         self.min_incorrect_count = 20
+
+        self.repeat_strategies = {
+            RepeatStrategy.OLD_MISTAKES: OldMistakesRepeatStrategy(alpha=0.999),
+            RepeatStrategy.RECENT_MISTAKES: RecentMistakesRepeatStrategy(alpha=0.999),
+            RepeatStrategy.WEIGHTED_ARTISTS: WeightedArtistsRepeatStrategy(),
+            RepeatStrategy.INTERVAL_TRACKS: IntervalsRepeatStrategy()
+        }
 
     def have_question(self, username: str, group_id: Optional[int]) -> bool:
         return self.__get_user_question(username=username, group_id=group_id) is not None
@@ -44,23 +52,23 @@ class QuestionsDatabase:
         if not tracks:
             return None
 
-        track_ids = {track["track_id"] for track in tracks}
+        track_id2track = {track["track_id"]: track for track in tracks}
 
         if external_questions is None and (question := self.__get_user_question(username=settings.username, group_id=group_id)):
-            if question.is_valid(track_ids, settings.question_settings):
+            if question.is_valid(track_id2track, settings.question_settings):
                 return self.update_question(question, settings.question_settings)
 
             self.database.questions.delete_one({"username": settings.username, "correct": None, "group_id": group_id})
 
         if external_questions:
-            last_questions = [question for question in external_questions if question.track_id in track_ids]
+            last_questions = [question for question in external_questions if question.track_id in track_id2track]
         else:
-            last_questions = self.__get_last_questions(username=settings.username, track_ids=list(track_ids), group_id=group_id)
+            last_questions = self.__get_last_questions(username=settings.username, track_ids=list(track_id2track), group_id=group_id)
 
         last_incorrect_questions = [question for question in last_questions if not question.correct and question.question_type in settings.question_settings.question_types]
 
         if group_id is None and len(last_incorrect_questions) >= self.min_incorrect_count and random.random() < settings.question_settings.repeat_incorrect_probability:
-            question = self.repeat_incorrect_question(last_incorrect_questions, settings.question_settings)
+            question = self.repeat_question(last_questions, last_incorrect_questions, settings.question_settings, track_id2track)
         else:
             track = self.sample_question_tracks(tracks=tracks, last_questions=last_questions, settings=settings.question_settings, group_id=group_id, count=1)[0]
             question = self.generate_question(track=track, username=settings.username, settings=settings.question_settings, group_id=group_id)
@@ -80,9 +88,11 @@ class QuestionsDatabase:
 
         return self.__generate_question_by_type(question_type, track, username, settings, group_id)
 
-    def repeat_incorrect_question(self, last_incorrect_questions: List[Question], settings: QuestionSettings) -> Question:
-        question_weights = [1 - self.alpha ** (i + 1) for i in range(len(last_incorrect_questions))]
-        question = random.choices(last_incorrect_questions, weights=question_weights, k=1)[0]
+    def repeat_question(self, questions: List[Question], incorrect_questions: List[Question], settings: QuestionSettings, track_id2track: Dict[int, dict]) -> Question:
+        if settings.repeat_incorrect_strategy not in self.repeat_strategies:
+            raise ValueError(f'Unknown repeat incorrect strategy "{settings.repeat_incorrect_strategy}"')
+
+        question = self.repeat_strategies[settings.repeat_incorrect_strategy].get_question(questions, incorrect_questions=incorrect_questions, track_id2track=track_id2track)
         question.remove_answer()
         return self.update_question(question, settings)
 
