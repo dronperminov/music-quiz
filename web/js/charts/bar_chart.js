@@ -10,7 +10,7 @@ function BarChart(config = null) {
     this.radius = config.radius || 5
     this.barColor = config.barColor || "#00bcd4"
     this.labelColor = config.labelColor || "#212121"
-    this.labelSize = config.labelSize || 10
+    this.labelSize = config.labelSize || 8
 }
 
 BarChart.prototype.GetLimits = function(data, key, startIndex) {

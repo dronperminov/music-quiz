@@ -66,11 +66,11 @@ class PeriodAnalytics:
     @staticmethod
     def __evaluate_group(questions: List[dict], group_by: str) -> PeriodAnalyticsItem:
         if group_by == "hour":
-            label = questions[0]["timestamp"].strftime("%H:00\\n%d.%m")
+            label = questions[0]["timestamp"].strftime("%H:00\\n%d.%m.%y")
         elif group_by == "day":
             label = questions[0]["timestamp"].strftime("%d.%m\\n%Y")
         elif group_by == "week":
-            label = f'{questions[0]["timestamp"].strftime("%d.%m.%Y")}\\n{questions[-1]["timestamp"].strftime("%d.%m.%Y")}'
+            label = f'{questions[0]["timestamp"].strftime("%d.%m.%y")}\\n{questions[-1]["timestamp"].strftime("%d.%m.%y")}'
         else:
             months = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]
             label = f'{months[questions[0]["timestamp"].month - 1]}\\n{questions[0]["timestamp"].year}'
