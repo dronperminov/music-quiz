@@ -80,6 +80,7 @@ function UpdateQuestionSettings() {
 function ShowQuestionSettings(settings) {
     document.getElementById("start-from-chorus").checked = settings.start_from_chorus
     document.getElementById("show-simple-artist-type").checked = settings.show_simple_artist_type
+    document.getElementById("repeat-incorrect-strategy").value = settings.repeat_incorrect_strategy
 
     answerTimeInput.SetValue(settings.answer_time)
     genresInput.SetValue(settings.genres)
