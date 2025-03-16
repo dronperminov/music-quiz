@@ -163,6 +163,23 @@ function BuildAdminInfo() {
 
     MakeElement("info-divider-line", info)
 
+    let playlistBlock = MakeElement("info-line", info, {innerHTML: "<b>Плейлист</b>"})
+    MakeElement("description", playlistBlock, {innerText: "Добавление треков из плейлиста"})
+
+    let playlistUrlBlock = MakeElement("info-textarea-line", info)
+    let playlistUrlLabel = MakeElement("", playlistUrlBlock, {innerText: "Ссылка:", "for": "playlist-url"}, "label")
+    let playlistUrlInput = MakeElement("basic-input", playlistUrlBlock, {type: "text", value: "", placeholder: "https://music.yandex.ru/users/...", id: "playlist-url"}, "input")
+    MakeElement("error", info, {id: "playlist-url-error"})
+
+    let playlistMaxTracksBlock = MakeElement("info-input-line", info)
+    let playlistMaxTracksLabel = MakeElement("", playlistMaxTracksBlock, {innerText: "Треков не более:", "for": "playlist-max-tracks"}, "label")
+    let playlistMaxTracksInput = MakeElement("basic-input", playlistMaxTracksBlock, {type: "text", value: "100", id: "playlist-max-tracks"}, "input")
+    MakeElement("error", info, {id: "playlist-max-tracks-error"})
+
+    let playlistButton = MakeElement("basic-button gradient-button", info, {innerText: "Добавить"}, "button")
+
+    MakeElement("info-divider-line", info)
+
     let historyBlock = MakeElement("info-line", info, {innerHTML: "<b>История</b>"})
     MakeElement("description", historyBlock, {innerText: "История изменения базы данных"})
 
@@ -195,9 +212,10 @@ function BuildAdminInfo() {
         artistUrlInput.focus()
     })
 
-    chartButton.addEventListener("click", () => ParseChart([chartButton, artistButton, trackButton]))
-    artistButton.addEventListener("click", () => AddArtist([chartButton, artistButton, trackButton]))
-    trackButton.addEventListener("click", () => AddTrack([chartButton, artistButton, trackButton]))
+    chartButton.addEventListener("click", () => ParseChart([chartButton, artistButton, trackButton, playlistButton]))
+    artistButton.addEventListener("click", () => AddArtist([chartButton, artistButton, trackButton, playlistButton]))
+    trackButton.addEventListener("click", () => AddTrack([chartButton, artistButton, trackButton, playlistButton]))
+    playlistButton.addEventListener("click", () => AddPlaylist([chartButton, artistButton, trackButton, playlistButton]))
     historyButton.addEventListener("click", () => {
         let artistActions = artistActionsInput.checked ? ["add_artist", "edit_artist", "remove_artist"] : []
         let trackActions = trackActionsInput.checked ? ["add_track", "edit_track", "remove_track"] : []
