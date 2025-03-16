@@ -3,7 +3,7 @@ from typing import List, Tuple, Union
 
 from src.entities.question_settings import QuestionSettings
 from src.entities.track_modification_settings import TrackModificationSettings
-from src.enums import ArtistsCount, Genre, Language, QuestionType, QuizTourType
+from src.enums import ArtistsCount, Genre, Language, QuestionType, QuizTourType, RepeatStrategy
 
 
 @dataclass
@@ -67,6 +67,7 @@ class QuizTourAdd:
             track_position=track_position,
             black_list=[],
             repeat_incorrect_probability=0,
+            repeat_incorrect_strategy=RepeatStrategy.OLD_MISTAKES,
             track_modifications=TrackModificationSettings(change_playback_rate=False, probability=0)
         )
 
