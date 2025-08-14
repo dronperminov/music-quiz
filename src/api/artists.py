@@ -64,7 +64,7 @@ def get_artist(artist_id: int, user: Optional[User] = Depends(get_user)) -> HTML
     artist = music_database.get_artist(artist_id=artist_id)
 
     if artist is None:
-        return send_error(title="Исполнитель не найден", text="Не удалось найти запрашиваемого исполнителя. Возможно, он был удалён", user=user)
+        return send_error(title="Исполнитель не найден", text="Не удалось найти запрашиваемого исполнителя. Возможно, он был удалён", user=user, status_code=404)
 
     tracks = sorted(music_database.get_artist_tracks(artist_id), key=lambda track: artist.tracks[track.track_id])
     artist2name = music_database.get_artist_names_by_ids(list({artist_id for track in tracks for artist_id in track.artists}))

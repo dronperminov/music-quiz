@@ -22,7 +22,7 @@ def get_track(track_id: int, seek: float = Query(0), as_unknown: bool = Query(Fa
     track = music_database.get_track(track_id=track_id)
 
     if not track:
-        return send_error(title="Трек не найден", text="Не удалось найти запрашиваемый трек. Возможно, он был удалён", user=user)
+        return send_error(title="Трек не найден", text="Не удалось найти запрашиваемый трек. Возможно, он был удалён", user=user, status_code=404)
 
     artist_id2artist = music_database.get_artists_by_ids(artist_ids=track.artists)
 

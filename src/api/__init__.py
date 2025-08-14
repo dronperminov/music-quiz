@@ -11,10 +11,10 @@ templates = Environment(loader=FileSystemLoader("web/templates"), cache_size=0)
 templates.policies["json.dumps_kwargs"]["ensure_ascii"] = False
 
 
-def send_error(title: str, text: str, user: Optional[User]) -> HTMLResponse:
+def send_error(title: str, text: str, user: Optional[User], status_code: int = 200) -> HTMLResponse:
     template = templates.get_template("components/error.html")
     content = template.render(user=user, page="error", version=get_static_hash(), error_title=title, error_text=text)
-    return HTMLResponse(content=content)
+    return HTMLResponse(content=content, status_code=status_code)
 
 
 def login_redirect(back_url: str) -> RedirectResponse:
